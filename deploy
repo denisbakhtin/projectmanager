@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#run git save to have fresh sources for compilation
+#git is used merely as supportive backup in case I brake something
+
+
+#parameters
+
+#remote host
+HOST="192.168.0.111"
+USERNAME="tabula"
+SRCFOLDER="/home/tabula/go/src/github.com/denisbakhtin/projectmanager"
+TOFOLDER="/home/tabula/apps/projectmanager"
+SHAREDFOLDER="/media/data/projectmanager-data"
+GIT="/home/tabula/git/projectmanager" #remote git
+#GOCMD="/home/tabula/go_sources/bin/go"
+GOCMD="go"
+
+#execution
+
+ssh "$USERNAME@$HOST" "source .bash_profile ; rm -r $SRCFOLDER ; mkdir -p $SRCFOLDER ; cd $SRCFOLDER && git clone $GIT . && go get && $GOCMD build -o keytech-go main.go ; mkdir -p $TOFOLDER ; rm -r $TOFOLDER/current ; systemctl --user stop keytech-go ; cp -R $SRCFOLDER $TOFOLDER/current ; rm -r $TOFOLDER/current/public/uploads ; ln -s $SHAREDFOLDER $TOFOLDER/current/public/uploads ; goose -env production up ; systemctl --user start keytech-go"
+
+echo "========================================================================"
+echo "==Login to shh server and manually restart amazon-go.sh service plz!!!=="
+echo "========================================================================"

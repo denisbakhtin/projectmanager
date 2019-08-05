@@ -1,0 +1,12 @@
+{{ define "email/activation.tmpl" }}
+<p>
+    Thanks for registering, {{.Name}}!
+</p>
+<p>
+    Your account is not active yet. To activate it follow this link: <a href='{{.Link}}'>activate your account</a>.
+</p>
+<p>
+    If you did not request a registration, please ignore this message.
+</p>
+<p>Thanks, <br/>The {{.ProjectName}} Team</p>
+{{ end }}
