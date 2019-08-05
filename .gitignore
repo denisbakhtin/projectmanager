@@ -1,6 +1,7 @@
 bower_components/*
 public/*
 config/config.yml
+tmp/*
 
 lib-cov
 *.seed
