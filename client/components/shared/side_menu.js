@@ -25,17 +25,20 @@ const SideMenu = {
                     m('span.fa.fa-key'),
                     m('span', 'Manage Account')
                 ])),
-                m(dropdown, [
-                    m('a.nav-link[href=#]', [
-                        m('span.fa.fa-wrench'),
-                        m('span', 'Settings')
-                    ]),
-                    m('.dropdown-menu', [
-                        m('a.dropdown-item[href=#!/statuses]', 'Project Statuses'),
-                        m('a.dropdown-item[href=#!/task_steps]', 'Task Steps'),
-                        m('a.dropdown-item[href=#!/roles]', 'User Roles'),
-                    ]),
-                ]),
+                m(dropdown, {
+                    id: 'settings-dropdown',
+                    children: [
+                        m('a.nav-link[href=#]', [
+                            m('span.fa.fa-wrench'),
+                            m('span', 'Settings')
+                        ]),
+                        m('.dropdown-menu', [
+                            m('a.dropdown-item[href=#!/statuses]', 'Project Statuses'),
+                            m('a.dropdown-item[href=#!/task_steps]', 'Task Steps'),
+                            m('a.dropdown-item[href=#!/roles]', 'User Roles'),
+                        ]),
+                    ]
+                }),
                 m('li.nav-item', m('a.nav-link[href=#!/logout]', [
                     m('span.fa.fa-sign-out'),
                     m('span', 'Logout')
