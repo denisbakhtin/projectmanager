@@ -102,24 +102,22 @@ body {
             }
 
             #navbar-notifications {
-                &>a {
-                    transition: color 0.2s ease;
-                    padding-left: 20px;
+                transition: color 0.2s ease;
+                padding-left: 20px;
 
-                    &:hover {
-                        color: $primary;
-                    }
+                &:hover {
+                    color: $primary;
+                }
 
-                    .fa {
-                        font-size: 160%;
-                        font-weight: 600;
-                    }
+                .fa {
+                    font-size: 160%;
+                    font-weight: 600;
+                }
 
-                    .badge {
-                        position: absolute;
-                        top: 3px;
-                        left: 3px;
-                    }
+                .badge {
+                    position: absolute;
+                    top: 3px;
+                    left: 3px;
                 }
             }
 
@@ -169,6 +167,7 @@ body {
             color: #7b777a;
             padding: 10px 15px;
             display: block;
+            position: relative;
 
             &:hover {
                 background-color: #eee;
@@ -179,6 +178,58 @@ body {
             a {
                 color: $primary;
                 background-color: #eee;
+            }
+        }
+
+        &.dropdown {
+            &>.nav-link {
+                &:after {
+                    display: inline-block;
+                    padding-left: 5px;
+                    font: normal normal normal 14px/1 FontAwesome;
+                    content: "\f053";
+                    position: absolute;
+                    right: 15px;
+                    top: 15px;
+                    font-size: 12px;
+                }
+            }
+
+            &.show {
+                &>.nav-link {
+                    &:after {
+                        display: inline-block;
+                        padding-left: 5px;
+                        font: normal normal normal 14px/1 FontAwesome;
+                        content: "\f078";
+                        position: absolute;
+                        right: 15px;
+                        top: 15px;
+                        font-size: 12px;
+                        color: $primary;
+                    }
+                }
+
+                .dropdown-menu {
+                    display: block;
+                    position: initial;
+                    float: none;
+                    border: none;
+                    border-radius: 0;
+                    background: $dropdown-background;
+                    border-top: 1px solid darken($dropdown-background, 5%);
+                    border-bottom: 1px solid darken($dropdown-background, 5%);
+
+                    .dropdown-item {
+                        padding-left: 30px;
+                        font-size: 90%;
+
+                        &:hover {
+                            background: transparent;
+                            color: $primary;
+                        }
+                    }
+                }
             }
         }
 
@@ -207,6 +258,7 @@ body {
         }
     }
 }
+
 
 #main {
     padding: 20px;

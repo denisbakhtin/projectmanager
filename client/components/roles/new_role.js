@@ -57,9 +57,7 @@ const NewRole = {
                         el.dom.focus()
                     },
                     onkeypress: ui.onKeyPress,
-                    oninput: function (e) {
-                        state.setName(e.target.value)
-                    },
+                    oninput: (e) => state.setName(e.target.value),
                     value: state.name
                 }),
                 m('.input-group-append', [

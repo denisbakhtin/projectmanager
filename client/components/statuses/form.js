@@ -13,27 +13,21 @@ export default function form() {
                 oncreate: (el) => {
                     el.dom.focus()
                 },
-                oninput: function (e) {
-                    state.setName(e.target.value)
-                },
+                oninput: (e) => state.setName(e.target.value),
                 value: state.status.name
             })
         ]),
         m('.form-group w-25', [
             m('label', 'Order'),
             m('input.form-control[type=number][min=0]', {
-                oninput: function (e) {
-                    state.setOrder(e.target.value)
-                },
+                oninput: (e) => state.setOrder(e.target.value),
                 value: state.status.order
             })
         ]),
         m('.form-group', [
             m('label', "Description"),
             m('textarea.form-control', {
-                oninput: function (e) {
-                    state.setDescription(e.target.value)
-                },
+                oninput: (e) => state.setDescription(e.target.value),
                 value: state.status.description
             })
         ]),

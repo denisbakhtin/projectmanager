@@ -16,18 +16,14 @@ const Reset = {
                 m('.form-group', [
                     m('label.control-label', "New password"),
                     m('input.form-control[type=password][placeholder="Enter your new password"]', {
-                        oninput: function (e) {
-                            Auth.setPassword(e.target.value)
-                        },
+                        oninput: (e) => Auth.setPassword(e.target.value),
                         value: Auth.password
                     })
                 ]),
                 m('.form-group', [
                     m('label.control-label', "Confirm password"),
                     m('input.form-control[type=password][placeholder="Confirm your password"]', {
-                        oninput: function (e) {
-                            Auth.setPasswordConfirm(e.target.value)
-                        },
+                        oninput: (e) => Auth.setPasswordConfirm(e.target.value),
                         value: Auth.passwordConfirm
                     })
                 ]),
@@ -43,9 +39,7 @@ const Reset = {
                 m('.form-group', [
                     m('label', "Please, enter your email"),
                     m('input.form-control[type=email]', {
-                        oninput: function (e) {
-                            Auth.setEmail(e.target.value)
-                        },
+                        oninput: (e) => Auth.setEmail(e.target.value),
                         value: Auth.email
                     })
                 ]),

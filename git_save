@@ -1,7 +1,8 @@
 #!/bin/bash
 
-echo "Brunch build --production"
-brunch build --production
+#echo "Brunch build --production"
+#brunch build --production
+#todo: webpack build production
 
 echo -n "What's commit name? "
 read commit

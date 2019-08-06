@@ -5,4 +5,4 @@ Project Manager Web Site
 
 TODO: Features, Docs
 
-Uses [mithril.js](https://mithril.js.org/), [golang](https://golang.org/) api service.
+Uses [mithril.js](https://mithril.js.org/), [golang](https://golang.org/) back-end service.

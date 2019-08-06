@@ -20,36 +20,28 @@ const Register = {
                         m('.form-group', [
                             m('label.control-label', "Name"),
                             m('input.form-control[placeholder="Enter your name"]', {
-                                oninput: function (e) {
-                                    Auth.setName(e.target.value)
-                                },
+                                oninput: (e) => Auth.setName(e.target.value),
                                 value: Auth.name
                             })
                         ]),
                         m('.form-group', [
                             m('label.control-label', "Email"),
                             m('input.form-control[type=email][placeholder="Enter your email"]', {
-                                oninput: function (e) {
-                                    Auth.setEmail(e.target.value)
-                                },
+                                oninput: (e) => Auth.setEmail(e.target.value),
                                 value: Auth.email
                             })
                         ]),
                         m('.form-group', [
                             m('label.control-label', "Password"),
                             m('input.form-control[type=password][placeholder="Enter your password"]', {
-                                oninput: function (e) {
-                                    Auth.setPassword(e.target.value)
-                                },
+                                oninput: (e) => Auth.setPassword(e.target.value),
                                 value: Auth.password
                             })
                         ]),
                         m('.form-group', [
                             m('label.control-label', "Confirm password"),
                             m('input.form-control[type=password][placeholder="Confirm your password"]', {
-                                oninput: function (e) {
-                                    Auth.setPasswordConfirm(e.target.value)
-                                },
+                                oninput: (e) => Auth.setPasswordConfirm(e.target.value),
                                 value: Auth.passwordConfirm
                             })
                         ]),

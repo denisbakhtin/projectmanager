@@ -16,18 +16,14 @@ export default function form() {
                 oncreate: (el) => {
                     el.dom.focus()
                 },
-                oninput: function (e) {
-                    state.setName(e.target.value)
-                },
+                oninput: (e) => state.setName(e.target.value),
                 value: state.task.name
             })
         ]),
         m('.form-group', [
             m('label', 'State'),
             m('select.form-control', {
-                    onchange: function (e) {
-                        state.setStepID(e.target.value)
-                    },
+                    onchange: (e) => state.setStepID(e.target.value),
                     value: state.task.task_step_id
                 }, steps_state.steps ?
                 steps_state.steps.map((step) => {
@@ -39,18 +35,14 @@ export default function form() {
         m('.form-group', [
             m('label', "Description"),
             m('textarea.form-control', {
-                oninput: function (e) {
-                    state.setDescription(e.target.value)
-                },
+                oninput: (e) => state.setDescription(e.target.value),
                 value: state.task.description
             })
         ]),
         m('.form-group', [
             m('label', 'Assigned user'),
             m('select.form-control', {
-                    onchange: function (e) {
-                        state.setProjectUserID(e.target.value)
-                    },
+                    onchange: (e) => state.setProjectUserID(e.target.value),
                     value: state.task.project_user_id
                 }, steps_state.steps ?
                 steps_state.steps.map((step) => {
@@ -62,9 +54,7 @@ export default function form() {
         m('.form-group', [
             m('label', 'Task name'),
             m('input.form-control[type=text]', {
-                oninput: function (e) {
-                    state.setName(e.target.value)
-                },
+                oninput: (e) => state.setName(e.target.value),
                 value: state.task.name
             })
         ]),

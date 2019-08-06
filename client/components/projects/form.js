@@ -13,9 +13,7 @@ export default function form() {
                 oncreate: (el) => {
                     el.dom.focus()
                 },
-                oninput: function (e) {
-                    state.setName(e.target.value)
-                },
+                oninput: (e) => state.setName(e.target.value),
                 value: state.project.name
             })
         ]),
@@ -23,18 +21,14 @@ export default function form() {
             m('.form-group.mb-3.mr-4', [
                 m('label.mr-2', 'Start date'),
                 m('input.form-control[type=date]', {
-                    oninput: function (e) {
-                        state.setStartDate(e.target.value)
-                    },
+                    oninput: (e) => state.setStartDate(e.target.value),
                     value: state.project.start_date
                 })
             ]),
             m('.form-group.mb-3.mr-4', [
                 m('label.mr-2', 'End date'),
                 m('input.form-control[type=date]', {
-                    oninput: function (e) {
-                        state.setEndDate(e.target.value)
-                    },
+                    oninput: (e) => state.setEndDate(e.target.value),
                     min: state.project.start_date,
                     value: state.project.end_date
                 })
@@ -48,9 +42,7 @@ export default function form() {
             m('.form-group.mb-3', [
                 m('label.mr-2', 'Status'),
                 m('select.form-control', {
-                        onchange: function (e) {
-                            state.setStatusId(e.target.value)
-                        },
+                        onchange: (e) => state.setStatusId(e.target.value),
                         value: state.project.status_id
                     }, status_state.statuses ?
                     status_state.statuses.map((status) => {
@@ -71,9 +63,7 @@ export default function form() {
         m('.form-group', [
             m('label', "Description"),
             m('textarea.form-control', {
-                oninput: function (e) {
-                    state.setDescription(e.target.value)
-                },
+                oninput: (e) => state.setDescription(e.target.value),
                 value: state.project.description
             })
         ]),

@@ -1,5 +1,5 @@
 import m from 'mithril'
-import moment from 'moment'
+import dropdown from './dropdown'
 
 const SideMenu = {
     view(vnode) {
@@ -17,7 +17,15 @@ const SideMenu = {
                     m('span.fa.fa-check-square-o'),
                     m('span', 'Tasks')
                 ])),
-                m('li.nav-item.dropdown', [
+                m('li.nav-item', m('a.nav-link[href=#!/users]', [
+                    m('span.fa.fa-users'),
+                    m('span', 'Users')
+                ])),
+                m('li.nav-item', m('a.nav-link[href=#!/manage]', [
+                    m('span.fa.fa-key'),
+                    m('span', 'Manage Account')
+                ])),
+                m(dropdown, [
                     m('a.nav-link[href=#]', [
                         m('span.fa.fa-wrench'),
                         m('span', 'Settings')
@@ -25,34 +33,12 @@ const SideMenu = {
                     m('.dropdown-menu', [
                         m('a.dropdown-item[href=#!/statuses]', 'Project Statuses'),
                         m('a.dropdown-item[href=#!/task_steps]', 'Task Steps'),
+                        m('a.dropdown-item[href=#!/roles]', 'User Roles'),
                     ]),
                 ]),
-                m('li.nav-item', m('a.nav-link[href=#!/statuses]', [
-                    m('span.fa.fa-edit'),
-                    m('span', 'Project Statuses')
-                ])),
-                m('li.nav-item', m('a.nav-link[href=#!/task_steps]', [
-                    m('span.fa.fa-cubes'),
-                    m('span', 'Task Steps')
-                ])),
-                m('li.nav-item', m('a.nav-link[href=#!/users]', [
-                    m('span.fa.fa-users'),
-                    m('span', 'Users')
-                ])),
-                m('li.nav-item', m('a.nav-link[href=#!/roles]', [
-                    m('span.fa.fa-user-o'),
-                    m('span', 'User Roles')
-                ])),
-                m('li.nav-item', m('a.nav-link[href=#!/manage]', [
-                    m('span.fa.fa-key'),
-                    m('span', 'Manage Account')
-                ])),
                 m('li.nav-item', m('a.nav-link[href=#!/logout]', [
                     m('span.fa.fa-sign-out'),
-                    m('span', [
-                        m('span.fa.fa-home'),
-                        m('span', 'Logout')
-                    ])
+                    m('span', 'Logout')
                 ])),
             ]),
             m('.bottom-links.row', [

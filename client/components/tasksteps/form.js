@@ -13,17 +13,13 @@ export default function form() {
                 oncreate: (el) => {
                     el.dom.focus()
                 },
-                oninput: function (e) {
-                    state.setName(e.target.value)
-                },
+                oninput: (e) => state.setName(e.target.value),
                 value: state.step.name
             })
         ]),
         m('.form-check', [
             m('input#isfinal.form-check-input[type=checkbox]', {
-                oninput: function (e) {
-                    state.setIsfinal(e.target.value)
-                },
+                oninput: (e) => state.setIsfinal(e.target.value),
                 checked: state.step.is_final
             }),
             m('label.form-check-label[for=isfinal]', 'Is final')
@@ -31,9 +27,7 @@ export default function form() {
         m('.form-group w-25', [
             m('label', 'Order'),
             m('input.form-control[type=number][min=0]', {
-                oninput: function (e) {
-                    state.setOrder(e.target.value)
-                },
+                oninput: (e) => state.setOrder(e.target.value),
                 value: state.step.order
             })
         ]),

@@ -1,5 +1,4 @@
 import './css/site.scss'
-import 'bootstrap'
 import m from 'mithril'
 import 'moment'
 import users from './components/users/users'
@@ -38,7 +37,7 @@ import layout from './components/shared/layout'
 import public_layout from './components/shared/layout_public'
 import Auth from './utils/auth'
 
-var root = document.getElementById("app-root");
+var app_root = document.getElementById("app-root");
 
 var routes = {
     '/': route(home, false),
@@ -76,7 +75,7 @@ var routes = {
     '/logout': route(logout, false),
 };
 
-m.route(root, "/", routes)
+m.route(app_root, "/", routes)
 
 //route wrapper 
 function route(comp, requiresAuth = true) {
@@ -91,10 +90,7 @@ function route(comp, requiresAuth = true) {
 //render component with layout
 function withLayout(comp) {
     return {
-        view() {
-            console.log('withLayout: ', Auth.isLoggedIn())
-            return Auth.isLoggedIn() ? m(layout, comp) : m(public_layout, comp);
-        }
+        view: () => Auth.isLoggedIn() ? m(layout, comp) : m(public_layout, comp)
     }
 }
 

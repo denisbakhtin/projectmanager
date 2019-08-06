@@ -1,8 +1,8 @@
 ﻿import m from 'mithril'
-import moment from 'moment'
 import notifications from './navbar_notifications'
 import profile from './navbar_profile'
 import support from './navbar_support'
+import curtime from './navbar_time'
 
 const Navbar = {
     view(vnode) {
@@ -26,7 +26,7 @@ const Navbar = {
                 ]),
             ]),
             m('ul.navbar-nav.ml-auto', [
-                m('li.nav-item', m('span.navbar-text.text-primary.mr-4', moment().format('MMMM Do YYYY, h:mm:ss a'))),
+                m(curtime),
                 m(notifications),
                 m(profile),
                 m(support),

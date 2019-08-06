@@ -18,18 +18,14 @@ const Login = {
                         m('.form-group', [
                             m('label.control-label', "Email"),
                             m('input.form-control[type=email][placeholder="Enter your email"]', {
-                                oninput: function (e) {
-                                    Auth.setEmail(e.target.value)
-                                },
+                                oninput: (e) => Auth.setEmail(e.target.value),
                                 value: Auth.email
                             })
                         ]),
                         m('.form-group', [
                             m('label.control-label', "Password"),
                             m('input.form-control[type=password][placeholder="Enter your password"]', {
-                                oninput: function (e) {
-                                    Auth.setPassword(e.target.value)
-                                },
+                                oninput: (e) => Auth.setPassword(e.target.value),
                                 value: Auth.password
                             })
                         ]),
