@@ -3,17 +3,22 @@ import m from 'mithril'
 function Dropdown() {
     let show = false
     let key = 'dropdown'
+    let keepState = false
     let loadState = () => {
-        let s = sessionStorage.getItem(key)
+        let s = ''
+        if (keepState)
+            s = sessionStorage.getItem(key)
         show = (s) ? JSON.parse(s) : show
     }
     let storeState = (val) => {
         show = val
-        sessionStorage.setItem(key, JSON.stringify(val))
+        if (keepState)
+            sessionStorage.setItem(key, JSON.stringify(val))
     }
     return {
         oninit: (vnode) => {
             key = vnode.attrs.id || key
+            keepState = vnode.attrs.keepState || keepState
             loadState()
         },
         view: (vnode) => {
@@ -31,7 +36,10 @@ function Dropdown() {
             return m('li.nav-item.dropdown', {
                 class: show ? 'show' : '',
                 onclick: (e) => storeState(!show),
-            }, vnode.attrs.children)
+            }, [
+                m('div.dropdown-overlay'),
+                vnode.attrs.children
+            ])
         }
     }
 }

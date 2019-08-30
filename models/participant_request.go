@@ -8,7 +8,7 @@ import (
 
 //ParticipantRequest represents a row from participant_requests table
 type ParticipantRequest struct {
-	IDFrom    uint      `json:"id_from" valid:"required"`
+	IDFrom    uint64    `json:"id_from" valid:"required"`
 	EmailTo   string    `json:"email_to" valid:"required,email"`
 	Token     string    `json:"token" valid:"required,length(1|500)"`
 	CreatedAt time.Time `json:"created_at,omitempty"`

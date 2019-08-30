@@ -7,6 +7,7 @@ import (
 	"github.com/denisbakhtin/projectmanager/config"
 	"github.com/jinzhu/gorm"
 	"github.com/qor/validations"
+
 	//required by GORM
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -23,7 +24,7 @@ func InitializeDB() {
 	}
 	validations.RegisterCallbacks(DB)
 	DB.AutoMigrate(&User{}, &UserGroup{}, &Task{}, &Project{}, &Status{}, &TaskLog{}, &TaskStep{},
-		&AttachedFile{}, &ProjectUser{}, &Role{}, &Page{}, &Log{})
+		&AttachedFile{}, &ProjectUser{}, &Role{}, &Page{}, &Log{}, &Notification{})
 	DB.AutoMigrate()
 
 	count := 0

@@ -7,15 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//tasksGetHandler handles get all tasks request
-func tasksGetHandler(c *gin.Context) {
+//tasksGet handles get all tasks request
+func tasksGet(c *gin.Context) {
 	var tasks []models.Task
 	models.DB.Preload("ProjectUser").Preload("Project").Preload("TaskStep").Find(&tasks)
 	c.JSON(http.StatusOK, tasks)
 }
 
-//taskGetHandler handles get task request
-func taskGetHandler(c *gin.Context) {
+//taskGet handles get task request
+func taskGet(c *gin.Context) {
 	id := c.Param("id")
 	task := models.Task{}
 	models.DB.First(&task, id)
@@ -26,8 +26,8 @@ func taskGetHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-//tasksPostHandler handles create role request
-func tasksPostHandler(c *gin.Context) {
+//tasksPost handles create role request
+func tasksPost(c *gin.Context) {
 	task := models.Task{}
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -54,8 +54,8 @@ func tasksPostHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//tasksPutHandler handles update task request
-func tasksPutHandler(c *gin.Context) {
+//tasksPut handles update task request
+func tasksPut(c *gin.Context) {
 	//id := c.Param("id")
 	task := models.Task{}
 	if err := c.ShouldBindJSON(&task); err != nil {
@@ -69,8 +69,8 @@ func tasksPutHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//tasksDeleteHandler handles delete role request
-func tasksDeleteHandler(c *gin.Context) {
+//tasksDelete handles delete role request
+func tasksDelete(c *gin.Context) {
 	id := c.Param("id")
 	task := models.Task{}
 	models.DB.First(&task, id)

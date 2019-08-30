@@ -16,7 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func uploadsPostHandler(c *gin.Context) {
+func uploadsPost(c *gin.Context) {
 	uploader := c.Param("uploader") // form or ckeditor
 	file, _ := c.FormFile("upload")
 	ext := filepath.Ext(file.Filename)

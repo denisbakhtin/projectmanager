@@ -75,8 +75,6 @@ var routes = {
     '/logout': route(logout, false),
 };
 
-m.route(app_root, "/", routes)
-
 //route wrapper 
 function route(comp, requiresAuth = true) {
     if (requiresAuth)
@@ -103,6 +101,8 @@ function checkAuthorized(comp) {
         } else return withLayout(comp)
     }
 }
+
+m.route(app_root, "/", routes)
 
 //turn on webpack hot reload
 if (module.hot) {

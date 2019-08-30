@@ -20,7 +20,7 @@ const (
 
 //User represents a row from users table
 type User struct {
-	ID           uint       `gorm:"primary_key" json:"id"`
+	ID           uint64     `gorm:"primary_key" json:"id"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`
 	DeletedAt    *time.Time `sql:"index" json:"-"`
@@ -28,7 +28,7 @@ type User struct {
 	Email        string     `json:"email" gorm:"unique_index" valid:"required,email,length(1|100)"`
 	PasswordHash string     `json:"-" valid:"required"`
 	Token        string     `json:"token" valid:"length(0|1500)"`
-	UserGroupID  uint       `json:"user_group_id" gorm:"index" valid:"required"`
+	UserGroupID  uint64     `json:"user_group_id" gorm:"index" valid:"required"`
 	Status       uint       `json:"status"` //See constants
 	UserGroup    UserGroup  `json:"user_group" gorm:"save_associations:false" valid:"-"`
 }
@@ -97,7 +97,7 @@ type JWTClaims struct {
 	jwt.StandardClaims
 	Name   string `json:"name,omitempty"`
 	Role   string `json:"role,omitempty"`
-	UserID uint   `json:"user_id,omitempty"`
+	UserID uint64 `json:"user_id,omitempty"`
 }
 
 //CreateJWTToken issues a valid JWT token
@@ -123,7 +123,7 @@ func (u *User) CreateJWTToken() error {
 }
 
 //createJWTID creates a secure jwt token id
-func createJWTID(id uint) string {
+func createJWTID(id uint64) string {
 	str := fmt.Sprintf("%v-%v", id, time.Now().UnixNano())
 	bytes, _ := bcrypt.GenerateFromPassword([]byte(str), 12)
 	return string(bytes)

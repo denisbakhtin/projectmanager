@@ -1,22 +1,21 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/denisbakhtin/projectmanager/models"
 	"github.com/gin-gonic/gin"
 )
 
-//pagesGetHandler handles get all pages request
-func pagesGetHandler(c *gin.Context) {
+//pagesGet handles get all pages request
+func pagesGet(c *gin.Context) {
 	var pages []models.Page
 	models.DB.Find(&pages)
 	c.JSON(http.StatusOK, pages)
 }
 
-//pageGetHandler handles get page request
-func pageGetHandler(c *gin.Context) {
+//pageGet handles get page request
+func pageGet(c *gin.Context) {
 	id := c.Param("id")
 	page := models.Page{}
 	models.DB.First(&page, id)
@@ -27,8 +26,8 @@ func pageGetHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, page)
 }
 
-//pagesPostHandler handles create page request
-func pagesPostHandler(c *gin.Context) {
+//pagesPost handles create page request
+func pagesPost(c *gin.Context) {
 	page := models.Page{}
 	if err := c.ShouldBindJSON(&page); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -41,8 +40,8 @@ func pagesPostHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//pagesPutHandler handles update page request
-func pagesPutHandler(c *gin.Context) {
+//pagesPut handles update page request
+func pagesPut(c *gin.Context) {
 	//id := c.Param("id")
 	page := models.Page{}
 	if err := c.ShouldBindJSON(&page); err != nil {
@@ -56,8 +55,8 @@ func pagesPutHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//pagesDeleteHandler handles delete page request
-func pagesDeleteHandler(c *gin.Context) {
+//pagesDelete handles delete page request
+func pagesDelete(c *gin.Context) {
 	id := c.Param("id")
 	page := models.Page{}
 	models.DB.First(&page, id)
@@ -73,18 +72,17 @@ func pagesDeleteHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//pagesGetHTMLHandler handles get html page request
-func pagesGetHTMLHandler(c *gin.Context) {
+//pagesGetHTML handles get html page request
+func pagesGetHTML(c *gin.Context) {
 	id := c.Param("id")
-	log.Println("============================== Page id = ", id)
 
 	page := models.Page{}
 	models.DB.First(&page, id)
 	if page.ID == 0 || !page.Published {
-		c.HTML(http.StatusNotFound, "errors/404.tmpl", gin.H{"error": "Requested page not found"})
+		c.HTML(http.StatusNotFound, "errors/404", gin.H{"error": "Requested page not found"})
 		return
 	}
-	c.HTML(http.StatusOK, "pages/page.tmpl", gin.H{
+	c.HTML(http.StatusOK, "pages/page", gin.H{
 		"Title": page.Name,
 		"Page":  page,
 	})

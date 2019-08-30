@@ -7,16 +7,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//usersGetHandler handles get all users request
+//usersGet handles get all users request
 //TODO: allow access only to admins via middleware
-func usersGetHandler(c *gin.Context) {
+func usersGet(c *gin.Context) {
 	var users []models.User
 	models.DB.Find(&users)
 	c.JSON(http.StatusOK, users)
 }
 
-//userGetHandler handles get user request
-func userGetHandler(c *gin.Context) {
+//userGet handles get user request
+func userGet(c *gin.Context) {
 	id := c.Param("id")
 	user := models.User{}
 	models.DB.First(&user, id)
@@ -27,8 +27,8 @@ func userGetHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-//usersPutHandler handles user status update
-func usersPutHandler(c *gin.Context) {
+//usersPut handles user status update
+func usersPut(c *gin.Context) {
 	//id := c.Param("id")
 	user := models.User{}
 	if err := c.ShouldBindJSON(&user); err != nil {

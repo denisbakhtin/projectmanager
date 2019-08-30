@@ -12,8 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//loginPostHandler handles user login
-func loginPostHandler(c *gin.Context) {
+//loginPost handles user login
+func loginPost(c *gin.Context) {
 	vm := viewmodels.LoginVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -40,8 +40,8 @@ func loginPostHandler(c *gin.Context) {
 	c.JSON(200, gin.H{"token": user.Token})
 }
 
-//activatePostHandler handles user activation
-func activatePostHandler(c *gin.Context) {
+//activatePost handles user activation
+func activatePost(c *gin.Context) {
 	vm := viewmodels.ActivateVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -73,8 +73,8 @@ func activatePostHandler(c *gin.Context) {
 	c.JSON(200, gin.H{"token": user.Token})
 }
 
-//registerPostHandler handles user registration
-func registerPostHandler(c *gin.Context) {
+//registerPost handles user registration
+func registerPost(c *gin.Context) {
 	vm := viewmodels.RegisterVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -7,15 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//statusesGetHandler handles get all statuses request
-func statusesGetHandler(c *gin.Context) {
+//statusesGet handles get all statuses request
+func statusesGet(c *gin.Context) {
 	var statuses []models.Status
 	models.DB.Order("order").Find(&statuses)
 	c.JSON(http.StatusOK, statuses)
 }
 
-//statusGetHandler handles get status request
-func statusGetHandler(c *gin.Context) {
+//statusGet handles get status request
+func statusGet(c *gin.Context) {
 	id := c.Param("id")
 	status := models.Status{}
 	models.DB.First(&status, id)
@@ -26,8 +26,8 @@ func statusGetHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, status)
 }
 
-//statusesPostHandler handles create status request
-func statusesPostHandler(c *gin.Context) {
+//statusesPost handles create status request
+func statusesPost(c *gin.Context) {
 	status := models.Status{}
 	if err := c.ShouldBindJSON(&status); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -40,8 +40,8 @@ func statusesPostHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//statusesPutHandler handles update status request
-func statusesPutHandler(c *gin.Context) {
+//statusesPut handles update status request
+func statusesPut(c *gin.Context) {
 	//id := c.Param("id")
 	status := models.Status{}
 	if err := c.ShouldBindJSON(&status); err != nil {
@@ -55,8 +55,8 @@ func statusesPutHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//statusesDeleteHandler handles delete status request
-func statusesDeleteHandler(c *gin.Context) {
+//statusesDelete handles delete status request
+func statusesDelete(c *gin.Context) {
 	id := c.Param("id")
 	status := models.Status{}
 	models.DB.First(&status, id)

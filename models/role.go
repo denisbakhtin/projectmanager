@@ -4,7 +4,7 @@ import "time"
 
 //Role represents a row in roles table
 type Role struct {
-	ID        uint       `gorm:"primary_key" json:"id"`
+	ID        uint64     `gorm:"primary_key" json:"id"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `sql:"index" json:"-"`

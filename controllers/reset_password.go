@@ -11,8 +11,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//forgotPostHandler handles password reset request
-func forgotPostHandler(c *gin.Context) {
+//forgotPost handles password reset request
+func forgotPost(c *gin.Context) {
 	vm := viewmodels.ForgotVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -38,8 +38,8 @@ func forgotPostHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//resetPostHandler handles password reset request
-func resetPostHandler(c *gin.Context) {
+//resetPost handles password reset request
+func resetPost(c *gin.Context) {
 	vm := viewmodels.ResetVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

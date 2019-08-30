@@ -7,15 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//rolesGetHandler handles get all roles request
-func rolesGetHandler(c *gin.Context) {
+//rolesGet handles get all roles request
+func rolesGet(c *gin.Context) {
 	var roles []models.Role
 	models.DB.Find(&roles)
 	c.JSON(http.StatusOK, roles)
 }
 
-//roleGetHandler handles get role request
-func roleGetHandler(c *gin.Context) {
+//roleGet handles get role request
+func roleGet(c *gin.Context) {
 	id := c.Param("id")
 	role := models.Role{}
 	models.DB.First(&role, id)
@@ -26,8 +26,8 @@ func roleGetHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, role)
 }
 
-//rolesPostHandler handles create role request
-func rolesPostHandler(c *gin.Context) {
+//rolesPost handles create role request
+func rolesPost(c *gin.Context) {
 	role := models.Role{}
 	if err := c.ShouldBindJSON(&role); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -40,8 +40,8 @@ func rolesPostHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//rolesPutHandler handles update role request
-func rolesPutHandler(c *gin.Context) {
+//rolesPut handles update role request
+func rolesPut(c *gin.Context) {
 	//id := c.Param("id")
 	role := models.Role{}
 	if err := c.ShouldBindJSON(&role); err != nil {
@@ -55,8 +55,8 @@ func rolesPutHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//rolesDeleteHandler handles delete role request
-func rolesDeleteHandler(c *gin.Context) {
+//rolesDelete handles delete role request
+func rolesDelete(c *gin.Context) {
 	id := c.Param("id")
 	role := models.Role{}
 	models.DB.First(&role, id)

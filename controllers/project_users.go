@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//projectUsersGetHandler handles get all project users request
-func projectUsersGetHandler(c *gin.Context) {
+//projectUsersGet handles get all project users request
+func projectUsersGet(c *gin.Context) {
 	projectID := c.Param("project_id")
 	user := models.User{}
 	if u, exists := c.Get("user"); exists {
@@ -29,8 +29,8 @@ func projectUsersGetHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, pusers)
 }
 
-//projectUserGetHandler handles get project user request
-func projectUserGetHandler(c *gin.Context) {
+//projectUserGet handles get project user request
+func projectUserGet(c *gin.Context) {
 	projectID := c.Param("project_id")
 	id := c.Param("id")
 	puser := models.ProjectUser{}
@@ -42,8 +42,8 @@ func projectUserGetHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, puser)
 }
 
-//projectUsersPostHandler handles create project user request
-func projectUsersPostHandler(c *gin.Context) {
+//projectUsersPost handles create project user request
+func projectUsersPost(c *gin.Context) {
 	task := models.Task{}
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -70,8 +70,8 @@ func projectUsersPostHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//projectUsersPutHandler handles update project user request
-func projectUsersPutHandler(c *gin.Context) {
+//projectUsersPut handles update project user request
+func projectUsersPut(c *gin.Context) {
 	//id := c.Param("id")
 	task := models.Task{}
 	if err := c.ShouldBindJSON(&task); err != nil {
@@ -85,8 +85,8 @@ func projectUsersPutHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//projectUsersDeleteHandler handles delete project user request
-func projectUsersDeleteHandler(c *gin.Context) {
+//projectUsersDelete handles delete project user request
+func projectUsersDelete(c *gin.Context) {
 	id := c.Param("id")
 	task := models.Task{}
 	models.DB.First(&task, id)

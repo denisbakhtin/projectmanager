@@ -7,15 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//taskStepsGetHandler handles get all task steps request
-func taskStepsGetHandler(c *gin.Context) {
+//taskStepsGet handles get all task steps request
+func taskStepsGet(c *gin.Context) {
 	var steps []models.TaskStep
 	models.DB.Order("order").Find(&steps)
 	c.JSON(http.StatusOK, steps)
 }
 
-//taskStepGetHandler handles get task step request
-func taskStepGetHandler(c *gin.Context) {
+//taskStepGet handles get task step request
+func taskStepGet(c *gin.Context) {
 	id := c.Param("id")
 	step := models.TaskStep{}
 	models.DB.First(&step, id)
@@ -26,8 +26,8 @@ func taskStepGetHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, step)
 }
 
-//taskStepsPostHandler handles create task step request
-func taskStepsPostHandler(c *gin.Context) {
+//taskStepsPost handles create task step request
+func taskStepsPost(c *gin.Context) {
 	step := models.TaskStep{}
 	if err := c.ShouldBindJSON(&step); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -40,8 +40,8 @@ func taskStepsPostHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//taskStepsPutHandler handles update task step request
-func taskStepsPutHandler(c *gin.Context) {
+//taskStepsPut handles update task step request
+func taskStepsPut(c *gin.Context) {
 	//id := c.Param("id")
 	step := models.TaskStep{}
 	if err := c.ShouldBindJSON(&step); err != nil {
@@ -55,8 +55,8 @@ func taskStepsPutHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//taskStepsDeleteHandler handles delete task step request
-func taskStepsDeleteHandler(c *gin.Context) {
+//taskStepsDelete handles delete task step request
+func taskStepsDelete(c *gin.Context) {
 	id := c.Param("id")
 	step := models.TaskStep{}
 	models.DB.First(&step, id)

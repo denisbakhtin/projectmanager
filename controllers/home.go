@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//homeHandler handles home page html request
-func homeHandler(c *gin.Context) {
-	c.HTML(200, "home/home.tmpl", gin.H{
+//home handles home page html request
+func home(c *gin.Context) {
+	c.HTML(200, "home/home", gin.H{
 		"Title": config.Settings.ProjectName + " welcomes you!",
 	})
 }

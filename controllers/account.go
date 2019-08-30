@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//accountGetHandler handles user account request
-func accountGetHandler(c *gin.Context) {
+//accountGet handles user account request
+func accountGet(c *gin.Context) {
 	user := models.User{}
 	if u, exists := c.Get("user"); exists {
 		user = u.(models.User)
@@ -19,8 +19,8 @@ func accountGetHandler(c *gin.Context) {
 	c.JSON(200, user)
 }
 
-//accountPutHandler handles user account update
-func accountPutHandler(c *gin.Context) {
+//accountPut handles user account update
+func accountPut(c *gin.Context) {
 	vm := viewmodels.AccountVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
