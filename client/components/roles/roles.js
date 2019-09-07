@@ -36,6 +36,7 @@ const Roles = {
             m('table.table', [
                 m('thead', [
                     m('tr', [
+                        m('th.shrink[scope=col]', '#'),
                         m('th[scope=col]', 'Name'),
                         m('th.shrink.text-center[scope=col]', 'Actions')
                     ])
@@ -45,10 +46,11 @@ const Roles = {
                     state.roles ? 
                         state.roles.map((role) => {
                             return m('tr', { key: role.id }, state.editRole.id == role.id ? [
-                                m('td[colspan=2]', [
+                                m('td[colspan=3]', [
                                     m(editRole, { role: role, onUpdate: () => { state.editRole = {}; state.get(); }, onCancel: () => { state.editRole = {}}})
                                 ])
                             ] : [
+                                m('td.shrink', role.id),
                                 m('td', role.name),
                                 m('td', m('.btn-group', [
                                     m('button.btn.btn-outline-primary.btn-sm[type=button]', { onclick: () => { state.editRole = role } }, m('i.fa.fa-pencil')),

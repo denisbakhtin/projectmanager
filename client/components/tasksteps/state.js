@@ -6,6 +6,7 @@ import {
     responseErrors
 } from '../../utils/helpers'
 import Auth from '../../utils/auth'
+import service from '../../utils/service.js'
 
 const state = {
     step: {},
@@ -28,36 +29,17 @@ const state = {
     },
     //requests
     get() {
-        return m.request({
-                method: "GET",
-                url: "/api/task_steps/" + state.step.id,
-                headers: {
-                    Authorization: Auth.authHeader()
-                }
-            })
+        return service.getTaskStep(state.step.id)
             .then((result) => state.step = result)
             .catch((error) => state.errors = responseErrors(error))
     },
     getAll() {
-        return m.request({
-                method: "GET",
-                url: "/api/task_steps",
-                headers: {
-                    Authorization: Auth.authHeader()
-                }
-            })
+        return service.getTaskSteps()
             .then((result) => state.steps = result.slice(0))
             .catch((error) => state.errors = responseErrors(error))
     },
     create() {
-        return m.request({
-                method: "POST",
-                url: "/api/task_steps",
-                body: state.step,
-                headers: {
-                    Authorization: Auth.authHeader()
-                }
-            })
+        return service.createTaskStep(state.step)
             .then((result) => {
                 addSuccess("Task step created.")
                 m.route.set('/task_steps')
@@ -65,14 +47,7 @@ const state = {
             .catch((error) => state.errors = responseErrors(error))
     },
     update() {
-        return m.request({
-                method: "PUT",
-                url: "/api/task_steps/" + state.step.id,
-                body: state.step,
-                headers: {
-                    Authorization: Auth.authHeader()
-                }
-            })
+        return service.updateTaskStep(state.step.id, state.step)
             .then((result) => {
                 addSuccess("Task step updated.")
                 m.route.set('/task_steps')
@@ -80,13 +55,7 @@ const state = {
             .catch((error) => state.errors = responseErrors(error))
     },
     destroy() {
-        return m.request({
-                method: "DELETE",
-                url: "/api/task_steps/" + state.step.id,
-                headers: {
-                    Authorization: Auth.authHeader()
-                }
-            })
+        return service.deleteTaskStep(state.step.id)
             .then((result) => {
                 addSuccess("Task step removed.")
                 m.route.set('/task_steps', {}, {

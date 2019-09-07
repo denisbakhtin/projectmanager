@@ -6,7 +6,8 @@ const AttachedFiles = {
     oninit(vnode) {
         state.files = []
         state.errors = []
-        if (vnode.attrs.files && vnode.attrs.files.length > 0) state.files = vnode.attrs.files.slice(0)
+        if (vnode.attrs.files && vnode.attrs.files.length > 0)
+            state.files = vnode.attrs.files.slice(0)
     },
     onchange(vnode) {
         if (typeof vnode.attrs.onchange == 'function') vnode.attrs.onchange(state.files)

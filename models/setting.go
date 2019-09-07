@@ -2,15 +2,14 @@ package models
 
 import "time"
 
-//Role represents a row in roles table
-type Role struct {
+//Setting type contains settings info
+type Setting struct {
 	ID        uint64     `gorm:"primary_key" json:"id"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `sql:"index" json:"-"`
-	Name      string     `json:"name" valid:"required,length(1|100)"`
-}
 
-//RoleVM is a role view model
-type RoleVM struct {
+	Code  string `json:"code" valid:"required,length(1|100)"`
+	Title string `json:"title"`
+	Value string `json:"value" valid:"required"`
 }

@@ -10,7 +10,7 @@ import (
 //tasksGet handles get all tasks request
 func tasksGet(c *gin.Context) {
 	var tasks []models.Task
-	models.DB.Preload("ProjectUser").Preload("Project").Preload("TaskStep").Find(&tasks)
+	models.DB.Preload("ProjectUser").Preload("ProjectUser.User").Preload("Project").Preload("TaskStep").Find(&tasks)
 	c.JSON(http.StatusOK, tasks)
 }
 
@@ -18,7 +18,7 @@ func tasksGet(c *gin.Context) {
 func taskGet(c *gin.Context) {
 	id := c.Param("id")
 	task := models.Task{}
-	models.DB.First(&task, id)
+	models.DB.Preload("AttachedFiles").First(&task, id)
 	if task.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
 		return

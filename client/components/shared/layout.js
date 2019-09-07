@@ -9,7 +9,7 @@ const Layout = {
         return m(".layout.restricted-layout", [
             m("header", m(navbar)),
             m(side_menu),
-            m("#main", m(vnode.attrs)),
+            m("#main", m(vnode.attrs.child)),
             m(notifications),
         ]);
     }

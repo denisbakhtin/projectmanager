@@ -8,13 +8,12 @@ import (
 	"github.com/denisbakhtin/projectmanager/helpers"
 	"github.com/denisbakhtin/projectmanager/models"
 	"github.com/denisbakhtin/projectmanager/services"
-	"github.com/denisbakhtin/projectmanager/viewmodels"
 	"github.com/gin-gonic/gin"
 )
 
 //loginPost handles user login
 func loginPost(c *gin.Context) {
-	vm := viewmodels.LoginVM{}
+	vm := models.LoginVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -42,7 +41,7 @@ func loginPost(c *gin.Context) {
 
 //activatePost handles user activation
 func activatePost(c *gin.Context) {
-	vm := viewmodels.ActivateVM{}
+	vm := models.ActivateVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -75,7 +74,7 @@ func activatePost(c *gin.Context) {
 
 //registerPost handles user registration
 func registerPost(c *gin.Context) {
-	vm := viewmodels.RegisterVM{}
+	vm := models.RegisterVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

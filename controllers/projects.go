@@ -10,7 +10,9 @@ import (
 //projectsGet handles get all projects request
 func projectsGet(c *gin.Context) {
 	var projects []models.Project
-	models.DB.Preload("Owner").Preload("Status").Find(&projects)
+	//TODO: filter projects by current user
+	userID := currentUserID(c)
+	models.DB.Preload("Owner").Preload("Status").Where("owner_id = ?", userID).Find(&projects)
 	c.JSON(http.StatusOK, projects)
 }
 
@@ -24,6 +26,16 @@ func projectGet(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, project)
+}
+
+//projectNewGet handles get new project request
+func projectNewGet(c *gin.Context) {
+	//return viewmodel
+}
+
+//projectEditGet handles edit project request
+func projectEditGet(c *gin.Context) {
+	//return viewmodel
 }
 
 //projectsPost handles create role request

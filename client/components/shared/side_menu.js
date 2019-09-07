@@ -38,6 +38,7 @@ const SideMenu = {
                             m('a.dropdown-item[href=#!/statuses]', 'Project Statuses'),
                             m('a.dropdown-item[href=#!/task_steps]', 'Task Steps'),
                             m('a.dropdown-item[href=#!/roles]', 'User Roles'),
+                            m('a.dropdown-item[href=#!/settings]', 'Site Settings'),
                         ]),
                     ]
                 }),

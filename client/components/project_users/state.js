@@ -24,6 +24,17 @@ const state = {
             })
             .catch((error) => state.errors = responseErrors(error))
     },
+    getProjectUsers(project_id) {
+        m.request({
+            method: "GET",
+            url: "/api/project_users/"+project_id,
+            headers: { Authorization: Auth.authHeader() }
+        })
+            .then((result) => {
+                state.pusers = result.slice(0)
+            })
+            .catch((error) => state.errors = responseErrors(error))
+    },
     addUserToProject(project_id, user) {
         let role = state.roles.length > 0 ? state.roles[0] : {}
         state.pusers.push({

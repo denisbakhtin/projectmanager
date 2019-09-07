@@ -5,7 +5,6 @@ import (
 
 	"github.com/denisbakhtin/projectmanager/helpers"
 	"github.com/denisbakhtin/projectmanager/models"
-	"github.com/denisbakhtin/projectmanager/viewmodels"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,7 +20,7 @@ func accountGet(c *gin.Context) {
 
 //accountPut handles user account update
 func accountPut(c *gin.Context) {
-	vm := viewmodels.AccountVM{}
+	vm := models.AccountVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

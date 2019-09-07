@@ -14,14 +14,15 @@ import manage from './components/account/manage'
 import home from './components/home'
 
 import projects from './components/projects/projects'
-import new_project from './components/projects/new_project'
 import edit_project from './components/projects/edit_project'
 import project from './components/projects/project'
 
 import statuses from './components/statuses/statuses'
-import new_status from './components/statuses/new_status'
 import edit_status from './components/statuses/edit_status'
 import status from './components/statuses/status'
+
+import settings from './components/settings/settings'
+import edit_setting from './components/settings/edit_setting.js'
 
 import tasksteps from './components/tasksteps/tasksteps'
 import new_taskstep from './components/tasksteps/new_taskstep'
@@ -29,9 +30,8 @@ import edit_taskstep from './components/tasksteps/edit_taskstep'
 import taskstep from './components/tasksteps/taskstep'
 
 import tasks from './components/tasks/tasks'
-import new_task from './components/tasks/new_task'
 import edit_task from './components/tasks/edit_task'
-import task from './components/tasks/task'
+// import task from './components/tasks/task'
 
 import layout from './components/shared/layout'
 import public_layout from './components/shared/layout_public'
@@ -53,12 +53,12 @@ var routes = {
     '/users': route(users),
 
     '/projects': route(projects),
-    '/projects/new': route(new_project),
+    '/projects/new': route(edit_project),
     '/projects/edit/:id': route(edit_project),
     '/projects/:id': route(project),
 
     '/statuses': route(statuses),
-    '/statuses/new': route(new_status),
+    '/statuses/new': route(edit_status),
     '/statuses/edit/:id': route(edit_status),
     '/statuses/:id': route(status),
 
@@ -68,9 +68,13 @@ var routes = {
     '/task_steps/:id': route(taskstep),
 
     '/tasks': route(tasks),
-    '/tasks/new': route(new_task),
+    '/tasks/new': route(edit_task),
     '/tasks/edit/:id': route(edit_task),
-    '/tasks/:id': route(task),
+    // '/tasks/:id': route(task),
+
+    '/settings': route(settings),
+    '/settings/new': route(edit_setting),
+    '/settings/edit/:id': route(edit_setting),
 
     '/logout': route(logout, false),
 };
@@ -88,7 +92,7 @@ function route(comp, requiresAuth = true) {
 //render component with layout
 function withLayout(comp) {
     return {
-        view: () => Auth.isLoggedIn() ? m(layout, comp) : m(public_layout, comp)
+        view: () => Auth.isLoggedIn() ? m(layout, {child: comp}) : m(public_layout, {child: comp})
     }
 }
 

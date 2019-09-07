@@ -576,6 +576,11 @@ modal {
     }
   }
 }
+.task {
+    textarea {
+        height: 10em;
+    }
+}
 
 .validation-errors {
   &::first-letter {

@@ -31,6 +31,7 @@ func Initialize() {
 		authorized.POST("/api/roles", rolesPost)
 		authorized.PUT("/api/roles/:id", rolesPut)
 		authorized.DELETE("/api/roles/:id", rolesDelete)
+
 		authorized.GET("/api/users", usersGet)
 		authorized.GET("/api/users/:id", userGet)
 		authorized.PUT("/api/users/:id", usersPut)
@@ -44,6 +45,8 @@ func Initialize() {
 
 		authorized.GET("/api/projects", projectsGet)
 		authorized.GET("/api/projects/:id", projectGet)
+		authorized.GET("/api/new_project", projectNewGet)
+		authorized.GET("/api/edit_project/:id", projectEditGet)
 		authorized.POST("/api/projects", projectsPost)
 		authorized.PUT("/api/projects/:id", projectsPut)
 		authorized.DELETE("/api/projects/:id", projectsDelete)
@@ -71,6 +74,12 @@ func Initialize() {
 		authorized.POST("/api/project_users/:project_id", projectUsersPost)
 		authorized.PUT("/api/project_users/:project_id/:id", projectUsersPut)
 		authorized.DELETE("/api/project_users/:project_id/:id", projectUsersDelete)
+
+		authorized.GET("/api/settings", settingsGet)
+		authorized.GET("/api/settings/:id", settingGet)
+		authorized.POST("/api/settings", settingsPost)
+		authorized.PUT("/api/settings/:id", settingsPut)
+		authorized.DELETE("/api/settings/:id", settingsDelete)
 
 		authorized.POST("/api/upload/:uploader", uploadsPost)
 

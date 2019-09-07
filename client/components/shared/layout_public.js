@@ -7,7 +7,7 @@ const Layout = {
     view(vnode) {
         return m(".layout.public-layout", [
             m("header", m(navbar)),
-            m("#main.container", m(vnode.attrs)),
+            m("#main.container", m(vnode.attrs.child)),
             m(notifications),
         ]);
     }
