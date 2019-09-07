@@ -8,23 +8,24 @@ import {
 } from '../shared/notifications'
 
 export default function Status() {
-    var status = {},
-        errors = []
+    let status = {},
+        errors = [],
 
-    function get() {
-        return service.getStatus(status.id)
-            .then((result) => status = result)
-            .catch((error) => errors = responseErrors(error))
-    }
-    function destroy() {
-        return service.deleteStatus(status.id)
-            .then((result) => addSuccess("Status removed."))
-            .catch((error) => errors = responseErrors(error))
-    }
+        get = () =>
+        service.getStatus(status.id)
+        .then((result) => status = result)
+        .catch((error) => errors = responseErrors(error)),
+
+        destroy = () =>
+        service.deleteStatus(status.id)
+        .then((result) => addSuccess("Status removed."))
+        .catch((error) => errors = responseErrors(error))
+
     return {
         oninit(vnode) {
-            errors = []
-            status = { id: m.route.param('id') }
+            status = {
+                id: m.route.param('id')
+            }
             get()
         },
 
@@ -36,11 +37,21 @@ export default function Status() {
                         m('h3', "Description"),
                         m('p', status.description)
                     ] : null
-                ] : null, 
+                ] : null,
                 m('.actions', [
-                    m('button.btn.btn-primary.mr-2[type=button]', { onclick: () => { m.route.set('/statuses/edit/' + status.id) } }, "Edit"),
-                    m('button.btn.btn-secondary.mr-2[type=button]', { onclick: () => { m.route.set('/statuses') } }, "Back to list"),
-                    m('button.btn.btn-outline-danger[type=button]', { onclick: destroy }, "Remove status")
+                    m('button.btn.btn-primary.mr-2[type=button]', {
+                        onclick: () => {
+                            m.route.set('/statuses/edit/' + status.id)
+                        }
+                    }, "Edit"),
+                    m('button.btn.btn-secondary.mr-2[type=button]', {
+                        onclick: () => {
+                            m.route.set('/statuses')
+                        }
+                    }, "Back to list"),
+                    m('button.btn.btn-outline-danger[type=button]', {
+                        onclick: destroy
+                    }, "Remove status")
                 ])
             ])
         }

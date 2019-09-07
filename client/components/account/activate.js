@@ -2,7 +2,8 @@ import m from 'mithril'
 import Auth from '../../utils/auth'
 import error from '../shared/error'
 
-const Activate = {
+export default function Activate() {
+  return {
     view(vnode) {
         return m('.activation-notice', [
             m('h1', "Account activation"),
@@ -11,6 +12,5 @@ const Activate = {
             m('button.btn.btn-primary[type=button]', { onclick: () => {Auth.activate(m.route.param('token'))} }, "Activate"),
         ])
     }
+  }
 }
-
-export default Activate

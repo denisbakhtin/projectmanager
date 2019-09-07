@@ -13,109 +13,102 @@ import service from '../../utils/service.js'
 import pusers from '../project_users/pusers.js'
 
 export default function Project() {
-    var errors = [],
+    let errors = [],
         project = {},
         isNew = true,
-        statuses = []
+        statuses = [],
 
-    function setName(name) {
-        project.name = name
-    }
-    function setDescription(description) {
-        project.description = description
-    }
-    function setStatusId(status_id) {
-        project.status_id = status_id
-    }
-    function setStartDate(date) {
-        project.start_date = date
-        if (date && project.end_date && project.end_date < date)
-            project.end_date = null
-    }
-    function setEndDate(date) {
-        project.end_date = date
-        if (date && project.start_date && project.start_date > date)
-            project.start_date = null
-    }
-    function setProjectUsers(pusers) {
-        project.project_users = pusers
-    }
-    function setFiles(files) {
-        project.files = files
-    }
-    function validate() {
-        errors = []
-        if (!project.name)
-            errors.push("Project name is required.")
-        if (project.start_date && project.end_date && project.start_date > project.end_date)
-            errors.push("End date cannot be earlier than start date.")
-        return errors.length == 0
-    }
-    function toGo(proj) {
-        let obj = Object.assign(proj, {
-            status_id: proj.status_id ? "" + proj.status_id : undefined,
-            start_date: proj.start_date ? new Date(proj.start_date).toISOString() : undefined,
-            end_date: proj.end_date ? new Date(proj.end_date).toISOString() : undefined,
-            project_users: (proj.project_users) ? proj.project_users.map((pu) => {
-                pu.role_id = "" + pu.role_id;
-                return pu
-            }) : undefined,
-            files: proj.files
-        })
-        return obj
-    }
-    function fromGo(proj) {
-        return Object.assign(proj, {
+        setName = (name) => project.name = name,
+        setDescription = (description) => project.description = description,
+        setStatusId = (status_id) => project.status_id = status_id,
+        setStartDate = (date) => {
+            project.start_date = date
+            if (date && project.end_date && project.end_date < date)
+                project.end_date = null
+        },
+        setEndDate = (date) => {
+            project.end_date = date
+            if (date && project.start_date && project.start_date > date)
+                project.start_date = null
+        },
+        setProjectUsers = (pusers) => project.project_users = pusers,
+        setFiles = (files) => project.files = files,
+
+        validate = () => {
+            errors = []
+            if (!project.name)
+                errors.push("Project name is required.")
+            if (project.start_date && project.end_date && project.start_date > project.end_date)
+                errors.push("End date cannot be earlier than start date.")
+            return errors.length == 0
+        },
+
+        toGo = (proj) => {
+            let obj = Object.assign(proj, {
+                status_id: proj.status_id ? "" + proj.status_id : undefined,
+                start_date: proj.start_date ? new Date(proj.start_date).toISOString() : undefined,
+                end_date: proj.end_date ? new Date(proj.end_date).toISOString() : undefined,
+                project_users: (proj.project_users) ? proj.project_users.map((pu) => {
+                    pu.role_id = "" + pu.role_id;
+                    return pu
+                }) : undefined,
+                files: proj.files
+            })
+            return obj
+        },
+
+        fromGo = (proj) =>
+        Object.assign(proj, {
             start_date: ISODateToHtml5(proj.start_date || null),
             end_date: ISODateToHtml5(proj.end_date || null)
+        }),
+
+        getOwnerName = () => (project.owner || Auth.getAuthenticatedUser()).name,
+
+        //requests
+        get = () =>
+        service.getProject(project.id)
+        .then((result) => project = fromGo(result))
+        .catch((error) => errors = responseErrors(error)),
+
+        getStatuses = () =>
+        service.getStatuses()
+        .then((result) => statuses = result.slice(0))
+        .catch((error) => errors = responseErrors(error)),
+
+        create = () =>
+        service.createProject(toGo(project))
+        .then((result) => {
+            addSuccess("Project created.")
+            m.route.set('/projects')
         })
-    }
-    function getOwnerName() {
-        return (project.owner || Auth.getAuthenticatedUser()).name
-    }
-    //requests
-    function get() {
-        return service.getProject(project.id)
-            .then((result) => project = fromGo(result))
-            .catch((error) => errors = responseErrors(error))
-    }
-    function getStatuses() {
-        return service.getStatuses()
-            .then((result) => statuses = result.slice(0))
-            .catch((error) => errors = responseErrors(error))
-    }
-    function create() {
-        return service.createProject(toGo(project))
-            .then((result) => {
-                addSuccess("Project created.")
-                m.route.set('/projects')
+        .catch((error) => errors = responseErrors(error)),
+
+        update = () =>
+        service.updateProject(project.id, toGo(project))
+        .then((result) => {
+            addSuccess("Project updated.")
+            m.route.set('/projects')
+        })
+        .catch((error) => errors = responseErrors(error)),
+
+        destroy = () =>
+        service.deleteProject(project.id)
+        .then((result) => {
+            addSuccess("Project removed.")
+            m.route.set('/projects', {}, {
+                replace: true
             })
-            .catch((error) => errors = responseErrors(error))
-    }
-    function update() {
-        return service.updateProject(project.id, toGo(project))
-            .then((result) => {
-                addSuccess("Project updated.")
-                m.route.set('/projects')
-            })
-            .catch((error) => errors = responseErrors(error))
-    }
-    function destroy() {
-        return service.deleteProject(project.id)
-            .then((result) => {
-                addSuccess("Project removed.")
-                m.route.set('/projects', {}, {
-                    replace: true
-                })
-            })
-            .catch((error) => errors = responseErrors(error))
-    }
+        })
+        .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
             if (m.route.param('id')) {
                 isNew = false
-                project = { id: m.route.param('id')}
+                project = {
+                    id: m.route.param('id')
+                }
                 get()
             } else {
                 project = {}
@@ -201,8 +194,14 @@ export default function Project() {
                     errors: errors
                 })),
                 m('.actions', [
-                    m('button.btn.btn-primary.mr-2[type=button]', { onclick: (isNew) ? create : update }, "Save"),
-                    m('button.btn.btn-secondary[type=button]', { onclick: () => { window.history.back() } }, "Cancel")
+                    m('button.btn.btn-primary.mr-2[type=button]', {
+                        onclick: (isNew) ? create : update
+                    }, "Save"),
+                    m('button.btn.btn-secondary[type=button]', {
+                        onclick: () => {
+                            window.history.back()
+                        }
+                    }, "Cancel")
                 ]),
             ])
         }

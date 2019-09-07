@@ -7,35 +7,35 @@ import {
 } from '../../utils/helpers'
 
 export default function Project() {
-    var project = {},
-        errors = []
+    let project = {},
+        errors = [],
 
-    function get() {
-        return service.getProject(project.id)
-            .then((result) => project = fromGo(result))
-            .catch((error) => errors = responseErrors(error))
-    }
-    function fromGo(proj) {
-        return Object.assign(proj, {
+        get = () =>
+        service.getProject(project.id)
+        .then((result) => project = fromGo(result))
+        .catch((error) => errors = responseErrors(error)),
+
+        fromGo = (proj) =>
+        Object.assign(proj, {
             start_date: ISODateToHtml5(proj.start_date || null),
             end_date: ISODateToHtml5(proj.end_date || null)
-        })
-    }
-    function destroy() {
-        return service.deleteProject(project.id)
-            .then((result) => {
-                addSuccess("Project removed.")
-                m.route.set('/projects', {}, {
-                    replace: true
-                })
+        }),
+
+        destroy = () =>
+        service.deleteProject(project.id)
+        .then((result) => {
+            addSuccess("Project removed.")
+            m.route.set('/projects', {}, {
+                replace: true
             })
-            .catch((error) => errors = responseErrors(error))
-    }
+        })
+        .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
-            errors = []
-            project = { id: m.route.param('id') }
+            project = {
+                id: m.route.param('id')
+            }
             get()
         },
 
@@ -59,9 +59,19 @@ export default function Project() {
                     ] : null
                 ] : null,
                 m('.actions', [
-                    m('button.btn.btn-primary.mr-2[type=button]', { onclick: () => { m.route.set('/projects/edit/' + project.id) } }, "Edit"),
-                    m('button.btn.btn-secondary.mr-2[type=button]', { onclick: () => { m.route.set('/projects') } }, "Back to list"),
-                    m('button.btn.btn-outline-danger[type=button]', { onclick: destroy }, "Remove project")
+                    m('button.btn.btn-primary.mr-2[type=button]', {
+                        onclick: () => {
+                            m.route.set('/projects/edit/' + project.id)
+                        }
+                    }, "Edit"),
+                    m('button.btn.btn-secondary.mr-2[type=button]', {
+                        onclick: () => {
+                            m.route.set('/projects')
+                        }
+                    }, "Back to list"),
+                    m('button.btn.btn-outline-danger[type=button]', {
+                        onclick: destroy
+                    }, "Remove project")
                 ])
             ])
         }

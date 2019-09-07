@@ -1,75 +1,112 @@
 ﻿import m from 'mithril'
 import Auth from '../../utils/auth'
-import { responseErrors } from '../../utils/helpers'
+import {
+    responseErrors
+} from '../../utils/helpers'
 import newRole from './new_role'
 import editRole from './edit_role'
 import destroyRole from './destroy_role'
 import error from '../shared/error'
+import service from '../../utils/service.js'
 
-const state = {
-    roles: [],
-    errors: [],
-    editRole: {},
-    creating: false,
-    destroyRole: {},
-    get() {
-        state.errors = []
-        m.request({
-            method: "GET",
-            url: "/api/roles",
-            headers: { Authorization: Auth.authHeader() }
-        }).then((result) => {
-            state.roles = result.slice(0)
-        }).catch((error) => state.errors = responseErrors(error))
-    },
-}
+export default function Roles() {
+    let roles = [],
+        errors = [],
+        editRole = {},
+        creating = false,
+        destroyRole = {},
 
-const Roles = {
-    oninit(vnode) {
-        state.get()
-    },
-    
-    view(vnode) {
-        let ui = vnode.state;
-        return m(".roles", [
-            m('h1.mb-4', 'User roles'),
-            m('table.table', [
-                m('thead', [
-                    m('tr', [
-                        m('th.shrink[scope=col]', '#'),
-                        m('th[scope=col]', 'Name'),
-                        m('th.shrink.text-center[scope=col]', 'Actions')
-                    ])
-                ]),
-                m('tbody', [
-                    state.errors.length ? m('tr', m('td[colspan=2]', m(error, { errors: state.errors }))) : null,
-                    state.roles ? 
-                        state.roles.map((role) => {
-                            return m('tr', { key: role.id }, state.editRole.id == role.id ? [
+        get = () =>
+        service.getRoles().then((result) => {
+            roles = result.slice(0)
+        }).catch((error) => errors = responseErrors(error))
+
+    return {
+        oninit(vnode) {
+            get()
+        },
+
+        view(vnode) {
+            return m(".roles", [
+                m('h1.mb-4', 'User roles'),
+                m('table.table', [
+                    m('thead', [
+                        m('tr', [
+                            m('th.shrink[scope=col]', '#'),
+                            m('th[scope=col]', 'Name'),
+                            m('th.shrink.text-center[scope=col]', 'Actions')
+                        ])
+                    ]),
+                    m('tbody', [
+                        errors.length ? m('tr', m('td[colspan=2]', m(error, {
+                            errors: errors
+                        }))) : null,
+                        roles ?
+                        roles.map((role) => {
+                            return m('tr', {
+                                key: role.id
+                            }, editRole.id == role.id ? [
                                 m('td[colspan=3]', [
-                                    m(editRole, { role: role, onUpdate: () => { state.editRole = {}; state.get(); }, onCancel: () => { state.editRole = {}}})
+                                    m(editRole, {
+                                        role: role,
+                                        onUpdate: () => {
+                                            editRole = {};
+                                            get();
+                                        },
+                                        onCancel: () => {
+                                            editRole = {}
+                                        }
+                                    })
                                 ])
                             ] : [
                                 m('td.shrink', role.id),
                                 m('td', role.name),
                                 m('td', m('.btn-group', [
-                                    m('button.btn.btn-outline-primary.btn-sm[type=button]', { onclick: () => { state.editRole = role } }, m('i.fa.fa-pencil')),
-                                    m('button.btn.btn-outline-danger.btn-sm[type=button]', { onclick: () => { state.destroyRole = role } }, m('i.fa.fa-times'))
+                                    m('button.btn.btn-outline-primary.btn-sm[type=button]', {
+                                        onclick: () => {
+                                            editRole = role
+                                        }
+                                    }, m('i.fa.fa-pencil')),
+                                    m('button.btn.btn-outline-danger.btn-sm[type=button]', {
+                                        onclick: () => {
+                                            destroyRole = role
+                                        }
+                                    }, m('i.fa.fa-times'))
                                 ]))
                             ])
                         }) : null
-                ])
-            ]),
-            //create new role
-            state.creating ? m(newRole, { onCreate: () => { state.creating = false; state.get(); }, onCancel: () => { state.creating = false } }) : null,
-            m('.actions', [
-                m('button.btn.btn-primary[type=button]', { onclick: () => { state.creating = true } }, "New role")
-            ]),
-            //confirm role removal
-            Object.keys(state.destroyRole).length ?
-                m(destroyRole, { role: state.destroyRole, onDestroy: () => { state.destroyRole = {}; state.get(); }, onCancel: () => { state.destroyRole = {} } }) : null,
-        ])
+                    ])
+                ]),
+                //create new role
+                creating ? m(newRole, {
+                    onCreate: () => {
+                        creating = false;
+                        get();
+                    },
+                    onCancel: () => {
+                        creating = false
+                    }
+                }) : null,
+                m('.actions', [
+                    m('button.btn.btn-primary[type=button]', {
+                        onclick: () => {
+                            creating = true
+                        }
+                    }, "New role")
+                ]),
+                //confirm role removal
+                Object.keys(destroyRole).length ?
+                m(destroyRole, {
+                    role: destroyRole,
+                    onDestroy: () => {
+                        destroyRole = {};
+                        get();
+                    },
+                    onCancel: () => {
+                        destroyRole = {}
+                    }
+                }) : null,
+            ])
+        }
     }
 }
-
-export default Roles;

@@ -1,6 +1,7 @@
 import m from 'mithril'
 
-const Notice = {
+export default function Notice() {
+  return {
     view(vnode) {
         return m('.activation-notice', [
             m('h1', "Activate your account"),
@@ -8,6 +9,5 @@ const Notice = {
             m('p', "Please, click on the link inside to finish your registration.")
         ])
     }
+  }
 }
-
-export default Notice

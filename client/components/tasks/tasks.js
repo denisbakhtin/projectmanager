@@ -7,18 +7,16 @@ import service from '../../utils/service'
 
 
 export default function Tasks() {
-    var tasks = []
-    var errors = []
+    let tasks = [],
+        errors = [],
 
-    var getAll = function() {
-        return service.getTasks()
-            .then((result) => tasks = result.slice(0))
-            .catch((error) => errors = responseErrors(error))
-    }
+        getAll = () =>
+        service.getTasks()
+        .then((result) => tasks = result.slice(0))
+        .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
-            errors = []
             getAll()
         },
 
@@ -36,21 +34,33 @@ export default function Tasks() {
                         ])
                     ]),
                     m('tbody', [
-                        tasks ? 
-                            tasks.map((task) => {
-                                return m('tr', { key: task.id }, [
-                                    m('td', task.name),
-                                    m('td', task.task_step.name),
-                                    m('td', task.description),
-                                    m('td', task.project_user.user.name),
-                                    m('td.shrink.text-center', m('button.btn.btn-outline-primary.btn-sm[type=button]', { onclick: () => { m.route.set('/tasks/edit/'+task.id) } }, m('i.fa.fa-pencil')))
-                                ])
-                            }) : null
+                        tasks ?
+                        tasks.map((task) => {
+                            return m('tr', {
+                                key: task.id
+                            }, [
+                                m('td', task.name),
+                                m('td', task.task_step.name),
+                                m('td', task.description),
+                                m('td', task.project_user.user.name),
+                                m('td.shrink.text-center', m('button.btn.btn-outline-primary.btn-sm[type=button]', {
+                                    onclick: () => {
+                                        m.route.set('/tasks/edit/' + task.id)
+                                    }
+                                }, m('i.fa.fa-pencil')))
+                            ])
+                        }) : null
                     ])
                 ]),
-                errors.length ? m(error, { errors: errors }) : null,
+                errors.length ? m(error, {
+                    errors: errors
+                }) : null,
                 m('.actions.mt-4', [
-                    m('button.btn.btn-primary[type=button]', { onclick: () => { m.route.set('/tasks/new') } }, "New task")
+                    m('button.btn.btn-primary[type=button]', {
+                        onclick: () => {
+                            m.route.set('/tasks/new')
+                        }
+                    }, "New task")
                 ]),
             ])
         }

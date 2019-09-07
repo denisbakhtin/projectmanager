@@ -1,41 +1,28 @@
 import m from 'mithril';
 import {
-  responseErrors
+    responseErrors
 } from '../../utils/helpers'
 import Auth from '../../utils/auth'
+import service from '../../utils/service.js'
 
 //global ui state
 const state = {
-  sidebarCollapsed: false,
-  notifications: [],
-  errors: [],
+    sidebarCollapsed: false,
+    notifications: [],
+    errors: [],
 
-  //methods
-  toggleSidebar() {
-    state.sidebarCollapsed = !state.sidebarCollapsed
-  },
-  getNotifications() {
-    m.request({
-        method: "GET",
-        url: "/api/notifications",
-        headers: {
-          Authorization: Auth.authHeader()
-        },
-      })
-      .then((result) => {
-        state.notifications = result.slice(0)
-      })
-      .catch((error) => state.errors = responseErrors(error))
-  },
-  removeNotification(id) {
-    return m.request({
-      method: "DELETE",
-      url: "/api/notifications/" + id,
-      headers: {
-        Authorization: Auth.authHeader()
-      }
-    });
-  }
+    //methods
+    toggleSidebar: () =>
+        state.sidebarCollapsed = !state.sidebarCollapsed,
+
+    getNotifications: () =>
+        service.getNotifications()
+        .then((result) => {
+            state.notifications = result.slice(0)
+        })
+        .catch((error) => state.errors = responseErrors(error)),
+
+    removeNotification: (id) => service.deleteNotification(id)
 }
 
 export default state

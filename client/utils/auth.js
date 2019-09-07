@@ -43,6 +43,7 @@ const Auth = {
                 delete localStorage.returnURL
                 m.route.set(returnURL) //redirect to home page or returnURL
             }).catch((error) => Auth.errors = responseErrors(error))
+      return false
     },
     register() {
         if (Auth.validateRegister())
@@ -59,6 +60,7 @@ const Auth = {
                 Auth.storeTokenData(result.token)
                 m.route.set('/')
             }).catch((error) => Auth.errors = responseErrors(error))
+      return false
     },
     /*
     activate(activationToken) {

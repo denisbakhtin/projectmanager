@@ -1,6 +1,7 @@
 import m from 'mithril'
 
-const Notice = {
+export default function Notice() {
+  return {
     view(vnode) {
         return m('.reset-notice', [
             m('h1', "Password reset"),
@@ -8,6 +9,5 @@ const Notice = {
             m('p', "Please, click on the link inside to set a new password.")
         ])
     }
+  }
 }
-
-export default Notice

@@ -9,52 +9,49 @@ import {
 import service from '../../utils/service.js'
 
 export default function Setting() {
-    var errors = [],
+    let errors = [],
         setting = {},
-        isNew = true
+        isNew = true,
 
-    function setCode(code) {
-        setting.code = code
-    }
-    function setTitle(title) {
-        setting.title = title
-    }
-    function setValue(value) {
-        setting.value = value
-    }
-    function validate() {
-        errors = []
-        if (!setting.name)
-            errors.push("Setting code is required.")
-        return errors.length == 0
-    }
-    function get() {
-        return service.getSetting(setting.id)
-            .then((result) => setting = result)
-            .catch((error) => errors = responseErrors(error))
-    }
-    function create() {
-        return service.createSetting(setting)
-            .then((result) => {
-                addSuccess("Setting created.")
-                m.route.set('/settings')
-            })
-            .catch((error) => errors = responseErrors(error))
-    }
-    function update() {
-        return service.updateSetting(setting.id, setting)
-            .then((result) => {
-                addSuccess("Setting updated.")
-                m.route.set('/settings')
-            })
-            .catch((error) => errors = responseErrors(error))
-    }
+        setCode = (code) => setting.code = code,
+        setTitle = (title) => setting.title = title,
+        setValue = (value) => setting.value = value,
+
+        validate = () => {
+            errors = []
+            if (!setting.name)
+                errors.push("Setting code is required.")
+            return errors.length == 0
+        },
+
+        get = () =>
+        service.getSetting(setting.id)
+        .then((result) => setting = result)
+        .catch((error) => errors = responseErrors(error)),
+
+        create = () =>
+        service.createSetting(setting)
+        .then((result) => {
+            addSuccess("Setting created.")
+            m.route.set('/settings')
+        })
+        .catch((error) => errors = responseErrors(error)),
+
+        update = () =>
+        service.updateSetting(setting.id, setting)
+        .then((result) => {
+            addSuccess("Setting updated.")
+            m.route.set('/settings')
+        })
+        .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
             if (m.route.param('id')) {
                 isNew = false
-                setting = { id: m.route.param('id')}
+                setting = {
+                    id: m.route.param('id')
+                }
                 get()
             } else
                 setting = {}
@@ -94,8 +91,14 @@ export default function Setting() {
                     errors: errors
                 })),
                 m('.actions', [
-                    m('button.btn.btn-primary.mr-2[type=button]', { onclick: (isNew) ? create : update }, "Save"),
-                    m('button.btn.btn-secondary[type=button]', { onclick: () => { window.history.back() } }, "Cancel")
+                    m('button.btn.btn-primary.mr-2[type=button]', {
+                        onclick: (isNew) ? create : update
+                    }, "Save"),
+                    m('button.btn.btn-secondary[type=button]', {
+                        onclick: () => {
+                            window.history.back()
+                        }
+                    }, "Cancel")
                 ]),
             ])
         }

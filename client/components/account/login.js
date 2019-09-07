@@ -2,7 +2,8 @@
 import Auth from '../../utils/auth'
 import error from '../shared/error'
 
-const Login = {
+export default function Login() {
+  return {
     oninit(vnode) {
         Auth.setEmail('denis.bakhtin@gmail.com')
         Auth.setPassword('12345678')
@@ -42,6 +43,5 @@ const Login = {
             ])
         ])
     }
+  }
 }
-
-export default Login;

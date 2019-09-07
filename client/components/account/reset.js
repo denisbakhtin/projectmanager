@@ -2,7 +2,8 @@ import m from 'mithril'
 import Auth from '../../utils/auth'
 import error from '../shared/error'
 
-const Reset = {
+export default function Reset() {
+  return {
     oninit(vnode) {
         Auth.errors = []
         Auth.password = ''
@@ -52,6 +53,5 @@ const Reset = {
             ]
         ])
     }
+  }
 }
-
-export default Reset

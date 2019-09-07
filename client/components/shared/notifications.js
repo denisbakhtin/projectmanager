@@ -1,5 +1,7 @@
 ﻿import m from 'mithril'
-import { guid } from '../../utils/helpers'
+import {
+    guid
+} from '../../utils/helpers'
 
 let state = {
     list: [],
@@ -23,7 +25,12 @@ export function addDanger(text, timeout = 3000) {
 }
 
 function addNotification(id, type, text, timeout) {
-    let msg = { id, type, text, timeout }
+    let msg = {
+        id,
+        type,
+        text,
+        timeout
+    }
     state.list.push(msg)
     setTimeout(() => {
         state.destroy(msg)
@@ -31,22 +38,26 @@ function addNotification(id, type, text, timeout) {
     }, timeout)
 }
 
-const Notifications = {
-    oninit(vnode) {
-    },
-    notificationClass(type) {
-        const types = ['info', 'warning', 'success', 'danger']
-        if (types.indexOf(type) > -1)
-            return type
-        return 'info'
-    },
-    view(vnode) {
-        let ui = vnode.state
-        return state.list ?
-            m('.m-notifications', state.list.map((msg) => {
-                return m('.m-notification', { key: msg.id, class: ui.notificationClass(msg.type), onclick: () => { state.destroy(msg) } }, msg.text)
-            })) : null
+export default function Notifications() {
+    return {
+        oninit(vnode) {},
+        notificationClass(type) {
+            const types = ['info', 'warning', 'success', 'danger']
+            if (types.indexOf(type) > -1)
+                return type
+            return 'info'
+        },
+        view(vnode) {
+            return state.list ?
+                m('.m-notifications', state.list.map((msg) => {
+                    return m('.m-notification', {
+                        key: msg.id,
+                        class: vnode.attrs.notificationClass(msg.type),
+                        onclick: () => {
+                            state.destroy(msg)
+                        }
+                    }, msg.text)
+                })) : null
+        }
     }
 }
-
-export default Notifications

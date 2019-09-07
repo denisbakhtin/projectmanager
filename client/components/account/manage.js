@@ -2,7 +2,8 @@
 import Auth from '../../utils/auth'
 import error from '../shared/error'
 
-const Manage = {
+export default function Manage() {
+  return {
     oninit(vnode) {
         let user = Auth.getAuthenticatedUser()
         Auth.name = user.name
@@ -65,6 +66,5 @@ const Manage = {
             ])
         ])
     }
+  }
 }
-
-export default Manage;

@@ -1,20 +1,22 @@
 import m from 'mithril'
 
-function Dropdown() {
-    let show = false
-    let key = 'dropdown'
-    let keepState = false
-    let loadState = () => {
-        let s = ''
-        if (keepState)
-            s = sessionStorage.getItem(key)
-        show = (s) ? JSON.parse(s) : show
-    }
-    let storeState = (val) => {
-        show = val
-        if (keepState)
-            sessionStorage.setItem(key, JSON.stringify(val))
-    }
+export default function Dropdown() {
+    let show = false,
+        key = 'dropdown',
+        keepState = false,
+
+        loadState = () => {
+            let s = ''
+            if (keepState)
+                s = sessionStorage.getItem(key)
+            show = (s) ? JSON.parse(s) : show
+        },
+        storeState = (val) => {
+            show = val
+            if (keepState)
+                sessionStorage.setItem(key, JSON.stringify(val))
+        }
+
     return {
         oninit: (vnode) => {
             key = vnode.attrs.id || key
@@ -43,5 +45,3 @@ function Dropdown() {
         }
     }
 }
-
-export default Dropdown

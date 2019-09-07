@@ -2,7 +2,8 @@
 import Auth from '../../utils/auth'
 import error from '../shared/error'
 
-const Register = {
+export default function Register() {
+  return {
     oninit(vnode) {
         Auth.errors = []
         Auth.name = "Denis Bakhtin"
@@ -57,6 +58,5 @@ const Register = {
             ])
         ])
     }
+  }
 }
-
-export default Register;

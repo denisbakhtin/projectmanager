@@ -9,93 +9,98 @@ import {
 import service from '../../utils/service.js'
 
 export default function Status() {
-    var errors = [],
+    let errors = [],
         status = {},
-        isNew = true
+        isNew = true,
 
-    function setName(name) {
-        status.name = name
-    }
-    function setDescription(description) {
-        status.description = description
-    }
-    function setOrder(order) {
-        status.order = order
-    }
-    function validate() {
-        errors = []
-        if (!status.name)
-            errors.push("Status name is required.")
-        return errors.length == 0
-    }
-    function get() {
-        return service.getStatus(status.id)
-            .then((result) => status = result)
-            .catch((error) => errors = responseErrors(error))
-    }
-    function create() {
-        return service.createStatus(status)
-            .then((result) => {
-                addSuccess("Status created.")
-                m.route.set('/statuses')
-            })
-            .catch((error) => errors = responseErrors(error))
-    }
-    function update() {
-        return service.updateStatus(status.id, status)
-            .then((result) => {
-                addSuccess("Status updated.")
-                m.route.set('/statuses')
-            })
-            .catch((error) => errors = responseErrors(error))
-    }
+        setName = (name) => status.name = name,
+        setDescription = (description) => status.description = description,
+        setOrder = (order) => status.order = order,
 
-    return {
-        oninit(vnode) {
-            if (m.route.param('id')) {
-                isNew = false
-                status = { id: m.route.param('id')}
-                get()
-            } else
-                status = {order: "1"}
+        validate = () => {
             errors = []
+            if (!status.name)
+                errors.push("Status name is required.")
+            return errors.length == 0
         },
 
-        view(vnode) {
-            return m(".statuses", [
-                m('h1.mb-4', (isNew) ? 'New status' : 'Edit status'),
-                m('.form-group', [
-                    m('label', 'Status name'),
-                    m('input.form-control[type=text]', {
-                        oncreate: (el) => {
-                            el.dom.focus()
-                        },
-                        oninput: (e) => setName(e.target.value),
-                        value: status.name
-                    })
-                ]),
-                m('.form-group w-25', [
-                    m('label', 'Order'),
-                    m('input.form-control[type=number][min=0]', {
-                        oninput: (e) => setOrder(e.target.value),
-                        value: status.order
-                    })
-                ]),
-                m('.form-group', [
-                    m('label', "Description"),
-                    m('textarea.form-control', {
-                        oninput: (e) => setDescription(e.target.value),
-                        value: status.description
-                    })
-                ]),
-                m('.mb-2', m(error, {
-                    errors: errors
-                })),
-                m('.actions', [
-                    m('button.btn.btn-primary.mr-2[type=button]', { onclick: (isNew) ? create : update }, "Save"),
-                    m('button.btn.btn-secondary[type=button]', { onclick: () => { window.history.back() } }, "Cancel")
-                ]),
-            ])
+        get = () =>
+        service.getStatus(status.id)
+        .then((result) => status = result)
+        .catch((error) => errors = responseErrors(error)),
+
+        create = () =>
+        service.createStatus(status)
+        .then((result) => {
+            addSuccess("Status created.")
+            m.route.set('/statuses')
+        })
+        .catch((error) => errors = responseErrors(error)),
+
+        update = () =>
+        service.updateStatus(status.id, status)
+        .then((result) => {
+            addSuccess("Status updated.")
+            m.route.set('/statuses')
+        })
+        .catch((error) => errors = responseErrors(error))
+
+        return {
+            oninit(vnode) {
+                if (m.route.param('id')) {
+                    isNew = false
+                    status = {
+                        id: m.route.param('id')
+                    }
+                    get()
+                } else
+                    status = {
+                        order: "1"
+                    }
+                errors = []
+            },
+
+            view(vnode) {
+                return m(".statuses", [
+                    m('h1.mb-4', (isNew) ? 'New status' : 'Edit status'),
+                    m('.form-group', [
+                        m('label', 'Status name'),
+                        m('input.form-control[type=text]', {
+                            oncreate: (el) => {
+                                el.dom.focus()
+                            },
+                            oninput: (e) => setName(e.target.value),
+                            value: status.name
+                        })
+                    ]),
+                    m('.form-group w-25', [
+                        m('label', 'Order'),
+                        m('input.form-control[type=number][min=0]', {
+                            oninput: (e) => setOrder(e.target.value),
+                            value: status.order
+                        })
+                    ]),
+                    m('.form-group', [
+                        m('label', "Description"),
+                        m('textarea.form-control', {
+                            oninput: (e) => setDescription(e.target.value),
+                            value: status.description
+                        })
+                    ]),
+                    m('.mb-2', m(error, {
+                        errors: errors
+                    })),
+                    m('.actions', [
+                        m('button.btn.btn-primary.mr-2[type=button]', {
+                            onclick: (isNew) ? create : update
+                        }, "Save"),
+                        m('button.btn.btn-secondary[type=button]', {
+                            onclick: () => {
+                                window.history.back()
+                            }
+                        }, "Cancel")
+                    ]),
+                ])
+            }
         }
-    }
 }
