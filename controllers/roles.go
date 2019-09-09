@@ -20,7 +20,7 @@ func roleGet(c *gin.Context) {
 	role := models.Role{}
 	models.DB.First(&role, id)
 	if role.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Role not found"})
+		c.JSON(http.StatusNotFound, "Role not found")
 		return
 	}
 	c.JSON(http.StatusOK, role)
@@ -30,11 +30,11 @@ func roleGet(c *gin.Context) {
 func rolesPost(c *gin.Context) {
 	role := models.Role{}
 	if err := c.ShouldBindJSON(&role); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Create(&role).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -45,11 +45,11 @@ func rolesPut(c *gin.Context) {
 	//id := c.Param("id")
 	role := models.Role{}
 	if err := c.ShouldBindJSON(&role); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Save(&role).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -61,11 +61,11 @@ func rolesDelete(c *gin.Context) {
 	role := models.Role{}
 	models.DB.First(&role, id)
 	if role.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Role not found"})
+		c.JSON(http.StatusNotFound, "Role not found")
 		return
 	}
 	if err := models.DB.Delete(&role).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 

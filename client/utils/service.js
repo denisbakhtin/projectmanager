@@ -63,11 +63,27 @@ const Service = {
                 Authorization: Auth.authHeader()
             }
         }),
+    newProject: () =>
+        m.request({
+            method: "GET",
+            url: "/api/new_project/",
+            headers: {
+                Authorization: Auth.authHeader()
+            }
+        }),
     createProject: (project) =>
         m.request({
             method: "POST",
             url: "/api/projects",
             body: project,
+            headers: {
+                Authorization: Auth.authHeader()
+            }
+        }),
+    editProject: (id) =>
+        m.request({
+            method: "GET",
+            url: "/api/edit_project/" + id,
             headers: {
                 Authorization: Auth.authHeader()
             }
@@ -107,11 +123,27 @@ const Service = {
                 Authorization: Auth.authHeader()
             }
         }),
+    newTask: () =>
+        m.request({
+            method: "GET",
+            url: "/api/new_task/",
+            headers: {
+                Authorization: Auth.authHeader()
+            }
+        }),
     createTask: (task) =>
         m.request({
             method: "POST",
             url: "/api/tasks",
             body: task,
+            headers: {
+                Authorization: Auth.authHeader()
+            }
+        }),
+    editTask: (id) =>
+        m.request({
+            method: "GET",
+            url: "/api/edit_task/" + id,
             headers: {
                 Authorization: Auth.authHeader()
             }

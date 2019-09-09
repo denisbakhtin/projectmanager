@@ -22,3 +22,9 @@ type Project struct {
 	Owner         User           `json:"owner" gorm:"save_associations:false" valid:"-"`
 	Status        Status         `json:"status" gorm:"save_associations:false" valid:"-"`
 }
+
+//EditProjectVM is a view model for a new or an edited project
+type EditProjectVM struct {
+	Project  `json:"project"`
+	Statuses []Status `json:"statuses"`
+}

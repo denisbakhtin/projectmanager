@@ -20,7 +20,7 @@ func settingGet(c *gin.Context) {
 	setting := models.Setting{}
 	models.DB.First(&setting, id)
 	if setting.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Setting not found"})
+		c.JSON(http.StatusNotFound, "Setting not found")
 		return
 	}
 	c.JSON(http.StatusOK, setting)
@@ -30,11 +30,11 @@ func settingGet(c *gin.Context) {
 func settingsPost(c *gin.Context) {
 	setting := models.Setting{}
 	if err := c.ShouldBindJSON(&setting); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Create(&setting).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -45,11 +45,11 @@ func settingsPut(c *gin.Context) {
 	//id := c.Param("id")
 	setting := models.Setting{}
 	if err := c.ShouldBindJSON(&setting); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Save(&setting).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -61,11 +61,11 @@ func settingsDelete(c *gin.Context) {
 	setting := models.Setting{}
 	models.DB.First(&setting, id)
 	if setting.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Setting not found"})
+		c.JSON(http.StatusNotFound, "Setting not found")
 		return
 	}
 	if err := models.DB.Delete(&setting).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 

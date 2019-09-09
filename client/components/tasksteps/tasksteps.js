@@ -38,7 +38,7 @@ export default function TaskSteps() {
                             }, [
                                 m('td', step.name),
                                 m('td', step.is_final),
-                                m('td', step.order),
+                                m('td', step.ord),
                                 m('td.shrink.text-center', m('button.btn.btn-outline-primary.btn-sm[type=button]', {
                                     onclick: () => {
                                         m.route.set('/task_steps/edit/' + step.id)

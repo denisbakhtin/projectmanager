@@ -39,20 +39,20 @@ function addNotification(id, type, text, timeout) {
 }
 
 export default function Notifications() {
+    function notificationClass(type) {
+        const types = ['info', 'warning', 'success', 'danger']
+        if (types.indexOf(type) > -1)
+            return type
+        return 'info'
+    }
     return {
         oninit(vnode) {},
-        notificationClass(type) {
-            const types = ['info', 'warning', 'success', 'danger']
-            if (types.indexOf(type) > -1)
-                return type
-            return 'info'
-        },
         view(vnode) {
             return state.list ?
                 m('.m-notifications', state.list.map((msg) => {
                     return m('.m-notification', {
                         key: msg.id,
-                        class: vnode.attrs.notificationClass(msg.type),
+                        class: notificationClass(msg.type),
                         onclick: () => {
                             state.destroy(msg)
                         }

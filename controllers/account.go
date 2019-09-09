@@ -22,7 +22,7 @@ func accountGet(c *gin.Context) {
 func accountPut(c *gin.Context) {
 	vm := models.AccountVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -33,21 +33,21 @@ func accountPut(c *gin.Context) {
 	user.Name = vm.Name
 	if len(vm.CurrentPassword) > 0 && len(vm.NewPassword) > 0 {
 		if !user.HasPassword(vm.CurrentPassword) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Wrong current password"})
+			c.JSON(http.StatusBadRequest, "Wrong current password")
 			return
 		}
 		if err := helpers.CheckNewPassword(vm.NewPassword); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, err.Error())
 			return
 		}
 		user.PasswordHash = helpers.CreatePasswordHash(vm.NewPassword)
 	}
 	if err := models.DB.Save(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := user.CreateJWTToken(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 

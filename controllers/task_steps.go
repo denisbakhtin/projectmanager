@@ -20,7 +20,7 @@ func taskStepGet(c *gin.Context) {
 	step := models.TaskStep{}
 	models.DB.First(&step, id)
 	if step.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Task step not found"})
+		c.JSON(http.StatusNotFound, "Task step not found")
 		return
 	}
 	c.JSON(http.StatusOK, step)
@@ -30,11 +30,11 @@ func taskStepGet(c *gin.Context) {
 func taskStepsPost(c *gin.Context) {
 	step := models.TaskStep{}
 	if err := c.ShouldBindJSON(&step); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Create(&step).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -45,11 +45,11 @@ func taskStepsPut(c *gin.Context) {
 	//id := c.Param("id")
 	step := models.TaskStep{}
 	if err := c.ShouldBindJSON(&step); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Save(&step).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -61,11 +61,11 @@ func taskStepsDelete(c *gin.Context) {
 	step := models.TaskStep{}
 	models.DB.First(&step, id)
 	if step.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Task step not found"})
+		c.JSON(http.StatusNotFound, "Task step not found")
 		return
 	}
 	if err := models.DB.Delete(&step).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 

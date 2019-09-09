@@ -12,7 +12,6 @@ export default function Register() {
         Auth.passwordConfirm = "12345678"
     },
     view(vnode) {
-        let ui = vnode.state;
         return m("#auth-form-wrapper", [
             m('.card', [
                 m('.card-body', [

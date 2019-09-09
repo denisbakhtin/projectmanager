@@ -14,13 +14,13 @@ import (
 func forgotPost(c *gin.Context) {
 	vm := models.ForgotVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	user := models.User{}
 	models.DB.Where("email = ?", strings.ToLower(vm.Email)).First(&user)
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		c.JSON(http.StatusBadRequest, "User not found")
 		return
 	}
 
@@ -41,24 +41,24 @@ func forgotPost(c *gin.Context) {
 func resetPost(c *gin.Context) {
 	vm := models.ResetVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	user := models.User{}
 	models.DB.Where("token = ?", vm.Token).First(&user)
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		c.JSON(http.StatusBadRequest, "User not found")
 		return
 	}
 	user.Token = ""
 	user.PasswordHash = helpers.CreatePasswordHash(vm.Password)
 	if err := models.DB.Save(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := user.CreateJWTToken(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 

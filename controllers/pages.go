@@ -20,7 +20,7 @@ func pageGet(c *gin.Context) {
 	page := models.Page{}
 	models.DB.First(&page, id)
 	if page.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Page not found"})
+		c.JSON(http.StatusNotFound, "Page not found")
 		return
 	}
 	c.JSON(http.StatusOK, page)
@@ -30,11 +30,11 @@ func pageGet(c *gin.Context) {
 func pagesPost(c *gin.Context) {
 	page := models.Page{}
 	if err := c.ShouldBindJSON(&page); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Create(&page).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -45,11 +45,11 @@ func pagesPut(c *gin.Context) {
 	//id := c.Param("id")
 	page := models.Page{}
 	if err := c.ShouldBindJSON(&page); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Save(&page).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -61,11 +61,11 @@ func pagesDelete(c *gin.Context) {
 	page := models.Page{}
 	models.DB.First(&page, id)
 	if page.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Page not found"})
+		c.JSON(http.StatusNotFound, "Page not found")
 		return
 	}
 	if err := models.DB.Delete(&page).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -79,7 +79,7 @@ func pagesGetHTML(c *gin.Context) {
 	page := models.Page{}
 	models.DB.First(&page, id)
 	if page.ID == 0 || !page.Published {
-		c.HTML(http.StatusNotFound, "errors/404", gin.H{"error": "Requested page not found"})
+		c.HTML(http.StatusNotFound, "errors/404", "Requested page not found")
 		return
 	}
 	c.HTML(http.StatusOK, "pages/page", gin.H{

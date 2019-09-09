@@ -10,5 +10,5 @@ type Status struct {
 	DeletedAt   *time.Time `sql:"index" json:"-"`
 	Name        string     `json:"name" valid:"required,length(1|100)"`
 	Description string     `json:"description" valid:"length(0|1500)"`
-	Order       uint64     `json:"order,string,omitempty"` //order
+	Ord         uint64     `json:"ord,string,omitempty"` //order
 }

@@ -15,7 +15,7 @@ export default function Status() {
 
         setName = (name) => status.name = name,
         setDescription = (description) => status.description = description,
-        setOrder = (order) => status.order = order,
+        setOrd = (order) => status.ord = order,
 
         validate = () => {
             errors = []
@@ -55,7 +55,7 @@ export default function Status() {
                     get()
                 } else
                     status = {
-                        order: "1"
+                        ord: "1"
                     }
                 errors = []
             },
@@ -76,8 +76,8 @@ export default function Status() {
                     m('.form-group w-25', [
                         m('label', 'Order'),
                         m('input.form-control[type=number][min=0]', {
-                            oninput: (e) => setOrder(e.target.value),
-                            value: status.order
+                            oninput: (e) => setOrd(e.target.value),
+                            value: status.ord
                         })
                     ]),
                     m('.form-group', [

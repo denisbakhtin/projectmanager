@@ -21,7 +21,7 @@ func userGet(c *gin.Context) {
 	user := models.User{}
 	models.DB.First(&user, id)
 	if user.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, "User not found")
 		return
 	}
 	c.JSON(http.StatusOK, user)
@@ -32,11 +32,11 @@ func usersPut(c *gin.Context) {
 	//id := c.Param("id")
 	user := models.User{}
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Where("id = ?", user.ID).Update("status", user.Status).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})

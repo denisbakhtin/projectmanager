@@ -18,12 +18,11 @@ export default function Modal() {
         },
 
         view(vnode) {
-            let ui = vnode.state;
             return m('modal[tabindex=-1][role=dialog]', {
                 oncreate: (el) => {
                     el.dom.focus()
                 },
-                onkeypress: ui.onKeyPress
+                onkeypress: vnode.attrs.onKeyPress
             }, [
                 m('.modal-dialog[role=document]', [
                     m('.modal-content', [

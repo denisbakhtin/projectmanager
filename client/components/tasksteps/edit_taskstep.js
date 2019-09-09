@@ -14,7 +14,7 @@ export default function TaskStep() {
         isNew = true,
         setName = (name) => step.name = name,
         setIsfinal = (is_final) => step.is_final = is_final,
-        setOrder = (order) => step.order = order,
+        setOrd = (ord) => step.ord = ord,
         validate = () => {
             errors = []
             if (!step.name)
@@ -78,8 +78,8 @@ export default function TaskStep() {
                 m('.form-group w-25', [
                     m('label', 'Order'),
                     m('input.form-control[type=number][min=0]', {
-                        oninput: (e) => setOrder(e.target.value),
-                        value: step.order
+                        oninput: (e) => setOrd(e.target.value),
+                        value: step.ord
                     })
                 ]),
                 m('.mb-2', m(error, {

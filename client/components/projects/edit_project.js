@@ -16,6 +16,7 @@ export default function Project() {
     let errors = [],
         project = {},
         isNew = true,
+        loaded = false,
         statuses = [],
 
         setName = (name) => project.name = name,
@@ -31,7 +32,7 @@ export default function Project() {
             if (date && project.start_date && project.start_date > date)
                 project.start_date = null
         },
-        setProjectUsers = (pusers) => project.project_users = pusers,
+        setProjectUsers = (pu) => project.project_users = pu,
         setFiles = (files) => project.files = files,
 
         validate = () => {
@@ -66,15 +67,21 @@ export default function Project() {
         getOwnerName = () => (project.owner || Auth.getAuthenticatedUser()).name,
 
         //requests
-        get = () =>
-        service.getProject(project.id)
-        .then((result) => project = fromGo(result))
-        .catch((error) => errors = responseErrors(error)),
+        newProject = () =>
+        service.newProject()
+        .then((result) => {
+            statuses = result.statuses;
+            project = fromGo(result.project);
+            loaded = true;
+        }).catch((error) => errors = responseErrors(error)),
 
-        getStatuses = () =>
-        service.getStatuses()
-        .then((result) => statuses = result.slice(0))
-        .catch((error) => errors = responseErrors(error)),
+        editProject = (id) =>
+        service.editProject(id)
+        .then((result) => {
+            statuses = result.statuses;
+            project = fromGo(result.project);
+            loaded = true;
+        }).catch((error) => errors = responseErrors(error)),
 
         create = () =>
         service.createProject(toGo(project))
@@ -104,24 +111,15 @@ export default function Project() {
 
     return {
         oninit(vnode) {
-            if (m.route.param('id')) {
-                isNew = false
-                project = {
-                    id: m.route.param('id')
-                }
-                get()
-            } else {
-                project = {}
-            }
-            errors = []
-            getStatuses().then((result) => {
-                if (!project.status_id)
-                    project.status_id = result[0].id
-            })
+            isNew = (m.route.param('id') == undefined)
+            if (isNew)
+                newProject()
+            else
+                editProject(m.route.param('id'))
         },
 
         view(vnode) {
-            return m(".projects", [
+            return m(".projects", (loaded) ? [
                 m('h1.mb-4', (isNew) ? 'New project' : 'Edit project'),
                 m('.form-group', [
                     m('label', 'Project name'),
@@ -158,14 +156,14 @@ export default function Project() {
                     m('.form-group.mb-3', [
                         m('label.mr-2', 'Status'),
                         m('select.form-control', {
-                                onchange: (e) => setStatusId(e.target.value),
-                                value: project.status_id
-                            }, statuses ?
-                            statuses.map((status) => {
-                                return m('option', {
-                                    value: status.id
-                                }, status.name)
-                            }) : null)
+                            onchange: (e) => setStatusId(e.target.value),
+                            value: project.status_id
+                        }, statuses.map((status) => {
+                            return m('option', {
+                                value: status.id,
+                                selected: (project.status_id == status.id),
+                            }, status.name)
+                        }))
                     ]),
                 ]),
                 m('.form-group', [
@@ -185,10 +183,10 @@ export default function Project() {
                 ]),
                 m('.form-group', [
                     m('label', "Attached files"),
-                    (isNew || project.files != undefined) ? m(files, {
+                    m(files, {
                         files: project.files,
                         onchange: setFiles
-                    }) : null,
+                    }),
                 ]),
                 m('.mb-2', m(error, {
                     errors: errors
@@ -203,7 +201,7 @@ export default function Project() {
                         }
                     }, "Cancel")
                 ]),
-            ])
+            ] : m('Loading...'))
         }
     }
 }

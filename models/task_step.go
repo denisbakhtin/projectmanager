@@ -13,7 +13,7 @@ type TaskStep struct {
 	DeletedAt *time.Time `sql:"index" json:"-"`
 	Name      string     `json:"name" valid:"required,length(1|200)"`
 	IsFinal   bool       `json:"is_final"`
-	Order     uint64     `json:"order,string,omitempty"` //order
+	Ord       uint64     `json:"ord,string,omitempty"` //order
 }
 
 //BeforeDelete gorm hook

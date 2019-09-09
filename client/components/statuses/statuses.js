@@ -39,7 +39,7 @@ export default function Statuses() {
                             }, [
                                 m('td', status.name),
                                 m('td', status.description),
-                                m('td', status.order),
+                                m('td', status.ord),
                                 m('td.shrink.text-center', m('button.btn.btn-outline-primary.btn-sm[type=button]', {
                                     onclick: () => {
                                         m.route.set('/statuses/edit/' + status.id)

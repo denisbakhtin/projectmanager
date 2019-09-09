@@ -14,7 +14,6 @@ export default function Manage() {
         Auth.errors = []
     },
     view(vnode) {
-        let ui = vnode.state;
         return m("#auth-form-wrapper", [
             m('.card', [
                 m('.card-body', [

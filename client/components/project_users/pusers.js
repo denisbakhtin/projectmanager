@@ -56,16 +56,17 @@ export default function ProjectUsers() {
         getRoles = () =>
         service.getRoles()
         .then((result) => roles = result.slice(0))
-        .catch((error) => errors = responseErrors(error))
+        .catch((error) => errors = responseErrors(error)),
+
+        onchange = (vnode) => {
+            if (typeof vnode.attrs.onchange == 'function') vnode.attrs.onchange(pusers)
+        }
 
     return {
         oninit(vnode) {
             getUsers()
             if (vnode.attrs.project_users && vnode.attrs.project_users.length > 0) pusers = vnode.attrs.project_users.slice(0)
             getRoles()
-        },
-        onchange(vnode) {
-            if (typeof vnode.attrs.onchange == 'function') vnode.attrs.onchange(pusers)
         },
 
         view(vnode) {
@@ -83,23 +84,22 @@ export default function ProjectUsers() {
                                                 m('td.user_entry', {
                                                     onclick: () => {
                                                         removeUserFromProject(puser);
-                                                        vnode.attrs.onchange(vnode)
+                                                        onchange(vnode)
                                                     }
                                                 }, `${puser.user.name} (${puser.user.email})`),
                                                 m('td.shrink.role-select', [
                                                     roles.length > 0 ?
                                                     m('select.form-control', {
                                                         onchange: function(e) {
-                                                            val = e.target.value;
+                                                            let val = e.target.value;
                                                             puser.role_id = val;
-                                                            puser.role = roles.find((el) => {
-                                                                return el.id == val
-                                                            })
+                                                            puser.role = roles.find((el) => (el.id == val));
                                                         },
                                                         value: puser.role_id
                                                     }, roles.map((role) => {
                                                         return m('option', {
-                                                            value: role.id
+                                                            value: role.id,
+                                                            selected: (role.id == puser.role_id)
                                                         }, role.name)
                                                     })) : null
                                                 ])
@@ -107,28 +107,25 @@ export default function ProjectUsers() {
                                         })
                                     ]) : m('.text-muted.text-center', "empty")
                                 ])
-
                             ])
-
                         ]),
-                        m('.col-sm-1', [
-                            m('.text-center.mt-4', m('i.fa.fa-2x.fa-arrows-h')),
-                        ]),
-                        m('.col', [
-                            m('h6.text-center', 'Available users'),
-                            m('.card', [
-                                m('.card-body', [
-                                    availableUsers.length > 0 ? availableUsers.map((user) => {
-                                        return m('.user_entry', {
-                                            onclick: () => {
-                                                addUserToProject(vnode.attrs.project_id, user);
-                                                vnode.attrs.onchange(vnode)
-                                            }
-                                        }, `${user.name} (${user.email})`)
+                m('.col-sm-1', [
+                    m('.text-center.mt-4', m('i.fa.fa-2x.fa-arrows-h')),
+                ]),
+                m('.col', [
+                    m('h6.text-center', 'Available users'),
+                    m('.card', [
+                        m('.card-body', [
+                            availableUsers.length > 0 ? availableUsers.map((user) => {
+                                return m('.user_entry', {
+                                    onclick: () => {
+                                        addUserToProject(vnode.attrs.project_id, user);
+                                        onchange(vnode)
+                                    }
+                                }, `${user.name} (${user.email})`)
                                     }) : m('.text-muted.text-center', "empty")
                                 ])
                             ])
-
                         ])
                     ]),
                     m('.mb-2', m(error, {

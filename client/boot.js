@@ -38,6 +38,34 @@ import Auth from './utils/auth'
 
 const app_root = document.getElementById("app-root");
 
+//render component with layout
+function withLayout(comp) {
+    return {
+        view: () => Auth.isLoggedIn() ? m(layout, {
+            child: comp
+        }) : m(public_layout, {
+            child: comp
+        })
+    }
+}
+
+//Authorization route filter
+function checkAuthorized(comp) {
+    return function(args, path) {
+        if (!Auth.isLoggedIn()) {
+            localStorage.returnURL = path
+            m.route.set("/login")
+        } else return withLayout(comp)
+    }
+}
+
+//route wrapper
+function route(comp, requiresAuth = true) {
+    return (requiresAuth) ? {
+        onmatch: checkAuthorized(comp)
+    } : withLayout(comp)
+}
+
 const routes = {
     '/': route(home, false),
     '/login': route(login, false),
@@ -78,29 +106,7 @@ const routes = {
     '/logout': route(logout, false),
 };
 
-//route wrapper 
-const route = (comp, requiresAuth = true) =>
-    (requiresAuth) ? {
-        onmatch: checkAuthorized(comp)
-    } : withLayout(comp)
 
-//render component with layout
-const withLayout = (comp) => {
-    view: () => Auth.isLoggedIn() ? m(layout, {
-        child: comp
-    }) : m(public_layout, {
-        child: comp
-    })
-}
-
-//Authorization route filter
-const checkAuthorized = (comp) =>
-    function(args, path) {
-        if (!Auth.isLoggedIn()) {
-            localStorage.returnURL = path
-            m.route.set("/login")
-        } else return withLayout(comp)
-    }
 
 m.route(app_root, "/", routes)
 

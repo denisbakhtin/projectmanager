@@ -18,3 +18,10 @@ type Task struct {
 	ProjectUser   ProjectUser    `json:"project_user" gorm:"save_associations:false" valid:"-"`
 	TaskStep      TaskStep       `json:"task_step" gorm:"save_associations:false" valid:"-"`
 }
+
+//EditTaskVM is a view model for a new or an edited task
+type EditTaskVM struct {
+	Projects  []Project `json:"projects"`
+	Task      `json:"task"`
+	TaskSteps []TaskStep `json:"task_steps"`
+}

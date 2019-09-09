@@ -20,7 +20,7 @@ func statusGet(c *gin.Context) {
 	status := models.Status{}
 	models.DB.First(&status, id)
 	if status.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Status not found"})
+		c.JSON(http.StatusNotFound, "Status not found")
 		return
 	}
 	c.JSON(http.StatusOK, status)
@@ -30,11 +30,11 @@ func statusGet(c *gin.Context) {
 func statusesPost(c *gin.Context) {
 	status := models.Status{}
 	if err := c.ShouldBindJSON(&status); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Create(&status).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -45,11 +45,11 @@ func statusesPut(c *gin.Context) {
 	//id := c.Param("id")
 	status := models.Status{}
 	if err := c.ShouldBindJSON(&status); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	if err := models.DB.Save(&status).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -61,11 +61,11 @@ func statusesDelete(c *gin.Context) {
 	status := models.Status{}
 	models.DB.First(&status, id)
 	if status.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Status not found"})
+		c.JSON(http.StatusNotFound, "Status not found")
 		return
 	}
 	if err := models.DB.Delete(&status).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 

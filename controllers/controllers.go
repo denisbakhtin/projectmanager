@@ -65,6 +65,8 @@ func Initialize() {
 
 		authorized.GET("/api/tasks", tasksGet)
 		authorized.GET("/api/tasks/:id", taskGet)
+		authorized.GET("/api/new_task", taskNewGet)
+		authorized.GET("/api/edit_task/:id", taskEditGet)
 		authorized.POST("/api/tasks", tasksPost)
 		authorized.PUT("/api/tasks/:id", tasksPut)
 		authorized.DELETE("/api/tasks/:id", tasksDelete)

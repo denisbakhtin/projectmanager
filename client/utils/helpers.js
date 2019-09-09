@@ -15,8 +15,6 @@ export function responseErrors(error) {
     if (!error) return []
     if (error.statusCode == 401) return ["Authorization required."]
     if (error.statusCode == 404) return ["Sorry, the request url you tried cannot be found."]
-    if (!!error.errors) error.errors.slice(0)
-    if (!!error.error) return [error.error]
     if (!!error.message) return [error.message]
     return ["Your request resulted in an error."]
 }

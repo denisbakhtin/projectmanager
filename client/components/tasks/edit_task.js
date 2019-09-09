@@ -16,6 +16,7 @@ export default function Task() {
         steps = [],
         projects = [],
         isNew = true,
+        loaded = false,
 
         setName = (name) => task.name = name,
         setDescription = (description) => task.description = description,
@@ -31,25 +32,23 @@ export default function Task() {
         },
 
         //requests
-        getProjects = () =>
-        service.getProjects()
-        .then((result) => projects = result.slice(0))
-        .catch((error) => errors = responseErrors(error)),
+        newTask = () =>
+        service.newTask()
+        .then((result) => {
+            projects = result.projects
+            task = result.task
+            steps = result.task_steps
+            loaded = true;
+        }).catch((error) => errors = responseErrors(error)),
 
-        getProjectUsers = () =>
-        service.getProjectUsers(task.project_id)
-        .then((result) => pusers = result.slice(0))
-        .catch((error) => errors = responseErrors(error)),
-
-        get = () =>
-        service.getTask(task.id)
-        .then((result) => task = result)
-        .catch((error) => errors = responseErrors(error)),
-
-        getSteps = () =>
-        service.getTaskSteps()
-        .then((result) => steps = result.slice(0))
-        .catch((error) => errors = responseErrors(error)),
+        editTask = (id) =>
+        service.editTask(id)
+        .then((result) => {
+            projects = result.projects
+            task = result.task
+            steps = result.task_steps
+            loaded = true;
+        }).catch((error) => errors = responseErrors(error)),
 
         create = () =>
         service.createTask(task)
@@ -69,26 +68,14 @@ export default function Task() {
 
     return {
         oninit(vnode) {
-            if (m.route.param('id')) {
-                isNew = false
-                task = {
-                    id: m.route.param('id')
-                }
-                get()
-            } else
-                task = {}
-            errors = []
-            getSteps()
-            getProjects().then(function(result) {
-                if (!task.project_id && result.length) {
-                    task.project_id = result[0].id
-                    //is this correct?
-                    getProjectUsers().then((res) => setProjectUserID(res.id))
-                }
-            })
+            isNew = (m.route.param('id') == undefined)
+            if (isNew)
+                newTask()
+            else
+                editTask(m.route.param('id'))
         },
         view(vnode) {
-            return m(".task", [
+            return m(".task", (loaded) ? [
                 m('h1.mb-4', (isNew) ? 'New task' : 'Edit task'),
                 m('.form-group', [
                     m('label', 'Task name'),
@@ -104,41 +91,47 @@ export default function Task() {
                     m('.col-sm-2',
                         m('label', 'State'),
                         m('select.form-control', {
-                                onchange: (e) => setStepID(e.target.value),
-                                value: task.task_step_id
-                            }, steps ?
+                            onchange: (e) => setStepID(e.target.value),
+                            value: task.task_step_id
+                        },
                             steps.map((step) => {
                                 return m('option', {
-                                    value: step.id
+                                    value: step.id,
+                                    selected: (step.id == task.task_step_id)
                                 }, step.name)
-                            }) : null)
+                            })
+                        )
                     ),
                     m('.col-sm-5',
                         m('label', 'Project'),
                         m('select.form-control', {
-                                onchange: function(e) {
-                                    setProjectID(e.target.value)
-                                    getProjectUsers()
-                                },
-                                value: task.project_id
-                            }, projects ?
+                            onchange: function(e) {
+                                setProjectID(e.target.value)
+                                getProjectUsers()
+                            },
+                            value: task.project_id
+                        },
                             projects.map((proj) => {
                                 return m('option', {
-                                    value: proj.id
+                                    value: proj.id,
+                                    selected: (proj.id == task.project_id)
                                 }, proj.name)
-                            }) : null)
+                            })
+                        )
                     ),
                     m('.col-sm-5',
                         m('label', 'Assigned user'),
                         m('select.form-control', {
-                                onchange: (e) => setProjectUserID(e.target.value),
-                                value: task.project_user_id
-                            }, pusers ?
+                            onchange: (e) => setProjectUserID(e.target.value),
+                            value: task.project_user_id
+                        },
                             pusers.map((puser) => {
                                 return m('option', {
-                                    value: puser.id
+                                    value: puser.id,
+                                    selected: (puser.id == task.project_user_id)
                                 }, puser.user.name + "(" + puser.role.name + ")")
-                            }) : null)
+                            })
+                        )
                     ),
                 ]),
                 m('.form-group', [
@@ -150,10 +143,10 @@ export default function Task() {
                 ]),
                 m('.form-group', [
                     m('label', "Attached files"),
-                    (isNew || task.files != undefined) ? m(files, {
+                    m(files, {
                         files: task.files,
                         onchange: setFiles
-                    }) : null,
+                    }),
                 ]),
                 m('.mb-2', m(error, {
                     errors: errors
@@ -169,7 +162,7 @@ export default function Task() {
                         }
                     }, "Cancel")
                 ]),
-            ])
+            ] : m('Loading...'))
         }
     }
 }

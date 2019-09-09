@@ -14,26 +14,24 @@ export default function AttachedFiles() {
         errors = [],
 
         //requests
-        upload = (e) => {
-            let file = e.target.files[0]
-            service.uploadFile(e.target.files[0])
-                .then((result) => files.push(result))
-                .catch((error) => errors = responseErrors(error))
-        },
+        upload = (e) =>
+        service.uploadFile(e.target.files[0])
+        .then((result) => files.push(result))
+        .catch((error) => errors = responseErrors(error)),
+
         create = () => {},
-        remove = (index) => files.splice(index, 1)
+        remove = (index) => files.splice(index, 1),
+        onchange = (vnode) => {
+            if (typeof vnode.attrs.onchange == 'function') vnode.attrs.onchange(files)
+        }
 
     return {
         oninit(vnode) {
-            files = []
-            errors = []
             if (vnode.attrs.files && vnode.attrs.files.length > 0)
                 files = vnode.attrs.files.slice(0)
         },
-        onchange(vnode) {
-            if (typeof vnode.attrs.onchange == 'function') vnode.attrs.onchange(files)
-        },
 
+        //is this todo below actual?
         //TODO: use polymorphic gorm files relation (for tasks, projects, task_logs, etc)
         //show upload progress https://mithril.js.org/request.html#monitoring-progress
         view(vnode) {
@@ -46,7 +44,7 @@ export default function AttachedFiles() {
                         m('a[href=#]', {
                             onclick: () => {
                                 remove(index);
-                                vnode.attrs.onchange(vnode);
+                                onchange(vnode);
                                 return false
                             }
                         }, m('i.fa.fa-times.text-danger.ml-2'))
@@ -62,9 +60,7 @@ export default function AttachedFiles() {
                     m('i.fa.fa-paperclip.ml-2')
                 ]),
                 m('input#attachment.hidden[type=file]', {
-                    onchange: (e) => {
-                        upload(e).then((result) => vnode.attrs.onchange(vnode))
-                    }
+                    onchange: (e) => upload(e).then((result) => onchange(vnode)),
                 }),
             ])
         }
