@@ -1,25 +1,101 @@
 ﻿import m from 'mithril'
-import form from './form'
-import state from './state'
+import error from '../shared/error'
+import {
+    addSuccess
+} from '../shared/notifications'
+import {
+    responseErrors
+} from '../../utils/helpers'
 
-const TaskStep = {
-    oninit(vnode) {
-        state.errors = []
-        state.step = { id: m.route.param('id')}
-        state.get()
-    },
-    
-    view(vnode) {
-        let ui = vnode.state
-        return m(".task_step", [
-            m('h1.mb-4', 'Edit task step'),
-            form(),
-            m('.actions', [
-                m('button.btn.btn-primary.mr-2[type=button]', { onclick: state.update }, "Update"),
-                m('button.btn.btn-secondary[type=button]', { onclick: () => { window.history.back() } }, "Cancel")
-            ]),
-        ])
+export default function TaskStep() {
+    let step = {},
+        steps = [],
+        errors = [],
+        isNew = true,
+        setName = (name) => step.name = name,
+        setIsfinal = (is_final) => step.is_final = is_final,
+        setOrder = (order) => step.order = order,
+        validate = () => {
+            errors = []
+            if (!step.name)
+                errors.push("Step name is required.")
+            return errors.length == 0
+        },
+
+        //requests
+        get = () =>
+        service.getTaskStep(step.id)
+        .then((result) => step = result)
+        .catch((error) => errors = responseErrors(error)),
+
+        create = () =>
+        service.createTaskStep(step)
+        .then((result) => {
+            addSuccess("Task step created.")
+            m.route.set('/task_steps')
+        })
+        .catch((error) => errors = responseErrors(error)),
+
+        update = () =>
+        service.updateTaskStep(step.id, step)
+        .then((result) => {
+            addSuccess("Task step updated.")
+            m.route.set('/task_steps')
+        })
+        .catch((error) => errors = responseErrors(error))
+
+    return {
+        oninit(vnode) {
+            if (m.route.param('id')) {
+                isNew = false
+                step = {
+                    id: m.route.param('id')
+                }
+                get()
+            }
+        },
+
+        view(vnode) {
+            return m(".task_step", [
+                m('h1.mb-4', (isNew) ? "Create task step" : 'Edit task step'),
+                m('.form-group', [
+                    m('label', 'Step name'),
+                    m('input.form-control[type=text]', {
+                        oncreate: (el) => {
+                            el.dom.focus()
+                        },
+                        oninput: (e) => setName(e.target.value),
+                        value: step.name
+                    })
+                ]),
+                m('.form-check', [
+                    m('input#isfinal.form-check-input[type=checkbox]', {
+                        oninput: (e) => setIsfinal(e.target.value),
+                        checked: step.is_final
+                    }),
+                    m('label.form-check-label[for=isfinal]', 'Is final')
+                ]),
+                m('.form-group w-25', [
+                    m('label', 'Order'),
+                    m('input.form-control[type=number][min=0]', {
+                        oninput: (e) => setOrder(e.target.value),
+                        value: step.order
+                    })
+                ]),
+                m('.mb-2', m(error, {
+                    errors: errors
+                })),
+                m('.actions', [
+                    m('button.btn.btn-primary.mr-2[type=button]', {
+                        onclick: (isNew) ? create : update
+                    }, "Save"),
+                    m('button.btn.btn-secondary[type=button]', {
+                        onclick: () => {
+                            window.history.back()
+                        }
+                    }, "Cancel")
+                ]),
+            ])
+        }
     }
 }
-
-export default TaskStep;

@@ -18,6 +18,7 @@ module.exports = {
         ignored: /node_modules/,
     },
     optimization: {
+        usedExports: true,
         minimizer: [
             new UglifyJsPlugin({
                 cache: true,
