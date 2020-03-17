@@ -6,10 +6,6 @@ export default function Register() {
     return {
         oninit(vnode) {
             Auth.errors = []
-            Auth.name = "Denis Bakhtin"
-            Auth.email = "denis.bakhtin@gmail.com"
-            Auth.password = "12345678"
-            Auth.passwordConfirm = "12345678"
         },
         view(vnode) {
             return m("#auth-form-wrapper", [

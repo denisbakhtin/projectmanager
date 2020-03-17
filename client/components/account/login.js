@@ -5,8 +5,6 @@ import error from '../shared/error'
 export default function Login() {
     return {
         oninit(vnode) {
-            Auth.setEmail('denis.bakhtin@gmail.com')
-            Auth.setPassword('12345678')
             Auth.errors = []
         },
         view(vnode) {
