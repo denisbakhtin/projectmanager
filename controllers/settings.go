@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/denisbakhtin/projectmanager/config"
 	"github.com/denisbakhtin/projectmanager/models"
 	"github.com/gin-gonic/gin"
 )
@@ -11,6 +12,8 @@ import (
 func settingsGet(c *gin.Context) {
 	var settings []models.Setting
 	models.DB.Order("id").Find(&settings)
+	//append some settings from config.yml
+	settings = append(settings, models.Setting{Code: "site_name", Value: config.Settings.ProjectName})
 	c.JSON(http.StatusOK, settings)
 }
 

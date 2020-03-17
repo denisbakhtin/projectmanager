@@ -31,6 +31,7 @@ func ListenAndServe() {
 		publicAPI.POST("/register", registerPost)
 		publicAPI.POST("/forgot", forgotPost)
 		publicAPI.POST("/reset", resetPost)
+		publicAPI.GET("/settings", settingsGet)
 	}
 
 	api := router.Group("/api")
@@ -118,7 +119,6 @@ func ListenAndServe() {
 		api.PUT("/pages/:id", pagesPut)
 		api.DELETE("/pages/:id", pagesDelete)
 
-		api.GET("/settings", settingsGet)
 		api.GET("/settings/:id", settingGet)
 		api.POST("/settings", settingsPost)
 		api.PUT("/settings/:id", settingsPut)
@@ -140,7 +140,8 @@ func currentUserID(c *gin.Context) uint64 {
 
 func funcMap() template.FuncMap {
 	return template.FuncMap{
-		"pages": pagesMenu,
+		"pages":    pagesMenu,
+		"siteName": siteName,
 	}
 }
 
@@ -148,4 +149,8 @@ func pagesMenu() []models.Page {
 	var pages []models.Page
 	models.DB.Where("published = true").Order("id asc").Select("id, name").Find(&pages)
 	return pages
+}
+
+func siteName() string {
+	return config.Settings.ProjectName
 }

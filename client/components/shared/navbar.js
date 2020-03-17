@@ -3,9 +3,24 @@ import notifications from './navbar_notifications'
 import profile from './navbar_profile'
 import curtime from './navbar_time'
 import state from './state'
+import service from '../../utils/service'
 
 export default function Navbar() {
+    let site_name = "Project Manager",
+
+        getSettings = () =>
+            service.getSettings()
+                .then((result) => {
+                    let settings = result.slice(0)
+                    let name_setting = settings.find((el) => el.code === "site_name")
+                    if (name_setting) site_name = name_setting.value
+                })
+
     return {
+        oninit(vnode) {
+            getSettings()
+        },
+
         view(vnode) {
             return m('nav.navbar.navbar-expand-md.navbar-light.bg-light.fixed-top', [
                 m('a.navbar-brand[href=#!/]', [
@@ -15,7 +30,7 @@ export default function Navbar() {
                         width: '23px',
                         height: '23px',
                     }),
-                    "Project Manager",
+                    site_name,
                 ]),
                 m('button.sidebar-toggler.mr-4', {
                     onclick: state.toggleSidebar
