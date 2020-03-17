@@ -3,8 +3,11 @@ package models
 import (
 	"fmt"
 	"log"
+	"regexp"
+	"strings"
 
 	"github.com/denisbakhtin/projectmanager/config"
+	"github.com/fiam/gounidecode/unidecode"
 	"github.com/jinzhu/gorm"
 	"github.com/qor/validations"
 
@@ -23,8 +26,9 @@ func InitializeDB() {
 		log.Panic(err)
 	}
 	validations.RegisterCallbacks(DB)
-	DB.AutoMigrate(&User{}, &UserGroup{}, &Task{}, &Project{}, &Status{}, &TaskLog{}, &TaskStep{},
-		&AttachedFile{}, &ProjectUser{}, &Role{}, &Page{}, &Log{}, &Notification{}, &Setting{})
+	DB.AutoMigrate(&User{}, &UserGroup{}, &Task{}, &Project{}, &TaskLog{},
+		&AttachedFile{}, &Page{}, &Log{}, &Notification{},
+		&Setting{}, &Category{}, &Session{}, &Comment{}, &TaskLog{})
 
 	count := 0
 	if err := DB.Model(&UserGroup{}).Where([]int64{ADMIN, EDITOR, USER}).Count(&count).Error; err != nil {
@@ -41,4 +45,12 @@ func InitializeDB() {
 			log.Panic(fmt.Sprintf("Error creating User user group with ID=%d. Try to create it manually and modify models.USER constant accordingly.", USER))
 		}
 	}
+}
+
+//createSlug makes url slug out of string
+func createSlug(s string) string {
+	s = strings.ToLower(unidecode.Unidecode(s))                     //transliterate if it is not in english
+	s = regexp.MustCompile("[^a-z0-9\\s]+").ReplaceAllString(s, "") //spaces
+	s = regexp.MustCompile("\\s+").ReplaceAllString(s, "-")         //spaces
+	return s
 }

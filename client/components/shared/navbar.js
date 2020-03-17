@@ -7,7 +7,7 @@ import state from './state'
 export default function Navbar() {
     return {
         view(vnode) {
-            return m('nav.navbar.navbar-expand-lg.navbar-light.bg-light.fixed-top', [
+            return m('nav.navbar.navbar-expand-md.navbar-light.bg-light.fixed-top', [
                 m('a.navbar-brand[href=#!/]', [
                     m('img', {
                         src: "/public/images/navbar_logo.png",
@@ -22,9 +22,9 @@ export default function Navbar() {
                 }, m('span.fa.fa-bars')),
                 m('form.form-inline.search-form.mr-2', [
                     m('.input-group', [
-                        m('input.form-control[type=search][placeholder=Search...]'),
+                        m('input.form-control[type=search][placeholder=Search...]', { onchange: (e) => state.setQuery(e.target.value), value: state.query }),
                         m('.input-group-append', [
-                            m('button.btn.btn-outline-primary[type=button]', m('i.fa.fa-search')),
+                            m('button.btn.btn-outline-primary[type=submit]', { onclick: () => m.route.set("/search") }, m('i.fa.fa-search')),
                         ]),
                     ]),
                 ]),

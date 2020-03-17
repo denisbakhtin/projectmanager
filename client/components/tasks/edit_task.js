@@ -12,62 +12,65 @@ import error from '../shared/error'
 export default function Task() {
     let task = {},
         pusers = [],
+        project_id,
         errors = [],
-        steps = [],
+        categories = [],
         projects = [],
         isNew = true,
         loaded = false,
 
         setName = (name) => task.name = name,
         setDescription = (description) => task.description = description,
-        setStepID = (step_id) => task.task_step_id = step_id,
-        setProjectUserID = (project_user_id) => task.project_user_id = project_user_id,
+        setCategoryID = (id) => task.category_id = id,
+        //setProjectUserID = (project_user_id) => task.project_user_id = project_user_id,
         setProjectID = (project_id) => task.project_id = project_id,
         setFiles = (files) => task.files = files,
-        validate = () => {
-            errors = []
-            if (!task.name)
-                errors.push("Task name is required.")
-            return errors.length == 0
-        },
+        setPriority = (prio) => task.priority = prio,
 
         //requests
         newTask = () =>
-        service.newTask()
-        .then((result) => {
-            projects = result.projects
-            task = result.task
-            steps = result.task_steps
-            loaded = true;
-        }).catch((error) => errors = responseErrors(error)),
+            service.newTask()
+                .then((result) => {
+                    projects = result.projects
+                    categories = result.categories
+                    task = result.task
+                    task.project_id = project_id ?? ((projects && projects.length > 0) ? projects[0].id : null)
+                    loaded = true
+                }).catch((error) => errors = responseErrors(error)),
 
         editTask = (id) =>
-        service.editTask(id)
-        .then((result) => {
-            projects = result.projects
-            task = result.task
-            steps = result.task_steps
-            loaded = true;
-        }).catch((error) => errors = responseErrors(error)),
+            service.editTask(id)
+                .then((result) => {
+                    projects = result.projects
+                    categories = result.categories
+                    task = result.task
+                    loaded = true
+                }).catch((error) => errors = responseErrors(error)),
 
         create = () =>
-        service.createTask(task)
-        .then((result) => {
-            addSuccess("Task created.")
-            m.route.set('/tasks')
-        })
-        .catch((error) => errors = responseErrors(error)),
+            service.createTask(task)
+                .then((result) => {
+                    addSuccess("Task created.")
+                    m.route.set('/tasks')
+                })
+                .catch((error) => errors = responseErrors(error)),
 
         update = () =>
-        service.updateTask(task.id, task)
-        .then((result) => {
-            addSuccess("Task updated.")
-            m.route.set('/tasks')
-        })
-        .catch((error) => errors = responseErrors(error))
+            service.updateTask(task.id, task)
+                .then((result) => {
+                    addSuccess("Task updated.")
+                    window.history.back();
+                })
+                .catch((error) => errors = responseErrors(error))
+    /* getProjectUsers = () =>
+        service.getProjectUsers(task.project_id)
+            .then((result) => pusers = result)
+            .catch((error) => errors = responseErrors(error))
+    */
 
     return {
         oninit(vnode) {
+            project_id = m.route.param('project_id')
             isNew = (m.route.param('id') == undefined)
             if (isNew)
                 newTask()
@@ -76,7 +79,7 @@ export default function Task() {
         },
         view(vnode) {
             return m(".task", (loaded) ? [
-                m('h1.mb-4', (isNew) ? 'New task' : 'Edit task'),
+                m('h1.title', (isNew) ? 'New task' : 'Edit task'),
                 m('.form-group', [
                     m('label', 'Task name'),
                     m('input.form-control[type=text]', {
@@ -84,30 +87,17 @@ export default function Task() {
                             el.dom.focus()
                         },
                         oninput: (e) => setName(e.target.value),
+                        placeholder: "e.g. Post a new article",
                         value: task.name
                     })
                 ]),
                 m('.form-group.form-row', [
-                    m('.col-sm-2',
-                        m('label', 'State'),
-                        m('select.form-control', {
-                            onchange: (e) => setStepID(e.target.value),
-                            value: task.task_step_id
-                        },
-                            steps.map((step) => {
-                                return m('option', {
-                                    value: step.id,
-                                    selected: (step.id == task.task_step_id)
-                                }, step.name)
-                            })
-                        )
-                    ),
                     m('.col-sm-5',
                         m('label', 'Project'),
                         m('select.form-control', {
-                            onchange: function(e) {
+                            onchange: function (e) {
                                 setProjectID(e.target.value)
-                                getProjectUsers()
+                                //getProjectUsers()
                             },
                             value: task.project_id
                         },
@@ -119,6 +109,23 @@ export default function Task() {
                             })
                         )
                     ),
+                    (categories.length > 0) ?
+                        m('.col-sm-5', [
+                            m('label', 'Category'),
+                            m('select.form-control', {
+                                onchange: (e) => setCategoryID(e.target.value),
+                                value: task.category_id ?? ""
+                            }, [
+                                m('option[value=""][disabled=disabled][hidden=hidden]', "Select category..."),
+                                categories.map((cat) => {
+                                    return m('option', {
+                                        value: cat.id,
+                                        selected: (cat.id == task.category_id)
+                                    }, cat.name)
+                                }),
+                            ])
+                        ]) : null,
+                    /*
                     m('.col-sm-5',
                         m('label', 'Assigned user'),
                         m('select.form-control', {
@@ -133,9 +140,40 @@ export default function Task() {
                             })
                         )
                     ),
+                    */
                 ]),
                 m('.form-group', [
-                    m('label', "Description"),
+                    m('.custom-control.custom-radio.custom-control-inline', [
+                        m('input#priority1.custom-control-input[type=radio][name=priority][value=1]', {
+                            checked: task.priority == 1,
+                            onchange: (e) => setPriority(e.target.value)
+                        }),
+                        m('label.custom-control-label.mr-1[for=priority1]', 'Do Now'),
+                    ]),
+                    m('.custom-control.custom-radio.custom-control-inline', [
+                        m('input#priority2.custom-control-input[type=radio][name=priority][value=2]', {
+                            checked: task.priority == 2,
+                            onchange: (e) => setPriority(e.target.value)
+                        }),
+                        m('label.custom-control-label.mr-1[for=priority2]', 'Do Next'),
+                    ]),
+                    m('.custom-control.custom-radio.custom-control-inline', [
+                        m('input#priority3.custom-control-input[type=radio][name=priority][value=3]', {
+                            checked: task.priority == 3,
+                            onchange: (e) => setPriority(e.target.value)
+                        }),
+                        m('label.custom-control-label.mr-1[for=priority3]', 'Do Later'),
+                    ]),
+                    m('.custom-control.custom-radio.custom-control-inline', [
+                        m('input#priority4.custom-control-input[type=radio][name=priority][value=4]', {
+                            checked: task.priority == 4,
+                            onchange: (e) => setPriority(e.target.value)
+                        }),
+                        m('label.custom-control-label.mr-1[for=priority4]', 'Do Last'),
+                    ]),
+                ]),
+                m('.form-group', [
+                    m('label', "Description (supports Markdown)"),
                     m('textarea.form-control', {
                         oninput: (e) => setDescription(e.target.value),
                         value: task.description
@@ -155,11 +193,12 @@ export default function Task() {
                 m('.actions', [
                     m('button.btn.btn-primary.mr-2[type=button]', {
                         onclick: (isNew) ? create : update
-                    }, "Save"),
-                    m('button.btn.btn-secondary[type=button]', {
-                        onclick: () => {
-                            m.route.set('/tasks')
-                        }
+                    }, [
+                        m("i.fa.fa-check.mr-1"),
+                        "Submit"
+                    ]),
+                    m('button.btn.btn-outline-secondary[type=button]', {
+                        onclick: () => window.history.back()
                     }, "Cancel")
                 ]),
             ] : m('Loading...'))

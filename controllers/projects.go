@@ -3,16 +3,25 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/denisbakhtin/projectmanager/helpers"
 	"github.com/denisbakhtin/projectmanager/models"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 //projectsGet handles get all projects request
 func projectsGet(c *gin.Context) {
 	var projects []models.Project
-	//TODO: filter projects by owner and assigned users
-	userID := currentUserID(c)
-	models.DB.Preload("Owner").Preload("Status").Where("owner_id = ?", userID).Find(&projects)
+	models.DB.Preload("Tasks").Preload("Category").
+		Where("user_id = ?", currentUserID(c)).Order("archived asc, created_at asc").
+		Find(&projects)
+	c.JSON(http.StatusOK, projects)
+}
+
+//projectsFavoriteGet handles get all favorite projects request
+func projectsFavoriteGet(c *gin.Context) {
+	var projects []models.Project
+	models.DB.Select("id, name").Where("user_id = ? and favorite = true", currentUserID(c)).Order("created_at asc").Find(&projects)
 	c.JSON(http.StatusOK, projects)
 }
 
@@ -20,9 +29,18 @@ func projectsGet(c *gin.Context) {
 func projectGet(c *gin.Context) {
 	id := c.Param("id")
 	project := models.Project{}
-	models.DB.Preload("ProjectUsers").Preload("ProjectUsers.Role").Preload("ProjectUsers.User").Preload("AttachedFiles").Preload("Owner").Preload("Status").Preload("Tasks").First(&project, id)
+	query := models.DB.Where("user_id = ?", currentUserID(c)).
+		Preload("AttachedFiles").Preload("Category")
+	query = query.Preload("Tasks", func(db *gorm.DB) *gorm.DB {
+		return db.Order("tasks.completed asc, created_at asc")
+	})
+	query = query.Preload("Tasks.Comments", func(db *gorm.DB) *gorm.DB {
+		return db.Order("comments.created_at asc")
+	})
+
+	query.First(&project, id)
 	if project.ID == 0 {
-		c.JSON(http.StatusNotFound, "Project not found")
+		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Project"))
 		return
 	}
 	c.JSON(http.StatusOK, project)
@@ -31,18 +49,17 @@ func projectGet(c *gin.Context) {
 //projectNewGet handles get new project request
 func projectNewGet(c *gin.Context) {
 	vm := models.EditProjectVM{}
-	models.DB.Order("ord asc").Find(&vm.Statuses)
-	if len(vm.Statuses) > 0 {
-		vm.Project.StatusID = vm.Statuses[0].ID
-	}
+	userID := currentUserID(c)
+	models.DB.Where("user_id = ?", userID).Find(&vm.Categories)
 	c.JSON(http.StatusOK, vm)
 }
 
 //projectEditGet handles edit project request
 func projectEditGet(c *gin.Context) {
 	vm := models.EditProjectVM{}
-	models.DB.Order("ord asc").Find(&vm.Statuses)
-	models.DB.Preload("ProjectUsers").Preload("ProjectUsers.Role").Preload("ProjectUsers.User").Preload("AttachedFiles").Preload("Owner").Preload("Status").Preload("Tasks").First(&vm.Project, c.Param("id"))
+	userID := currentUserID(c)
+	models.DB.Where("user_id = ?", userID).Find(&vm.Categories)
+	models.DB.Preload("AttachedFiles").Preload("Tasks").First(&vm.Project, c.Param("id"))
 	c.JSON(http.StatusOK, vm)
 }
 
@@ -54,10 +71,7 @@ func projectsPost(c *gin.Context) {
 		return
 	}
 	user := models.User{}
-	if u, exists := c.Get("user"); exists {
-		user = u.(models.User)
-	}
-	project.OwnerID = user.ID
+	project.UserID = user.ID
 	if err := models.DB.Create(&project).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -73,26 +87,40 @@ func projectsPut(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	project.Status = models.Status{} //prevent gorm from taking its id instead of project.StatusID
-	if err := models.DB.Omit("owner_id").Save(&project).Error; err != nil {
+	project.UserID = currentUserID(c)
+	if err := models.DB.Save(&project).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	//delete removed users
-	userIds := []uint64{0} //add atleast one non-existent id for query to work :)
-	for i := 0; i < len(project.ProjectUsers); i++ {
-		userIds = append(userIds, project.ProjectUsers[i].ID)
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+//projectArchive handles archive project request
+func projectArchive(c *gin.Context) {
+	//id := c.Param("id")
+	project := models.Project{}
+	if err := c.ShouldBindJSON(&project); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
-	if err := models.DB.Where("project_id = ? and id not in (?)", project.ID, userIds).Delete(models.ProjectUser{}).Error; err != nil {
+	//update column without hooks
+	if err := models.DB.Model(&project).UpdateColumn("archived", project.Archived).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	//delete removed files
-	fileIds := []uint64{0} //add atleast one non-existent id for query to work :)
-	for i := 0; i < len(project.AttachedFiles); i++ {
-		fileIds = append(fileIds, project.AttachedFiles[i].ID)
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+//projectFavorite handles toggling project favorite status request
+func projectFavorite(c *gin.Context) {
+	//id := c.Param("id")
+	project := models.Project{}
+	if err := c.ShouldBindJSON(&project); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
-	if err := models.DB.Where("owner_type = ? and owner_id = ? and id not in (?)", "projects", project.ID, fileIds).Delete(models.AttachedFile{}).Error; err != nil {
+	//update column without hooks
+	if err := models.DB.Model(&project).UpdateColumn("favorite", project.Favorite).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -103,9 +131,9 @@ func projectsPut(c *gin.Context) {
 func projectsDelete(c *gin.Context) {
 	id := c.Param("id")
 	project := models.Project{}
-	models.DB.First(&project, id)
+	models.DB.Where("user_id = ?", currentUserID(c)).First(&project, id)
 	if project.ID == 0 {
-		c.JSON(http.StatusNotFound, "Project not found")
+		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Project"))
 		return
 	}
 	if err := models.DB.Delete(&project).Error; err != nil {

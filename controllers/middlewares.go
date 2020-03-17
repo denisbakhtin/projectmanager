@@ -50,3 +50,21 @@ func AuthRequired() gin.HandlerFunc {
 		}
 	}
 }
+
+//AdminRequired middleware restricts access for authenticated admin users only
+func AdminRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// before request
+		user := models.User{}
+		if u, exists := c.Get("user"); exists {
+			user = u.(models.User)
+		}
+		if user.ID != 0 && user.IsAdmin() {
+			c.Next()
+		} else {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "Admin user is required to proceed",
+			})
+		}
+	}
+}

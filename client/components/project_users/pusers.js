@@ -21,21 +21,14 @@ export default function ProjectUsers() {
 
         //requests
         getUsers = () =>
-        service.getUsers()
-        .then((result) => {
-            users = result.slice(0)
-            let authuser = Auth.getAuthenticatedUser
-            let index = users.findIndex(x => x.id === authuser.user_id)
-            users.splice(index, 1)
-        })
-        .catch((error) => errors = responseErrors(error)),
-
-        getProjectUsers = (project_id) =>
-        service.getProjectUsers(project_id)
-        .then((result) => {
-            pusers = result.slice(0)
-        })
-        .catch((error) => errors = responseErrors(error)),
+            service.getUsers()
+                .then((result) => {
+                    users = result.slice(0)
+                    let authuser = Auth.getAuthenticatedUser
+                    let index = users.findIndex(x => x.id === authuser.user_id)
+                    users.splice(index, 1)
+                })
+                .catch((error) => errors = responseErrors(error)),
 
         addUserToProject = (project_id, user) => {
             let role = roles.length > 0 ? roles[0] : {}
@@ -54,9 +47,9 @@ export default function ProjectUsers() {
         },
 
         getRoles = () =>
-        service.getRoles()
-        .then((result) => roles = result.slice(0))
-        .catch((error) => errors = responseErrors(error)),
+            service.getRoles()
+                .then((result) => roles = result.slice(0))
+                .catch((error) => errors = responseErrors(error)),
 
         onchange = (vnode) => {
             if (typeof vnode.attrs.onchange == 'function') vnode.attrs.onchange(pusers)
@@ -89,19 +82,19 @@ export default function ProjectUsers() {
                                                 }, `${puser.user.name} (${puser.user.email})`),
                                                 m('td.shrink.role-select', [
                                                     roles.length > 0 ?
-                                                    m('select.form-control', {
-                                                        onchange: function(e) {
-                                                            let val = e.target.value;
-                                                            puser.role_id = val;
-                                                            puser.role = roles.find((el) => (el.id == val));
-                                                        },
-                                                        value: puser.role_id
-                                                    }, roles.map((role) => {
-                                                        return m('option', {
-                                                            value: role.id,
-                                                            selected: (role.id == puser.role_id)
-                                                        }, role.name)
-                                                    })) : null
+                                                        m('select.form-control', {
+                                                            onchange: function (e) {
+                                                                let val = e.target.value;
+                                                                puser.role_id = val;
+                                                                puser.role = roles.find((el) => (el.id == val));
+                                                            },
+                                                            value: puser.role_id
+                                                        }, roles.map((role) => {
+                                                            return m('option', {
+                                                                value: role.id,
+                                                                selected: (role.id == puser.role_id)
+                                                            }, role.name)
+                                                        })) : null
                                                 ])
                                             ])
                                         })
@@ -109,20 +102,20 @@ export default function ProjectUsers() {
                                 ])
                             ])
                         ]),
-                m('.col-sm-1', [
-                    m('.text-center.mt-4', m('i.fa.fa-2x.fa-arrows-h')),
-                ]),
-                m('.col', [
-                    m('h6.text-center', 'Available users'),
-                    m('.card', [
-                        m('.card-body', [
-                            availableUsers.length > 0 ? availableUsers.map((user) => {
-                                return m('.user_entry', {
-                                    onclick: () => {
-                                        addUserToProject(vnode.attrs.project_id, user);
-                                        onchange(vnode)
-                                    }
-                                }, `${user.name} (${user.email})`)
+                        m('.col-sm-1', [
+                            m('.text-center.mt-4', m('i.fa.fa-2x.fa-arrows-h')),
+                        ]),
+                        m('.col', [
+                            m('h6.text-center', 'Available users'),
+                            m('.card', [
+                                m('.card-body', [
+                                    availableUsers.length > 0 ? availableUsers.map((user) => {
+                                        return m('.user_entry', {
+                                            onclick: () => {
+                                                addUserToProject(vnode.attrs.project_id, user);
+                                                onchange(vnode)
+                                            }
+                                        }, `${user.name} (${user.email})`)
                                     }) : m('.text-muted.text-center', "empty")
                                 ])
                             ])
@@ -138,17 +131,16 @@ export default function ProjectUsers() {
                         }
                     }, 'Done')
                 ]) : [
-                    m('a[href=#]', {
-                        onclick: () => {
-                            pickup = true;
-                            return false;
-                        }
-                    }, pusers.length > 0 ? pusers.map((u) => {
-                        return `${u.user.name} (${u.role.name})`
-                    }).join(', ') : "None"),
-                    m('i.fa.fa-pencil.ml-2')
-                ]
-
+                        m('a[href=#]', {
+                            onclick: () => {
+                                pickup = true;
+                                return false;
+                            }
+                        }, pusers.length > 0 ? pusers.map((u) => {
+                            return `${u.user.name} (${u.role.name})`
+                        }).join(', ') : "None"),
+                        m('i.fa.fa-pencil.ml-2')
+                    ]
             ])
         }
     }

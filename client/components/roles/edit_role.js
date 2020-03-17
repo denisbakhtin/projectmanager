@@ -1,65 +1,70 @@
 ﻿import m from 'mithril'
+import error from '../shared/error'
+import {
+    addSuccess
+} from '../shared/notifications'
 import {
     responseErrors
 } from '../../utils/helpers'
-import Auth from '../../utils/auth'
-import error from '../shared/error'
-import service from '../../utils/service.js'
+import service from '../../utils/service'
 
-export default function EditRole() {
-    let errors = [],
-        id = '',
-        name = '',
-        onUpdateCallback = null,
-        onCancelCallback = null,
+export default function Role() {
+    let role = {},
+        errors = [],
+        isNew = true,
+        setName = (name) => role.name = name,
 
-        setName = (value) => name = value,
+        //requests
+        get = (id) =>
+            service.getRole(id)
+                .then((result) => role = result)
+                .catch((error) => errors = responseErrors(error)),
+
+        create = () =>
+            service.createRole(role)
+                .then((result) => {
+                    addSuccess("User role created.")
+                    m.route.set('/roles')
+                })
+                .catch((error) => errors = responseErrors(error)),
 
         update = () =>
-        service.updateRole(id, name)
-        .then((result) => {
-            if (typeof onUpdateCallback == "function") onUpdateCallback()
-        }).catch((error) => errors = responseErrors(error)),
-
-        cancel = () =>
-        (typeof onCancelCallback == "function") ? onCancelCallback() : null
+            service.updateRole(role.id, role)
+                .then((result) => {
+                    addSuccess("User role updated.")
+                    m.route.set('/roles')
+                })
+                .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
-            errors = []
-            id = vnode.attrs.role.id
-            name = vnode.attrs.role.name
-            onUpdateCallback = vnode.attrs.onUpdate
-            onCancelCallback = vnode.attrs.onCancel
-        },
-        onKeyPress(event) {
-            if (event.keyCode == 13) update()
-            if (event.keyCode == 27) cancel()
+            isNew = (m.route.param('id') == undefined)
+            if (!isNew)
+                get(m.route.param('id'))
         },
 
         view(vnode) {
-            return m('.input-group.mb-2', [
-                m('.input-group', [
-                    m('input.form-control[placeholder="Enter role name"]', {
-                        oncreate: (el) => {
-                            el.dom.focus()
-                        },
-                        onkeypress: vnode.attrs.onKeyPress,
+            return m(".role", [
+                m('h1.mb-4', (isNew) ? "Create user role" : 'Edit user role'),
+                m('.form-group', [
+                    m('label', 'Role name'),
+                    m('input.form-control[type=text]', {
+                        oncreate: (el) => el.dom.focus(),
                         oninput: (e) => setName(e.target.value),
-                        value: name
-                    }),
-                    m('.input-group-append', [
-                        m('button.btn.btn-outline-success[type=button]', {
-                            onclick: update,
-                        }, m('i.fa.fa-check')),
-                        m('button.btn.btn-outline-secondary[type=button]', {
-                            onclick: cancel,
-                        }, m('i.fa.fa-times'))
-                    ])
+                        value: role.name
+                    })
                 ]),
-                m(error, {
+                m('.mb-2', m(error, {
                     errors: errors
-                })
+                })),
+                m('.actions', [
+                    m('button.btn.btn-primary.mr-2[type=button]', {
+                        onclick: (isNew) ? create : update
+                    }, "Save"),
+                    m('button.btn.btn-secondary[type=button]', {
+                        onclick: () => window.history.back()
+                    }, "Cancel")
+                ]),
             ])
         }
     }

@@ -1,24 +1,26 @@
 ﻿import m from 'mithril'
-import {
-    ISODateToHtml5
-} from '../../utils/helpers'
 import error from '../shared/error'
 import service from '../../utils/service.js'
+import projects_item from './projects_item.js'
+
+const Filters = Object.freeze({
+    ALL: (project) => true,
+    OPEN: (project) => project.archived == false,
+    ARCHIVED: (project) => project.archived == true,
+    FAVORITE: (project) => project.favorite == true,
+})
 
 export default function Projects() {
     let projects = [],
         errors = [],
+        filter = Filters.ALL,
+
+        activeClass = (fil) => (filter === fil) ? "active" : "",
 
         getAll = () =>
-        service.getProjects()
-        .then((result) => projects = result.map((r) => fromGo(r)))
-        .catch((error) => errors = responseErrors(error)),
-
-        fromGo = (proj) =>
-        Object.assign(proj, {
-            start_date: ISODateToHtml5(proj.start_date || null),
-            end_date: ISODateToHtml5(proj.end_date || null)
-        })
+            service.getProjects()
+                .then((result) => projects = result.slice(0))
+                .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
@@ -26,40 +28,27 @@ export default function Projects() {
         },
 
         view(vnode) {
+            let filteredProjects = projects.filter(filter)
+
             return m(".projects", [
-                m('h1.mb-4', 'Projects'),
-                projects ? projects.map((proj) => {
-                    return m('.card.mb-2', {
-                        onclick: () => {
-                            m.route.set('/projects/' + proj.id)
-                        }
-                    }, [
-                        m('.card-body', [
-                            m('h5.card-title', proj.name),
-                            m('h6.card-subtitle.mb-2.text-muted', [
-                                proj.start_date ? [
-                                    m('span', 'Starts: '),
-                                    m('span', ISODateToHtml5(proj.start_date, '-')),
-                                ] : null,
-                                proj.end_date ? [
-                                    m('span', ' Ends: '),
-                                    m('span', ISODateToHtml5(proj.end_date, '-')),
-                                ] : null,
-                                m('span', ' Owner: '),
-                                m('span', (proj.owner && proj.owner.name) ? proj.owner.name : "-"),
-                                m('span', ' Status: '),
-                                m('span', proj.status.name)
-                            ]),
-                            m('p.card-text', proj.description)
-                        ])
-                    ])
-                }) : null,
+                m('h1.title', 'Projects'),
+                m('.filters', [
+                    m('button.btn.btn-link', { class: activeClass(Filters.ALL), onclick: () => filter = Filters.ALL }, "All"),
+                    m('button.btn.btn-link', { class: activeClass(Filters.OPEN), onclick: () => filter = Filters.OPEN }, "Open"),
+                    m('button.btn.btn-link', { class: activeClass(Filters.ARCHIVED), onclick: () => filter = Filters.ARCHIVED }, "Archived"),
+                    m('button.btn.btn-link', { class: activeClass(Filters.FAVORITE), onclick: () => filter = Filters.FAVORITE }, "Favorite"),
+                ]),
+                (filteredProjects && filteredProjects.length > 0) ? m('ul.dashboard-box.box-list',
+                    filteredProjects.map((proj) => m(projects_item, { key: proj.id, project: proj, onUpdate: getAll }))
+                ) : m('p.empty-list', 'The list is empty'),
+                m(error, { errors: errors }),
                 m('.actions.mt-4', [
                     m('button.btn.btn-primary[type=button]', {
-                        onclick: () => {
-                            m.route.set('/projects/new')
-                        }
-                    }, "New project")
+                        onclick: () => m.route.set('/projects/new')
+                    }, [
+                        m('i.fa.fa-plus.mr-1'),
+                        "New project"
+                    ])
                 ]),
             ])
         }

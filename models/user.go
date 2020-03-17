@@ -20,17 +20,16 @@ const (
 
 //User represents a row from users table
 type User struct {
-	ID           uint64     `gorm:"primary_key" json:"id"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
-	DeletedAt    *time.Time `sql:"index" json:"-"`
-	Name         string     `json:"name" valid:"required,length(1|100)"`
-	Email        string     `json:"email" gorm:"unique_index" valid:"required,email,length(1|100)"`
-	PasswordHash string     `json:"-" valid:"required"`
-	Token        string     `json:"token" valid:"length(0|1500)"`
-	UserGroupID  uint64     `json:"user_group_id" gorm:"index" valid:"required"`
-	Status       uint       `json:"status"` //See constants
-	UserGroup    UserGroup  `json:"user_group" gorm:"save_associations:false" valid:"-"`
+	ID           uint64    `gorm:"primary_key" json:"id"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+	Name         string    `json:"name" valid:"required,length(1|100)"`
+	Email        string    `json:"email" gorm:"unique_index" valid:"required,email,length(1|100)"`
+	PasswordHash string    `json:"-" valid:"required"`
+	Token        string    `json:"token" valid:"length(0|1500)"`
+	UserGroupID  uint64    `json:"user_group_id" gorm:"index" valid:"required"`
+	Status       uint      `json:"status"` //See constants
+	UserGroup    UserGroup `json:"user_group" gorm:"save_associations:false" valid:"-"`
 }
 
 //BeforeCreate gorm hook
@@ -82,6 +81,7 @@ func (u *User) IsActive() bool {
 	return u.Status == ACTIVE
 }
 
+/*
 //BelongsToProjectUsers checks if user is among project users
 func (u *User) BelongsToProjectUsers(pusers []ProjectUser) bool {
 	for i := 0; i < len(pusers); i++ {
@@ -91,6 +91,7 @@ func (u *User) BelongsToProjectUsers(pusers []ProjectUser) bool {
 	}
 	return false
 }
+*/
 
 //JWTClaims extends jwt-go.StandardClaims with custom fields
 type JWTClaims struct {

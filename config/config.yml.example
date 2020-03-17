@@ -1,0 +1,30 @@
+production:
+  connection: host=127.0.0.1 user=supreme password=power dbname=ultimatedb sslmode=disable
+  smtp_server: smtp.googlemail.com
+  smtp_login: user@gmail.com
+  smtp_password: strong_password
+  smtp_port: 465
+  smtp_reply: supreme_power_example@gmail.com
+  project_name: Project Manager
+  jwt_secret: JsdfR3PpxnE$fksjMyCws&6EzPzpKa
+  check_emails: true
+test:
+  connection: host=127.0.0.1 user=supreme password=power dbname=ultimatedb_test sslmode=disable
+  smtp_server: smtp.googlemail.com
+  smtp_login: user@gmail.com
+  smtp_password: strong_password
+  smtp_port: 465
+  smtp_reply: supreme_power_example@gmail.com
+  project_name: Project Manager
+  jwt_secret: JsdfR3PpxnE$fksjMyCws&6EzPzpKa
+  check_emails: false
+development:
+  connection: host=127.0.0.1 user=supreme password=power dbname=ultimatedb_dev sslmode=disable
+  smtp_server: smtp.googlemail.com
+  smtp_login: supreme_power_example@gmail.com
+  smtp_password: strong_password
+  smtp_port: 465
+  smtp_reply: user@gmail.com
+  project_name: Project Manager
+  jwt_secret: JsdfR3PpxnE$fksjMyCws&6EzPzpKa
+  check_emails: false

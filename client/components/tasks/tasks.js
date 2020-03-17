@@ -4,16 +4,25 @@ import {
     responseErrors
 } from '../../utils/helpers'
 import service from '../../utils/service'
+import tasks_item from './tasks_item.js'
 
+const Filters = Object.freeze({
+    ALL: (task) => true,
+    OPEN: (task) => task.completed == false,
+    SOLVED: (task) => task.completed == true
+});
 
 export default function Tasks() {
     let tasks = [],
         errors = [],
+        filter = Filters.ALL,
+
+        activeClass = (fil) => (filter === fil) ? "active" : "",
 
         getAll = () =>
-        service.getTasks()
-        .then((result) => tasks = result.slice(0))
-        .catch((error) => errors = responseErrors(error))
+            service.getTasks()
+                .then((result) => tasks = result.slice(0))
+                .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
@@ -21,46 +30,26 @@ export default function Tasks() {
         },
 
         view(vnode) {
+            let filteredTasks = tasks.filter(filter)
+
             return m(".tasks", [
-                m('h1.mb-4', 'Project tasks'),
-                m('table.table', [
-                    m('thead', [
-                        m('tr', [
-                            m('th[scope=col]', 'Name'),
-                            m('th[scope=col]', 'State'),
-                            m('th[scope=col]', 'Description'),
-                            m('th[scope=col]', 'Assigned User'),
-                            m('th.shrink.text-center[scope=col]', 'Actions')
-                        ])
-                    ]),
-                    m('tbody', [
-                        tasks ?
-                        tasks.map((task) => {
-                            return m('tr', {
-                                key: task.id
-                            }, [
-                                m('td', task.name),
-                                m('td', task.task_step.name),
-                                m('td', task.description),
-                                m('td', task.project_user.user.name),
-                                m('td.shrink.text-center', m('button.btn.btn-outline-primary.btn-sm[type=button]', {
-                                    onclick: () => {
-                                        m.route.set('/tasks/edit/' + task.id)
-                                    }
-                                }, m('i.fa.fa-pencil')))
-                            ])
-                        }) : null
-                    ])
+                m('h1.title', 'Tasks'),
+                m('.filters', [
+                    m('button.btn.btn-link', { class: activeClass(Filters.ALL), onclick: () => filter = Filters.ALL }, "All"),
+                    m('button.btn.btn-link', { class: activeClass(Filters.OPEN), onclick: () => filter = Filters.OPEN }, "Open"),
+                    m('button.btn.btn-link', { class: activeClass(Filters.SOLVED), onclick: () => filter = Filters.SOLVED }, "Solved"),
                 ]),
-                errors.length ? m(error, {
-                    errors: errors
-                }) : null,
+                (filteredTasks && filteredTasks.length > 0) ? m('ul.dashboard-box.box-list',
+                    filteredTasks.map((task) => m(tasks_item, { key: task.id, task: task, onUpdate: getAll }))
+                ) : m('p.empty-list', 'The list is empty'),
+                m(error, { errors: errors }),
                 m('.actions.mt-4', [
                     m('button.btn.btn-primary[type=button]', {
-                        onclick: () => {
-                            m.route.set('/tasks/new')
-                        }
-                    }, "New task")
+                        onclick: () => m.route.set('/tasks/new')
+                    }, [
+                        m('i.fa.fa-plus.mr-1'),
+                        "New task"
+                    ])
                 ]),
             ])
         }

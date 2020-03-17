@@ -6,108 +6,59 @@ import {
 } from '../shared/notifications'
 import {
     responseErrors,
-    ISODateToHtml5
 } from '../../utils/helpers'
 import Auth from '../../utils/auth'
 import service from '../../utils/service.js'
-import pusers from '../project_users/pusers.js'
+//import pusers from '../project_users/pusers.js'
 
 export default function Project() {
     let errors = [],
         project = {},
+        categories = [],
         isNew = true,
         loaded = false,
-        statuses = [],
 
         setName = (name) => project.name = name,
+        setCategoryID = (id) => project.category_id = id,
         setDescription = (description) => project.description = description,
-        setStatusId = (status_id) => project.status_id = status_id,
-        setStartDate = (date) => {
-            project.start_date = date
-            if (date && project.end_date && project.end_date < date)
-                project.end_date = null
-        },
-        setEndDate = (date) => {
-            project.end_date = date
-            if (date && project.start_date && project.start_date > date)
-                project.start_date = null
-        },
-        setProjectUsers = (pu) => project.project_users = pu,
+        //setProjectUsers = (pu) => project.project_users = pu,
         setFiles = (files) => project.files = files,
-
-        validate = () => {
-            errors = []
-            if (!project.name)
-                errors.push("Project name is required.")
-            if (project.start_date && project.end_date && project.start_date > project.end_date)
-                errors.push("End date cannot be earlier than start date.")
-            return errors.length == 0
-        },
-
-        toGo = (proj) => {
-            let obj = Object.assign(proj, {
-                status_id: proj.status_id ? "" + proj.status_id : undefined,
-                start_date: proj.start_date ? new Date(proj.start_date).toISOString() : undefined,
-                end_date: proj.end_date ? new Date(proj.end_date).toISOString() : undefined,
-                project_users: (proj.project_users) ? proj.project_users.map((pu) => {
-                    pu.role_id = "" + pu.role_id;
-                    return pu
-                }) : undefined,
-                files: proj.files
-            })
-            return obj
-        },
-
-        fromGo = (proj) =>
-        Object.assign(proj, {
-            start_date: ISODateToHtml5(proj.start_date || null),
-            end_date: ISODateToHtml5(proj.end_date || null)
-        }),
 
         getOwnerName = () => (project.owner || Auth.getAuthenticatedUser()).name,
 
         //requests
         newProject = () =>
-        service.newProject()
-        .then((result) => {
-            statuses = result.statuses;
-            project = fromGo(result.project);
-            loaded = true;
-        }).catch((error) => errors = responseErrors(error)),
+            service.newProject()
+                .then((result) => {
+                    project = result.project
+                    project.files = []
+                    categories = result.categories
+                    loaded = true
+                }).catch((error) => errors = responseErrors(error)),
 
         editProject = (id) =>
-        service.editProject(id)
-        .then((result) => {
-            statuses = result.statuses;
-            project = fromGo(result.project);
-            loaded = true;
-        }).catch((error) => errors = responseErrors(error)),
+            service.editProject(id)
+                .then((result) => {
+                    project = result.project
+                    categories = result.categories
+                    loaded = true
+                }).catch((error) => errors = responseErrors(error)),
 
         create = () =>
-        service.createProject(toGo(project))
-        .then((result) => {
-            addSuccess("Project created.")
-            m.route.set('/projects')
-        })
-        .catch((error) => errors = responseErrors(error)),
+            service.createProject(project)
+                .then((result) => {
+                    addSuccess("Project created.")
+                    m.route.set('/projects')
+                })
+                .catch((error) => errors = responseErrors(error)),
 
         update = () =>
-        service.updateProject(project.id, toGo(project))
-        .then((result) => {
-            addSuccess("Project updated.")
-            m.route.set('/projects')
-        })
-        .catch((error) => errors = responseErrors(error)),
-
-        destroy = () =>
-        service.deleteProject(project.id)
-        .then((result) => {
-            addSuccess("Project removed.")
-            m.route.set('/projects', {}, {
-                replace: true
-            })
-        })
-        .catch((error) => errors = responseErrors(error))
+            service.updateProject(project.id, project)
+                .then((result) => {
+                    addSuccess("Project updated.")
+                    window.history.back()
+                })
+                .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
@@ -120,53 +71,36 @@ export default function Project() {
 
         view(vnode) {
             return m(".projects", (loaded) ? [
-                m('h1.mb-4', (isNew) ? 'New project' : 'Edit project'),
+                m('h1.title', (isNew) ? 'New project' : 'Edit project'),
                 m('.form-group', [
                     m('label', 'Project name'),
                     m('input.form-control[type=text]', {
-                        oncreate: (el) => {
-                            el.dom.focus()
-                        },
+                        oncreate: (el) => el.dom.focus(),
                         oninput: (e) => setName(e.target.value),
+                        placeholder: 'e.g. Web-site development',
                         value: project.name
                     })
                 ]),
-                m('.form-inline', [
-                    m('.form-group.mb-3.mr-4', [
-                        m('label.mr-2', 'Start date'),
-                        m('input.form-control[type=date]', {
-                            oninput: (e) => setStartDate(e.target.value),
-                            value: project.start_date
-                        })
-                    ]),
-                    m('.form-group.mb-3.mr-4', [
-                        m('label.mr-2', 'End date'),
-                        m('input.form-control[type=date]', {
-                            oninput: (e) => setEndDate(e.target.value),
-                            min: project.start_date,
-                            value: project.end_date
-                        })
-                    ]),
-                    m('.form-group.mb-3.mr-4', [
-                        m('label.mr-2', 'Owner'),
-                        m('input.form-control[type=text][disabled]', {
-                            value: getOwnerName()
-                        })
-                    ]),
-                    m('.form-group.mb-3', [
-                        m('label.mr-2', 'Status'),
-                        m('select.form-control', {
-                            onchange: (e) => setStatusId(e.target.value),
-                            value: project.status_id
-                        }, statuses.map((status) => {
-                            return m('option', {
-                                value: status.id,
-                                selected: (project.status_id == status.id),
-                            }, status.name)
-                        }))
-                    ]),
-                ]),
-                m('.form-group', [
+                (categories.length > 0) ?
+                    m('.form-group.form-row', [
+                        m('.col-auto', [
+                            m('label', 'Category'),
+                            m('select.form-control', {
+                                onchange: (e) => setCategoryID(e.target.value),
+                                value: project.category_id ?? ""
+                            }, [
+                                m('option[value=""][disabled=disabled][hidden=hidden]', "Select category..."),
+                                categories.map((cat) => {
+                                    return m('option', {
+                                        value: cat.id,
+                                        selected: (cat.id == project.category_id)
+                                    }, cat.name)
+                                }),
+                            ])
+                        ]),
+                    ]) : null,
+                /*
+                    m('.form-group', [
                     m('label', "Assigned users"),
                     m(pusers, {
                         project_id: project.id,
@@ -174,8 +108,9 @@ export default function Project() {
                         onchange: setProjectUsers
                     }),
                 ]),
+                */
                 m('.form-group', [
-                    m('label', "Description"),
+                    m('label', "Description (supports Markdown)"),
                     m('textarea.form-control', {
                         oninput: (e) => setDescription(e.target.value),
                         value: project.description
@@ -188,17 +123,16 @@ export default function Project() {
                         onchange: setFiles
                     }),
                 ]),
-                m('.mb-2', m(error, {
-                    errors: errors
-                })),
+                m('.mb-2', m(error, { errors: errors })),
                 m('.actions', [
                     m('button.btn.btn-primary.mr-2[type=button]', {
                         onclick: (isNew) ? create : update
-                    }, "Save"),
-                    m('button.btn.btn-secondary[type=button]', {
-                        onclick: () => {
-                            window.history.back()
-                        }
+                    }, [
+                        m("i.fa.fa-check.mr-1"),
+                        "Submit"
+                    ]),
+                    m('button.btn.btn-outline-secondary[type=button]', {
+                        onclick: () => window.history.back()
                     }, "Cancel")
                 ]),
             ] : m('Loading...'))

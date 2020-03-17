@@ -8,7 +8,6 @@ import (
 )
 
 //usersGet handles get all users request
-//TODO: allow access only to admins via middleware
 func usersGet(c *gin.Context) {
 	var users []models.User
 	models.DB.Find(&users)

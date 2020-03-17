@@ -18,6 +18,7 @@ const Auth = {
     setPasswordConfirm: (passwordConfirm) => Auth.passwordConfirm = passwordConfirm,
     errors: [],
     isLoggedIn: () => !!localStorage.token,
+    isAdmin: () => !!localStorage.token && (localStorage.role === "Admin"),
     login: () => {
         if (Auth.validateLogin())
             m.request({

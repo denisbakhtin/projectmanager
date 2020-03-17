@@ -43,6 +43,16 @@
   }
 }
 
+@media print {
+  #side-menu.wide {
+    display: none;
+
+    &+#main {
+      margin-left: 0 !important;
+    }
+  }
+}
+
 html,
 body {
   min-height: 100%;
@@ -51,10 +61,10 @@ body {
 }
 
 body {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 400;
   font-family: 'Open Sans', sans-serif;
-  background-color: #f1f3f6;
+  background-color: #fafafa;
   color: #333;
 }
 
@@ -78,8 +88,9 @@ body {
 
   &.restricted-layout {
     .navbar {
-      padding: 0 2rem 0 0;
+      padding: 0 20px 0 0;
       height: $restricted-navbar-height;
+      border-bottom: 1px solid #ddd;
 
       .navbar-brand {
         padding-left: 20px;
@@ -98,6 +109,12 @@ body {
 
         .fa {
           font-size: 180%;
+        }
+      }
+
+      .nav-time {
+        @media (max-width: 1100px) {
+          display: none;
         }
       }
 
@@ -196,7 +213,7 @@ body {
       }
 
       #navbar-support {
-        &>a { 
+        &>a {
           &:hover {
             color: $primary;
           }
@@ -225,6 +242,10 @@ body {
   z-index: 2;
   transition: all 0.3s;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+
+  &>.nav {
+    overflow: hidden;
+  }
 
   &.wide {
     width: $restricted-sidebar-width;
@@ -304,9 +325,11 @@ body {
   }
 
   .nav-item {
+    width: 100%;
 
     a {
       text-transform: uppercase;
+      font-size: 90%;
       color: #7b777a;
       padding: 10px 15px;
       display: block;
@@ -314,6 +337,17 @@ body {
 
       &:hover {
         background-color: #eee;
+      }
+
+      &.favorite-project {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: 80%;
+
+        .fa {
+          color: #aaa;
+        }
       }
     }
 
@@ -417,12 +451,14 @@ body {
   }
 }
 
-.table {
+table {
   .shrink {
-    white-space: nowrap;
     width: 1px;
+    white-space: nowrap;
   }
+}
 
+.table {
   tr {
     td {
       vertical-align: middle;
@@ -435,12 +471,61 @@ body {
 }
 
 .btn {
+  text-transform: uppercase;
+  font-size: 15px;
+
+  &+.btn {
+    margin-left: 0.5rem;
+  }
+
   .fa {
     min-width: 1.1em;
   }
 
   &:focus {
     box-shadow: none !important;
+  }
+
+  &.btn-raised {
+    box-shadow: 0 3px 5px 1px rgba(0, 0, 0, 0.14);
+  }
+
+  &.btn-round {
+    border-radius: 50px !important;
+
+    &:not(.btn-icon) {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+
+  .badge {
+    border-radius: 50%;
+
+    &.badge-primary {
+      background: lighten($primary, 5%);
+    }
+  }
+
+  &.btn-default {
+    color: #555;
+    background: #eee;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #ddd;
+    }
+  }
+
+  &.btn-icon {
+    border-radius: 50%;
+    padding: 0.375rem 0.6rem;
+
+    .fa {
+      width: 16px;
+      height: 16px;
+      min-width: auto;
+    }
   }
 }
 
@@ -472,22 +557,50 @@ body {
   border-top-color: transparent;
 }
 
-modal {
-  position: fixed;
-  left: 0;
-  width: 100%;
-  top: 0;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.modal {
   background: rgba(0, 0, 0, 0.3);
-  z-index: 1000;
+  z-index: 2000 !important;
+
+  &.show {
+    display: block !important;
+  }
+
+  .modal-body {
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.active-task {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: row;
+  z-index: 10;
+  padding: 10px;
+  background: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+
+  .fa {
+    font-size: 1.5em;
+  }
+
+  .stop-button {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: $primary;
+
+    &:hover {
+      color: darken($primary, 10%);
+    }
+  }
 }
 
 .m-notifications {
   position: fixed;
-  bottom: 20px;
+  bottom: 100px;
   right: 20px;
   display: flex;
   flex-direction: column;
@@ -577,10 +690,71 @@ modal {
     }
   }
 }
-.task {
-    textarea {
-        height: 10em;
+
+.project {
+  .project-time-spent {
+    margin-top: -24px;
+    margin-bottom: 24px;
+    color: #777;
+  }
+
+  .project-contents {
+    margin-top: -12px;
+    margin-bottom: 24px;
+    background: #fff;
+    padding: 10px 15px;
+
+    *:last-child {
+      margin-bottom: 0;
     }
+  }
+
+  .project-time-spent+.attached_files {
+    margin-top: -0.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .project-contents+.attached_files {
+    margin-top: -0.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+}
+
+.task {
+  textarea {
+    height: 10em;
+  }
+
+  .task-time-spent {
+    margin-top: -24px;
+    margin-bottom: 24px;
+    color: #777;
+  }
+
+  .task-contents {
+    margin-top: 15px;
+    margin-bottom: 24px;
+    background: #fff;
+    padding: 10px 15px;
+
+    *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .buttons+.comments {
+    margin-top: 24px;
+  }
+
+  .buttons+.attached_files {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .task-contents+.attached_files {
+    margin-top: -0.5rem !important;
+    margin-bottom: 1rem !important;
+  }
 }
 
 .validation-errors {
@@ -658,6 +832,10 @@ modal {
   .badge {
     padding: 0.5rem;
     line-height: 1.3;
+
+    &.badge-light {
+      background: #f5f5f5;
+    }
   }
 }
 
@@ -679,4 +857,222 @@ modal {
 
 button:focus {
   outline: none;
+}
+
+h1.title,
+h2.title,
+h3.title {
+  font-size: 26px;
+  margin-top: 0;
+  padding-top: 0;
+  margin-bottom: 25px;
+
+  .badge {
+    font-size: initial;
+    position: relative;
+    top: -1px;
+  }
+
+  .btn-sm {
+    padding: 0.25em 0.4em;
+    line-height: 1;
+  }
+}
+
+.dashboard-box {
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+ul.box-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &>li {
+    padding: 0;
+    margin: 0;
+    display: block;
+    border-bottom: 1px solid #e4e4e4;
+    padding: 0;
+    line-height: 26px;
+    padding: 22px 25px 25px 25px;
+    background-color: #fff;
+    border-left: 5px solid transparent;
+
+    &:hover {
+      background-color: rgba(100, 0, 0, 0.01);
+    }
+
+    &.solution-comment {
+      background: lighten($primary, 55%);
+    }
+
+    &.priority1 {
+      border-left: 5px solid $danger;
+    }
+
+    &.priority2 {
+      border-left: 5px solid $primary;
+    }
+
+    &.priority3 {
+      border-left: 5px solid $success;
+    }
+
+    .buttons {
+      margin-top: 10px;
+    }
+
+    attachments {
+      h4 {
+        margin: 10px 0;
+      }
+    }
+
+    .item-description {
+
+      .item-title {
+        margin: 0;
+        color: #333;
+        font-size: 20px;
+        margin-bottom: 5px;
+
+        .badge {
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 21px;
+          padding: 2px 8px;
+          display: inline-block;
+          position: relative;
+          top: -2px;
+          margin: 0 0 4px 4px;
+        }
+      }
+
+      .dates {
+        color: #777;
+        font-size: 16px;
+
+        .fa {
+          margin-right: 7px;
+          font-size: 15px;
+          position: relative;
+          top: -1px;
+        }
+
+        .time-spent {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+a.badge {
+  cursor: pointer;
+}
+
+label {
+  font-weight: bold;
+}
+
+.spent-report {
+  .filters {
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    background: #fff;
+
+    .btn {
+      margin-left: 0 !important;
+
+      &.active {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.spent-report-box,
+.session-box {
+  h5 {
+    margin: 0.75rem;
+    font-weight: bold;
+  }
+
+  a {
+    color: $body-color;
+
+    &:hover {
+      text-decoration: none;
+      color: darken($body-color, 20%);
+    }
+  }
+
+  .table {
+    margin-bottom: 0;
+
+    thead,
+    tfoot {
+      background: rgba(0, 0, 0, 0.04);
+
+      th {
+        border-bottom-width: 1px;
+      }
+    }
+  }
+}
+
+.spent-total {
+  padding: 0.75rem;
+  font-size: 22px;
+  background: rgba(0, 0, 0, 0.04);
+
+  mark {
+    background-color: $body-bg;
+    padding: .2rem .5rem;
+  }
+}
+
+.session {
+  .session-contents {
+    margin-top: 15px;
+    margin-bottom: 24px;
+    background: #fff;
+    padding: 10px 15px;
+  }
+}
+
+.filters {
+  margin-top: -10px;
+  margin-bottom: 10px;
+  background: #fff;
+
+  .active {
+    text-decoration: underline;
+  }
+}
+
+.under-construction {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 100px);
+
+  h1 {
+    font-size: 2rem;
+    text-transform: uppercase;
+  }
+}
+
+.page {
+  textarea.contents {
+    min-height: 400px;
+  }
+}
+
+.navbar-dark-bg {
+  background-color: rgba(33, 33, 33, 0.5);
 }

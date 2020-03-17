@@ -1,0 +1,31 @@
+{{ define "navbar" }}
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-dark-bg">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <img src="/public/images/navbar_logo.png" class="mr-2" width="23px" height="23px" />Project Manager
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="navbarContent" class="collapse navbar-collapse">
+          <ul class="navbar-nav ml-auto">
+            {{range pages}}
+              <li class="nav-item">
+                <a class="nav-link" href="/pages/{{.ID}}">{{.Name}}</a>
+              </li>
+            {{end}}
+            <!--
+            <li class="nav-item">
+              <a class="nav-link" href="/?#!/login">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/?#!/register">Register</a>
+            </li>
+            -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+{{ end }}

@@ -10,15 +10,15 @@ export default function Users() {
     let users = [],
         errors = [],
 
-        get = () =>
-        service.getUsers()
-        .then((result) => {
-            users = result.slice(0)
-        }).catch((error) => errors = responseErrors(error))
+        getAll = () =>
+            service.getUsers()
+                .then((result) => {
+                    users = result.slice(0)
+                }).catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
-            get()
+            getAll()
         },
 
         view(vnode) {
@@ -33,9 +33,7 @@ export default function Users() {
                         ])
                     ]),
                     m('tbody', [
-                        errors.length ? m('tr', m('td[colspan=3]', m(error, {
-                            errors: errors
-                        }))) : null,
+                        errors.length ? m('tr', m('td[colspan=3]', m(error, { errors: errors }))) : null,
                         users ? users.map((user) => {
                             return m('tr', {
                                 key: user.id

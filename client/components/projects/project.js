@@ -1,79 +1,67 @@
 ﻿import m from 'mithril'
+import MarkdownIt from 'markdown-it'
 import error from '../shared/error'
 import service from '../../utils/service.js'
 import {
     responseErrors,
-    ISODateToHtml5
 } from '../../utils/helpers'
+import tasks_item from '../tasks/tasks_item.js'
+import files from '../attached_files/files'
 
 export default function Project() {
     let project = {},
         errors = [],
+        id,
+        md,
 
         get = () =>
-        service.getProject(project.id)
-        .then((result) => project = fromGo(result))
-        .catch((error) => errors = responseErrors(error)),
-
-        fromGo = (proj) =>
-        Object.assign(proj, {
-            start_date: ISODateToHtml5(proj.start_date || null),
-            end_date: ISODateToHtml5(proj.end_date || null)
-        }),
-
-        destroy = () =>
-        service.deleteProject(project.id)
-        .then((result) => {
-            addSuccess("Project removed.")
-            m.route.set('/projects', {}, {
-                replace: true
-            })
-        })
-        .catch((error) => errors = responseErrors(error))
+            service.getProject(id)
+                .then((result) => project = result)
+                .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
-            project = {
-                id: m.route.param('id')
-            }
+            id = m.route.param('id')
             get()
+            md = new MarkdownIt()
         },
 
         view(vnode) {
-            return m(".project", [
-                project.name ? [
-                    m('h1.mb-2', project.name),
-                    m('h6.mb-4.text-muted', [
-                        m('span', 'Starts: '),
-                        m('span', (project.start_date) ? new Date(project.start_date).toISOString().slice(0, 10) : "-"),
-                        m('span', ' Ends: '),
-                        m('span', (project.end_date) ? new Date(project.end_date).toISOString().slice(0, 10) : "-"),
-                        m('span', ' Owner: '),
-                        m('span', (project.owner && project.owner.name) ? project.owner.name : "-"),
-                        m('span', ' Status: '),
-                        m('span', project.status)
+            return m(".project", (project) ? [
+                m('h1.title', [
+                    project.name,
+                    (project.category && project.category.id > 0) ?
+                        m('a.badge.badge-light.ml-2', { onclick: () => m.route.set('/categories/' + project.category.id) }, [
+                            m('i.fa.fa-tag.mr-1'),
+                            project.category.name
+                        ]) : null,
+                    m('button.ml-2.btn.btn-sm.btn-default[type=button]', {
+                        onclick: () => m.route.set('/projects/edit/' + project.id)
+                    }, 'Edit'),
+                ]),
+                m('p.project-time-spent', [
+                    m('i.fa.fa-clock-o.mr-2'),
+                    'Total time spent: 17 minutes',
+                ]),
+                (project.description) ? m('p.project-contents', m.trust(md.render(project.description))) : null,
+                m(files, { files: project.files, readOnly: true }),
+                (project.tasks && project.tasks.length > 0) ?
+                    m('ul.dashboard-box.box-list',
+                        project.tasks.map((task) => m(tasks_item, { task: task, onUpdate: get }))
+                    ) : null,
+                m(error, { errors: errors }),
+                m('.actions.mt-4', [
+                    m('button.btn.btn-primary[type=button]', {
+                        onclick: () => m.route.set('/tasks/new?project_id=' + project.id)
+                    }, [
+                        m('i.fa.fa-plus.mr-1'),
+                        "New task"
                     ]),
-                    project.description ? [
-                        m('h3', "Description"),
-                        m('p', project.description)
-                    ] : null
-                ] : null,
-                m('.actions', [
-                    m('button.btn.btn-primary.mr-2[type=button]', {
-                        onclick: () => {
-                            m.route.set('/projects/edit/' + project.id)
-                        }
-                    }, "Edit"),
-                    m('button.btn.btn-secondary.mr-2[type=button]', {
-                        onclick: () => {
-                            m.route.set('/projects')
-                        }
-                    }, "Back to list"),
-                    m('button.btn.btn-outline-danger[type=button]', {
-                        onclick: destroy
-                    }, "Remove project")
+                    m('button.btn.btn-outline-secondary.mr-2[type=button]', {
+                        onclick: () => window.history.back()
+                    }, "Back"),
                 ])
-            ])
+            ] : m('Loading...'))
         }
     }
 }

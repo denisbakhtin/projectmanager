@@ -10,7 +10,7 @@ import (
 //pagesGet handles get all pages request
 func pagesGet(c *gin.Context) {
 	var pages []models.Page
-	models.DB.Find(&pages)
+	models.DB.Order("published desc, id asc").Find(&pages)
 	c.JSON(http.StatusOK, pages)
 }
 
@@ -83,7 +83,9 @@ func pagesGetHTML(c *gin.Context) {
 		return
 	}
 	c.HTML(http.StatusOK, "pages/page", gin.H{
-		"Title": page.Name,
-		"Page":  page,
+		"Title":           page.Name,
+		"MetaKeywords":    page.MetaKeywords,
+		"MetaDescription": page.MetaDescription,
+		"Page":            &page,
 	})
 }

@@ -15,7 +15,6 @@ export default function Profile() {
                     ]),
                     m('.dropdown-menu', [
                         m('a.dropdown-item[href=#!/manage]', 'Account'),
-                        m('a.dropdown-item[href=#!/settings]', 'Settings'),
                         m('a.dropdown-item.text-danger[href=#!/logout]', 'Logout'),
                     ]),
                 ]

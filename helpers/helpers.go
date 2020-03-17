@@ -81,3 +81,8 @@ func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
+
+//NotFoundOrOwned returns error description when record of type %entity% is not found or not owned by the current user
+func NotFoundOrOwned(entity string) string {
+	return fmt.Sprintf("%s not found or not owned by this user", entity)
+}

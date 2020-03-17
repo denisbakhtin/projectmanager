@@ -1,5 +1,6 @@
 package controllers
 
+/*
 import (
 	"net/http"
 
@@ -60,9 +61,7 @@ func projectUsersPost(c *gin.Context) {
 		return
 	}
 	task.ProjectUserID = puser.ID
-	step := models.TaskStep{}
-	models.DB.Order("order").First(&step)
-	task.TaskStepID = step.ID
+	task.Completed = false
 	if err := models.DB.Create(&task).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -101,3 +100,4 @@ func projectUsersDelete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{})
 }
+*/

@@ -1,2 +1,11 @@
 {{ define "pages/page" }}
+{{template "header" .}}
+{{template "navbar" .}}
+<div class="container">
+    <h1 class="mt-4 mb-3">{{.Title}}</h1>
+    <div class="content">
+        {{.Page.HTMLContent}}
+    </div>
+</div>
+{{template "footer" .}}
 {{ end }}

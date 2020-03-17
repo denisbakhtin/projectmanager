@@ -46,16 +46,14 @@ export default function Notifications() {
         return 'info'
     }
     return {
-        oninit(vnode) {},
+        oninit(vnode) { },
         view(vnode) {
             return state.list ?
                 m('.m-notifications', state.list.map((msg) => {
                     return m('.m-notification', {
                         key: msg.id,
                         class: notificationClass(msg.type),
-                        onclick: () => {
-                            state.destroy(msg)
-                        }
+                        onclick: () => state.destroy(msg)
                     }, msg.text)
                 })) : null
         }

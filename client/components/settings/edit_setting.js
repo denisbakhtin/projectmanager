@@ -17,45 +17,32 @@ export default function Setting() {
         setTitle = (title) => setting.title = title,
         setValue = (value) => setting.value = value,
 
-        validate = () => {
-            errors = []
-            if (!setting.name)
-                errors.push("Setting code is required.")
-            return errors.length == 0
-        },
-
-        get = () =>
-        service.getSetting(setting.id)
-        .then((result) => setting = result)
-        .catch((error) => errors = responseErrors(error)),
+        get = (id) =>
+            service.getSetting(id)
+                .then((result) => setting = result)
+                .catch((error) => errors = responseErrors(error)),
 
         create = () =>
-        service.createSetting(setting)
-        .then((result) => {
-            addSuccess("Setting created.")
-            m.route.set('/settings')
-        })
-        .catch((error) => errors = responseErrors(error)),
+            service.createSetting(setting)
+                .then((result) => {
+                    addSuccess("Setting created.")
+                    m.route.set('/settings')
+                })
+                .catch((error) => errors = responseErrors(error)),
 
         update = () =>
-        service.updateSetting(setting.id, setting)
-        .then((result) => {
-            addSuccess("Setting updated.")
-            m.route.set('/settings')
-        })
-        .catch((error) => errors = responseErrors(error))
+            service.updateSetting(setting.id, setting)
+                .then((result) => {
+                    addSuccess("Setting updated.")
+                    m.route.set('/settings')
+                })
+                .catch((error) => errors = responseErrors(error))
 
     return {
         oninit(vnode) {
-            if (m.route.param('id')) {
-                isNew = false
-                setting = {
-                    id: m.route.param('id')
-                }
-                get()
-            } else
-                setting = {}
-            errors = []
+            isNew = (m.route.param('id') == undefined)
+            if (!isNew)
+                get(m.route.param('id'))
         },
 
         view(vnode) {
@@ -65,9 +52,7 @@ export default function Setting() {
                     m('.col', [
                         m('label', 'Setting code'),
                         m('input.form-control[type=text]', {
-                            oncreate: (el) => {
-                                el.dom.focus()
-                            },
+                            oncreate: (el) => el.dom.focus(),
                             oninput: (e) => setCode(e.target.value),
                             value: setting.code
                         })
@@ -87,17 +72,13 @@ export default function Setting() {
                         value: setting.value
                     })
                 ]),
-                m('.mb-2', m(error, {
-                    errors: errors
-                })),
+                m('.mb-2', m(error, { errors: errors })),
                 m('.actions', [
                     m('button.btn.btn-primary.mr-2[type=button]', {
                         onclick: (isNew) ? create : update
                     }, "Save"),
                     m('button.btn.btn-secondary[type=button]', {
-                        onclick: () => {
-                            window.history.back()
-                        }
+                        onclick: () => window.history.back()
                     }, "Cancel")
                 ]),
             ])

@@ -3,14 +3,21 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/denisbakhtin/projectmanager/helpers"
 	"github.com/denisbakhtin/projectmanager/models"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 //tasksGet handles get all tasks request
 func tasksGet(c *gin.Context) {
 	var tasks []models.Task
-	models.DB.Preload("ProjectUser").Preload("ProjectUser.User").Preload("Project").Preload("TaskStep").Find(&tasks)
+	query := models.DB.Where("user_id = ?", currentUserID(c)).
+		Preload("Project").Preload("Comments").Preload("Category")
+	query = query.Preload("TaskLogs", func(db *gorm.DB) *gorm.DB {
+		return db.Where("session_id = 0 and minutes > 0")
+	})
+	query.Order("tasks.completed asc, tasks.created_at asc").Find(&tasks)
 	c.JSON(http.StatusOK, tasks)
 }
 
@@ -18,9 +25,17 @@ func tasksGet(c *gin.Context) {
 func taskGet(c *gin.Context) {
 	id := c.Param("id")
 	task := models.Task{}
-	models.DB.Preload("AttachedFiles").First(&task, id)
+	query := models.DB.Where("user_id = ?", currentUserID(c)).
+		Preload("AttachedFiles").Preload("Category")
+	query = query.Preload("Comments", func(db *gorm.DB) *gorm.DB {
+		return db.Order("comments.created_at asc")
+	})
+	query = query.Preload("TaskLogs", func(db *gorm.DB) *gorm.DB {
+		return db.Where("session_id = 0 and minutes > 0")
+	})
+	query.Preload("Comments.AttachedFiles").First(&task, id)
 	if task.ID == 0 {
-		c.JSON(http.StatusNotFound, "Task not found")
+		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Task"))
 		return
 	}
 	c.JSON(http.StatusOK, task)
@@ -30,15 +45,9 @@ func taskGet(c *gin.Context) {
 func taskNewGet(c *gin.Context) {
 	vm := models.EditTaskVM{}
 	userID := currentUserID(c)
-	//TODO: filter projects by owner and assigned users
-	models.DB.Where("owner_id = ?", userID).Find(&vm.Projects)
-	models.DB.Order("ord asc").Find(&vm.TaskSteps)
-	if len(vm.TaskSteps) > 0 {
-		vm.Task.TaskStepID = vm.TaskSteps[0].ID
-	}
-	if len(vm.Projects) > 0 {
-		vm.Task.ProjectID = vm.Projects[0].ID
-	}
+	models.DB.Where("user_id = ?", userID).Find(&vm.Projects)
+	models.DB.Where("user_id = ?", userID).Find(&vm.Categories)
+	vm.Task.Priority = models.PRIORITY4
 	c.JSON(http.StatusOK, vm)
 }
 
@@ -46,34 +55,24 @@ func taskNewGet(c *gin.Context) {
 func taskEditGet(c *gin.Context) {
 	vm := models.EditTaskVM{}
 	userID := currentUserID(c)
-	//TODO: filter projects by owner and assigned users
-	models.DB.Where("owner_id = ?", userID).Find(&vm.Projects)
-	models.DB.Order("ord asc").Find(&vm.TaskSteps)
-	models.DB.Preload("AttachedFiles").Preload("Project").Preload("ProjectUser").Preload("TaskStep").First(&vm.Task, c.Param("id"))
+	models.DB.Where("user_id = ?", userID).Find(&vm.Projects)
+	models.DB.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Project").First(&vm.Task, c.Param("id"))
+	models.DB.Where("user_id = ?", userID).Find(&vm.Categories)
 	c.JSON(http.StatusOK, vm)
 }
 
-//tasksPost handles create role request
+//tasksPost handles create task request
 func tasksPost(c *gin.Context) {
 	task := models.Task{}
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	user := models.User{}
-	if u, exists := c.Get("user"); exists {
-		user = u.(models.User)
+	if task.Priority == 0 {
+		task.Priority = models.PRIORITY4
 	}
-	puser := models.ProjectUser{}
-	models.DB.Where("user_id = ?", user.ID).First(&puser)
-	if puser.ID == 0 {
-		c.JSON(http.StatusBadRequest, "Project user not found")
-		return
-	}
-	task.ProjectUserID = puser.ID
-	step := models.TaskStep{}
-	models.DB.Order("order").First(&step)
-	task.TaskStepID = step.ID
+	task.Completed = false
+	task.UserID = currentUserID(c)
 	if err := models.DB.Create(&task).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -89,6 +88,7 @@ func tasksPut(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+	task.UserID = currentUserID(c)
 	if err := models.DB.Save(&task).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -96,13 +96,13 @@ func tasksPut(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-//tasksDelete handles delete role request
+//tasksDelete handles delete task request
 func tasksDelete(c *gin.Context) {
 	id := c.Param("id")
 	task := models.Task{}
-	models.DB.First(&task, id)
+	models.DB.Where("user_id = ?", currentUserID(c)).First(&task, id)
 	if task.ID == 0 {
-		c.JSON(http.StatusNotFound, "Task not found")
+		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Task"))
 		return
 	}
 	if err := models.DB.Delete(&task).Error; err != nil {

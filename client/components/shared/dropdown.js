@@ -31,7 +31,7 @@ export default function Dropdown() {
                 //prevent event propagation to parent item which leads to dropdown collapse
                 if (child.tag == "div" && child.children.length > 0)
                     for (let item of child.children) {
-                        item.attrs['onclick'] = (e) => e.stopPropagation()
+                        if (item) item.attrs['onclick'] = (e) => e.stopPropagation()
                     }
             }
 

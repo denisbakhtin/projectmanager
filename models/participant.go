@@ -1,5 +1,6 @@
 package models
 
+/*
 import (
 	"time"
 )
@@ -18,3 +19,4 @@ func (p *Participant) BeforeCreate() (err error) {
 	}
 	return
 }
+*/

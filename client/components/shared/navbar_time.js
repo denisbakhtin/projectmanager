@@ -21,7 +21,7 @@ export default function Time() {
             clearInterval(timer)
         },
         view(vnode) {
-            return m('li.nav-item', m('span.navbar-text.text-primary.mr-4', now))
+            return m('li.nav-item.nav-time', m('span.navbar-text.text-primary.mr-4', now))
         }
     }
 }

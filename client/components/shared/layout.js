@@ -2,6 +2,7 @@
 import navbar from './navbar'
 import notifications from './notifications'
 import side_menu from './side_menu'
+import ActiveTask from './active_task'
 
 export default function Layout() {
     return {
@@ -12,6 +13,7 @@ export default function Layout() {
                 m(side_menu),
                 m("#main", m(vnode.attrs.child)),
                 m(notifications),
+                m(ActiveTask),
             ]);
         }
     }

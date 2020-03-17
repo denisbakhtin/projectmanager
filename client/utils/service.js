@@ -1,360 +1,131 @@
 import m from 'mithril'
-import {
-    responseErrors,
-    ISODateToHtml5
-} from './helpers'
 import Auth from './auth'
 
 const Service = {
     //>>>>>>>>>>>>> roles
-    getRoles: () =>
-        m.request({
-            method: "GET",
-            url: "/api/roles",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    createRole: (name) =>
-        m.request({
-            method: "POST",
-            url: "/api/roles",
-            body: {
-                name: name
-            },
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    updateRole: (id, name) =>
-        m.request({
-            method: "PUT",
-            url: "/api/roles/" + id,
-            body: {
-                id: id,
-                name: name
-            },
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    deleteRole: (id) =>
-        m.request({
-            method: "DELETE",
-            url: "/api/roles/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
+    //getRoles: () => get("/api/roles"),
+    //createRole: (name) => post("/api/roles", { name: name }),
+    //updateRole: (id, name) => put("/api/roles/" + id, { id: id, name: name }),
+    //deleteRole: (id) => del("/api/roles/" + id),
+
+    //>>>>>>>>>>>>> pages
+    getPage: (id) => get("/api/pages/" + id),
+    getPages: () => get("/api/pages"),
+    createPage: (page) => post("/api/pages", page),
+    updatePage: (id, page) => put("/api/pages/" + id, page),
+    deletePage: (id) => del("/api/pages/" + id),
+
+    //>>>>>>>>>>>>> reports
+    getSpent: () => get("/api/reports/spent/"),
+
+    //>>>>>>>>>>>>> categories
+    getCategory: (id) => get("/api/categories/" + id),
+    getCategories: () => get("/api/categories"),
+    createCategory: (category) => post("/api/categories", category),
+    updateCategory: (id, category) => put("/api/categories/" + id, category),
+    deleteCategory: (id) => del("/api/categories/" + id),
+
     //>>>>>>>>>>>>> projects
-    getProject: (id) =>
-        m.request({
-            method: "GET",
-            url: "/api/projects/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    getProjects: () =>
-        m.request({
-            method: "GET",
-            url: "/api/projects",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    newProject: () =>
-        m.request({
-            method: "GET",
-            url: "/api/new_project/",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    createProject: (project) =>
-        m.request({
-            method: "POST",
-            url: "/api/projects",
-            body: project,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    editProject: (id) =>
-        m.request({
-            method: "GET",
-            url: "/api/edit_project/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    updateProject: (id, project) =>
-        m.request({
-            method: "PUT",
-            url: "/api/projects/" + id,
-            body: project,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    deleteProject: (id) =>
-        m.request({
-            method: "DELETE",
-            url: "/api/projects/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
+    getProject: (id) => get("/api/projects/" + id),
+    getProjects: () => get("/api/projects"),
+    newProject: () => get("/api/new_project/"),
+    createProject: (project) => post("/api/projects", project),
+    editProject: (id) => get("/api/edit_project/" + id),
+    updateProject: (id, project) => put("/api/projects/" + id, project),
+    deleteProject: (id) => del("/api/projects/" + id),
+    archiveProject: (id, project) => put("/api/archive_project/" + id, project),
+    favorProject: (id, project) => put("/api/favor_project/" + id, project),
+    getFavoriteProjects: () => get("/api/favorite_projects"),
 
     //>>>>>>>>>>>>>>>>>> tasks
-    getTask: (id) =>
-        m.request({
-            method: "GET",
-            url: "/api/tasks/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    getTasks: () =>
-        m.request({
-            method: "GET",
-            url: "/api/tasks",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    newTask: () =>
-        m.request({
-            method: "GET",
-            url: "/api/new_task/",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    createTask: (task) =>
-        m.request({
-            method: "POST",
-            url: "/api/tasks",
-            body: task,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    editTask: (id) =>
-        m.request({
-            method: "GET",
-            url: "/api/edit_task/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    updateTask: (id, task) =>
-        m.request({
-            method: "PUT",
-            url: "/api/tasks/" + id,
-            body: task,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    deleteTask: (id) =>
-        m.request({
-            method: "DELETE",
-            url: "/api/tasks/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
+    getTask: (id) => get("/api/tasks/" + id),
+    getTasks: () => get("/api/tasks"),
+    newTask: () => get("/api/new_task/"),
+    createTask: (task) => post("/api/tasks", task),
+    editTask: (id) => get("/api/edit_task/" + id),
+    updateTask: (id, task) => put("/api/tasks/" + id, task),
+    deleteTask: (id) => del("/api/tasks/" + id),
 
-    //>>>>>>>>>>>>>> statuses
-    getStatus: (id) =>
-        m.request({
-            method: "GET",
-            url: "/api/statuses/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    getStatuses: () =>
-        m.request({
-            method: "GET",
-            url: "/api/statuses",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    createStatus: (status) =>
-        m.request({
-            method: "POST",
-            url: "/api/statuses",
-            body: status,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    updateStatus: (id, status) =>
-        m.request({
-            method: "PUT",
-            url: "/api/statuses/" + id,
-            body: status,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    deleteStatus: (id) =>
-        m.request({
-            method: "DELETE",
-            url: "/api/statuses/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
+    //>>>>>>>>>>>>>>>>>> comments
+    getComment: (id) => get("/api/comments/" + id),
+    getComments: (task_id) => get("/api/comments?task_id=" + task_id),
+    createComment: (comment) => post("/api/comments", comment),
+    updateComment: (id, comment) => put("/api/comments/" + id, comment),
+    deleteComment: (id) => del("/api/comments/" + id),
+
+    //>>>>>>>>>>>>>>>>>> sessions
+    getSession: (id) => get("/api/sessions/" + id),
+    getSessions: () => get("/api/sessions"),
+    newSession: () => get("/api/new_session/"),
+    createSession: (session) => post("/api/sessions", session),
+    deleteSession: (id) => del("/api/sessions/" + id),
+
+    //>>>>>>>>>>>>>>>>>> task logs
+    getTaskLog: (id) => get("/api/task_logs/" + id),
+    getTaskLogs: () => get("/api/task_logs"),
+    createTaskLog: (taskLog) => post("/api/task_logs", taskLog),
+    updateTaskLog: (id, taskLog) => put("/api/task_logs/" + id, taskLog),
 
     //>>>>>>>>>>>> notifications
-    getNotifications: () =>
-        m.request({
-            method: "GET",
-            url: "/api/notifications",
-            headers: {
-                Authorization: Auth.authHeader()
-            },
-        }),
-    deleteNotification: (id) =>
-        m.request({
-            method: "DELETE",
-            url: "/api/notifications/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-
-    //>>>>>>>>>>>>>>> task steps
-    getTaskStep: (id) =>
-        m.request({
-            method: "GET",
-            url: "/api/task_steps/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    getTaskSteps: () =>
-        m.request({
-            method: "GET",
-            url: "/api/task_steps",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    createTaskStep: (step) =>
-        m.request({
-            method: "POST",
-            url: "/api/task_steps",
-            body: step,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    updateTaskStep: (id, step) =>
-        m.request({
-            method: "PUT",
-            url: "/api/task_steps/" + id,
-            body: step,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    deleteTaskStep: (id) =>
-        m.request({
-            method: "DELETE",
-            url: "/api/task_steps/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
+    getNotifications: () => get("/api/notifications"),
+    deleteNotification: (id) => del("/api/notifications/" + id),
 
     //>>>>>>>>>>>>> users
-    getUsers: () =>
-        m.request({
-            method: "GET",
-            url: "/api/users",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    getProjectUsers: (project_id) =>
-        m.request({
-            method: "GET",
-            url: "/api/project_users/" + project_id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    getRoles: () =>
-        m.request({
-            method: "GET",
-            url: "/api/roles",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
+    getUsers: () => get("/api/users"),
+    //getProjectUsers: (project_id) => get("/api/project_users/" + project_id),
+    getRoles: () => get("/api/roles"),
 
     //>>>>>>>>>>>>>> settings
-    getSetting: (id) =>
-        m.request({
-            method: "GET",
-            url: "/api/settings/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    getSettings: () =>
-        m.request({
-            method: "GET",
-            url: "/api/settings",
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    createSetting: (setting) =>
-        m.request({
-            method: "POST",
-            url: "/api/settings",
-            body: setting,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    updateSetting: (id, setting) =>
-        m.request({
-            method: "PUT",
-            url: "/api/settings/" + id,
-            body: setting,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
-    deleteSetting: (id) =>
-        m.request({
-            method: "DELETE",
-            url: "/api/settings/" + id,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        }),
+    getSetting: (id) => get("/api/settings/" + id),
+    getSettings: () => get("/api/settings"),
+    createSetting: (setting) => post("/api/settings", setting),
+    updateSetting: (id, setting) => put("/api/settings/" + id, setting),
+    deleteSetting: (id) => del("/api/settings/" + id),
+
     //>>>>>>>>>>>> upload file
     uploadFile: (file) => {
         let data = new FormData()
         data.append("upload", file)
-        return m.request({
-            method: "POST",
-            url: `/api/upload/form`,
-            body: data,
-            headers: {
-                Authorization: Auth.authHeader()
-            }
-        })
+        return post("/api/upload/form", data);
     },
 
+    //>>>>>>>>>>>>> search
+    getSearch: (query) => get("/api/search?query=" + query),
+
 }
+
+const get = (url) => m.request({
+    method: "GET",
+    url: url,
+    headers: {
+        Authorization: Auth.authHeader()
+    }
+})
+
+const post = (url, body) => m.request({
+    method: "POST",
+    url: url,
+    body: body,
+    headers: {
+        Authorization: Auth.authHeader()
+    }
+})
+
+const put = (url, body) => m.request({
+    method: "PUT",
+    url: url,
+    body: body,
+    headers: {
+        Authorization: Auth.authHeader()
+    }
+})
+
+const del = (url) => m.request({
+    method: "DELETE",
+    url: url,
+    headers: {
+        Authorization: Auth.authHeader()
+    }
+})
 
 export default Service
