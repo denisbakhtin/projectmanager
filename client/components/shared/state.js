@@ -1,8 +1,6 @@
-import m from 'mithril';
 import {
     responseErrors
 } from '../../utils/helpers'
-import Auth from '../../utils/auth'
 import service from '../../utils/service.js'
 
 //global ui state

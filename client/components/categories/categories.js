@@ -26,7 +26,7 @@ export default function Categories() {
                 categories.length > 0 ?
                     m('ul.dashboard-box.box-list', [
                         categories.map((cat) => m(categories_item, { key: cat.id, category: cat, onUpdate: getAll }))
-                    ]) : null,
+                    ]) : m('p.text-muted', 'No categories yet.'),
                 m(error, { errors: errors }),
                 m('.actions.mt-4', [
                     m('button.btn.btn-primary[type=button]', {

@@ -23,7 +23,7 @@ export default function Pages() {
                 pages.length > 0 ?
                     m('ul.dashboard-box.box-list', [
                         pages.map((page) => m(pages_item, { key: page.id, page: page, onUpdate: getAll }))
-                    ]) : null,
+                    ]) : m('p.text-muted', 'No pages yet.'),
                 m(error, { errors: errors }),
                 m('.actions.mt-4', [
                     m('button.btn.btn-primary[type=button]', {

@@ -26,7 +26,7 @@ export default function Sessions() {
                 sessions.length > 0 ?
                     m('ul.dashboard-box.box-list', [
                         sessions.map((session) => m(sessions_item, { key: session.id, session: session, onUpdate: getAll }))
-                    ]) : null,
+                    ]) : m('p', 'No sessions yet.'),
                 m(error, { errors: errors }),
                 m('.actions.mt-4', [
                     m('button.btn.btn-primary[type=button]', {

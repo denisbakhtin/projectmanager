@@ -40,7 +40,7 @@ export default function Projects() {
                 ]),
                 (filteredProjects && filteredProjects.length > 0) ? m('ul.dashboard-box.box-list',
                     filteredProjects.map((proj) => m(projects_item, { key: proj.id, project: proj, onUpdate: getAll }))
-                ) : m('p.empty-list', 'The list is empty'),
+                ) : m('p.text-muted', 'The list is empty'),
                 m(error, { errors: errors }),
                 m('.actions.mt-4', [
                     m('button.btn.btn-primary[type=button]', {
