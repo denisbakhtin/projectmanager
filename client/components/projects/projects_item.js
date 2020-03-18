@@ -50,23 +50,25 @@ export default function ProjectsItem() {
             return m('li', [
                 m('.item-description', [
                     m('h3.item-title', [
-                        project.name,
+                        m('span.mr-2', project.name),
                         (project.category.id > 0) ?
-                            m('a.badge.badge-light.ml-2', { onclick: () => m.route.set('/categories/' + project.category.id) }, [
+                            m('a.badge.badge-light.badge-category.mr-2', { onclick: () => m.route.set('/categories/' + project.category.id) }, [
                                 m('i.fa.fa-tag.mr-1'),
                                 project.category.name
                             ]) : null,
-                        (!project.archived) ? m('span.badge.badge-success.ml-2', 'Open') : null,
+                        (!project.archived) ? m('span.badge.badge-success', 'Open') : null,
                     ]),
                     m('.dates', [
-                        m('span.fa.fa-calendar'),
-                        m('span', 'Created on: '),
-                        m('span', humanDate(project.created_at)),
-                        project.updated_at > project.created_at ? [
-                            m('span.fa.fa-calendar.ml-3'),
+                        m('span.created-on.mr-3', [
+                            m('span.fa.fa-calendar'),
+                            m('span', 'Created on: '),
+                            m('span', humanDate(project.created_at)),
+                        ]),
+                        project.updated_at > project.created_at ? m('span.updated-on.mr-3', [
+                            m('span.fa.fa-calendar'),
                             m('span', 'Updated on: '),
                             m('span', humanDate(project.updated_at)),
-                        ] : null,
+                        ]) : null,
                     ]),
                 ]),
                 m('.buttons', [
@@ -76,22 +78,24 @@ export default function ProjectsItem() {
                         'Details',
                         (project.tasks && project.tasks.length > 0) ? m('span.badge.badge-primary.ml-2', project.tasks.length) : '',
                     ]),
-                    m('button.btn.btn-default.btn-icon[type=button]', {
-                        title: "Edit",
-                        onclick: () => m.route.set('/projects/edit/' + project.id)
-                    }, m('i.fa.fa-edit')),
-                    m('button.btn.btn-default.btn-icon[type=button]', {
-                        title: (project.favorite) ? "Remove from favorites" : "Move to favorites",
-                        onclick: () => toggleFavor(project),
-                    }, (project.favorite) ? m('i.fa.fa-star') : m('i.fa.fa-star-o')),
-                    m('button.btn.btn-default.btn-icon[type=button]', {
-                        title: (project.archived) ? "Unarchive" : "Archive",
-                        onclick: () => toggleArchive(project),
-                    }, m('i.fa.fa-archive')),
-                    m('button.btn.btn-default.btn-icon[type=button]', {
-                        title: "Delete",
-                        onclick: () => showModal = true
-                    }, m('i.fa.fa-trash-o')),
+                    m('span.extra-buttons', [
+                        m('button.btn.btn-default.btn-icon[type=button]', {
+                            title: "Edit",
+                            onclick: () => m.route.set('/projects/edit/' + project.id)
+                        }, m('i.fa.fa-edit')),
+                        m('button.btn.btn-default.btn-icon[type=button]', {
+                            title: (project.favorite) ? "Remove from favorites" : "Move to favorites",
+                            onclick: () => toggleFavor(project),
+                        }, (project.favorite) ? m('i.fa.fa-star') : m('i.fa.fa-star-o')),
+                        m('button.btn.btn-default.btn-icon[type=button]', {
+                            title: (project.archived) ? "Unarchive" : "Archive",
+                            onclick: () => toggleArchive(project),
+                        }, m('i.fa.fa-archive')),
+                        m('button.btn.btn-default.btn-icon[type=button]', {
+                            title: "Delete",
+                            onclick: () => showModal = true
+                        }, m('i.fa.fa-trash-o')),
+                    ]),
                 ]),
                 (showModal) ? m(yesno_modal, {
                     onYes: () => { remove(project); showModal = false },

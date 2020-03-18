@@ -30,12 +30,14 @@ export default function SessionsItem() {
                     m('h3.item-title', [
                         'Session #' + session.id,
                     ]),
-                    (session.contents && session.contents.length > 0) ? m('p', session.contents) : null,
+                    (session.contents && session.contents.length > 0) ? m('div', session.contents) : null,
                     m('.dates', [
-                        m('span.fa.fa-calendar'),
-                        m('span', 'Created on: '),
-                        m('span', humanDate(session.created_at)),
-                        (humanSessionSpent(session) != '') ? m('span.time-spent.ml-3', { title: "Total time spent" }, [
+                        m('span.created-on.mr-3', [
+                            m('span.fa.fa-calendar'),
+                            m('span', 'Created on: '),
+                            m('span', humanDate(session.created_at)),
+                        ]),
+                        (humanSessionSpent(session) != '') ? m('span.time-spent', { title: "Total time spent" }, [
                             m('span.fa.fa-clock-o'),
                             humanSessionSpent(session),
                         ]) : null,

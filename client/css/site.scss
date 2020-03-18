@@ -78,6 +78,7 @@ body {
 
 .layout {
   min-height: 100%;
+  position: relative;
 
   &.public-layout {
     background: url('/public/images/home_bg.jpg') center center;
@@ -93,6 +94,8 @@ body {
       padding: 0 20px 0 0;
       height: $restricted-navbar-height;
       border-bottom: 1px solid #ddd;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
 
       .navbar-brand {
         padding-left: 20px;
@@ -100,6 +103,7 @@ body {
         line-height: $restricted-navbar-height;
         background: $primary;
         width: $restricted-sidebar-width;
+        min-width: $restricted-sidebar-width;
         color: #fff;
       }
 
@@ -116,6 +120,25 @@ body {
       .nav-time {
         @media (max-width: 1100px) {
           display: none;
+        }
+      }
+
+      .search-form {
+        @media (max-width: 992px) {
+          display: none;
+        }
+      }
+
+      .navbar-nav {
+        flex-direction: row;
+
+        .dropdown-menu {
+          position: absolute;
+        }
+
+        .nav-link {
+          padding-right: 0.5rem;
+          padding-left: 0.5rem;
         }
       }
 
@@ -164,6 +187,12 @@ body {
             &:hover {
               color: inherit;
             }
+
+            .name {
+              @media (max-width: 576px) {
+                display: none;
+              }
+            }
           }
         }
 
@@ -200,6 +229,8 @@ body {
           .dropdown-menu {
             background: $dropdown-background;
             display: block;
+            right: 0;
+            left: initial;
 
             .dropdown-item {
               font-size: 90%;
@@ -475,10 +506,6 @@ table {
   text-transform: uppercase;
   font-size: 15px;
 
-  &+.btn {
-    margin-left: 0.5rem;
-  }
-
   .fa {
     min-width: 1.1em;
   }
@@ -741,20 +768,26 @@ table {
     *:last-child {
       margin-bottom: 0;
     }
+
+    &+.attached_files {
+      margin-top: -0.5rem !important;
+      margin-bottom: 1rem !important;
+    }
   }
 
-  .buttons+.comments {
-    margin-top: 24px;
-  }
+  .buttons {
+    .btn {
+      margin-right: 0.5rem;
+    }
 
-  .buttons+.attached_files {
-    margin-top: 1rem !important;
-    margin-bottom: 1rem !important;
-  }
+    &+.comments {
+      margin-top: 24px;
+    }
 
-  .task-contents+.attached_files {
-    margin-top: -0.5rem !important;
-    margin-bottom: 1rem !important;
+    &+.attached_files {
+      margin-top: 1rem !important;
+      margin-bottom: 1rem !important;
+    }
   }
 }
 
@@ -902,6 +935,10 @@ ul.box-list {
     background-color: #fff;
     border-left: 5px solid transparent;
 
+    @media (max-width: 450px) {
+      padding: 12px 15px 15px 12px;
+    }
+
     &:hover {
       background-color: rgba(100, 0, 0, 0.01);
     }
@@ -924,6 +961,21 @@ ul.box-list {
 
     .buttons {
       margin-top: 10px;
+
+      .btn {
+        margin-right: 0.5rem;
+      }
+
+      .button-text {
+        @media (max-width: 576px) {
+          display: none;
+        }
+      }
+
+      .extra-buttons {
+        display: inline-block;
+        margin-top: 10px;
+      }
     }
 
     attachments {
@@ -948,13 +1000,27 @@ ul.box-list {
           display: inline-block;
           position: relative;
           top: -2px;
-          margin: 0 0 4px 4px;
+
+          &.badge-category {
+            @media (max-width: 576px) {
+              display: none;
+            }
+          }
         }
       }
 
       .dates {
         color: #777;
         font-size: 16px;
+
+        .created-on,
+        .updated-on {
+          white-space: nowrap;
+
+          @media (max-width: 600px) {
+            display: none;
+          }
+        }
 
         .fa {
           margin-right: 7px;
@@ -965,6 +1031,7 @@ ul.box-list {
 
         .time-spent {
           font-weight: bold;
+          white-space: nowrap;
         }
       }
     }
@@ -1065,6 +1132,7 @@ label {
   h1 {
     font-size: 2rem;
     text-transform: uppercase;
+    text-align: center;
   }
 }
 

@@ -7,6 +7,8 @@ export default function SideMenu() {
     return {
         oninit(vnode) {
             state.getFavoriteProjects()
+            if (window.innerWidth < 768)
+                state.sidebarCollapsed = true
         },
 
         view(vnode) {

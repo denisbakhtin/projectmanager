@@ -33,18 +33,20 @@ export default function CommentsItem() {
             return m('li', { class: comment.is_solution ? "solution-comment" : "" }, [
                 m('.item-description', [
                     m('h3.item-title', [
-                        m.trust(md.render(comment.contents)),
-                        (comment.is_solution) ? m('span.badge.badge-success.ml-2', "Solution") : null,
+                        m('.mr-2', m.trust(md.render(comment.contents))),
+                        (comment.is_solution) ? m('span.badge.badge-success', "Solution") : null,
                     ]),
                     m('.dates', [
-                        m('span.fa.fa-calendar'),
-                        m('span', 'Created on: '),
-                        m('span', humanDate(comment.created_at)),
-                        comment.updated_at > comment.created_at ? [
-                            m('span.fa.fa-calendar.ml-3'),
+                        m('span.created-on.mr-3', [
+                            m('span.fa.fa-calendar'),
+                            m('span', 'Created on: '),
+                            m('span', humanDate(comment.created_at)),
+                        ]),
+                        comment.updated_at > comment.created_at ? m('span.updated-on.mr-3', [
+                            m('span.fa.fa-calendar'),
                             m('span', 'Updated on: '),
                             m('span', humanDate(comment.updated_at)),
-                        ] : null,
+                        ]) : null,
                     ]),
                 ]),
                 m(files, { files: comment.files, readOnly: true }),

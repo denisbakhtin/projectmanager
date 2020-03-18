@@ -13,7 +13,7 @@ import (
 func tasksGet(c *gin.Context) {
 	var tasks []models.Task
 	query := models.DB.Where("user_id = ?", currentUserID(c)).
-		Preload("Project").Preload("Comments").Preload("Category")
+		Preload("Project").Preload("Category")
 	query = query.Preload("TaskLogs", func(db *gorm.DB) *gorm.DB {
 		return db.Where("session_id = 0 and minutes > 0")
 	})

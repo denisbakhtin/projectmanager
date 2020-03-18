@@ -22,7 +22,7 @@ export default function Navbar() {
         },
 
         view(vnode) {
-            return m('nav.navbar.navbar-expand-md.navbar-light.bg-light.fixed-top', [
+            return m('nav.navbar.navbar-light.bg-light.fixed-top', [
                 m('a.navbar-brand[href=#!/]', [
                     m('img', {
                         src: "/public/images/navbar_logo.png",

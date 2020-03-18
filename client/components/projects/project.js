@@ -29,13 +29,13 @@ export default function Project() {
         view(vnode) {
             return m(".project", (project) ? [
                 m('h1.title', [
-                    project.name,
+                    m('span.mr-2', project.name),
                     (project.category && project.category.id > 0) ?
-                        m('a.badge.badge-light.ml-2', { onclick: () => m.route.set('/categories/' + project.category.id) }, [
+                        m('a.badge.badge-light.mr-2', { onclick: () => m.route.set('/categories/' + project.category.id) }, [
                             m('i.fa.fa-tag.mr-1'),
                             project.category.name
                         ]) : null,
-                    m('button.ml-2.btn.btn-sm.btn-default[type=button]', {
+                    m('button.btn.btn-sm.btn-default[type=button]', {
                         onclick: () => m.route.set('/projects/edit/' + project.id)
                     }, 'Edit'),
                 ]),
@@ -51,7 +51,7 @@ export default function Project() {
                     ) : null,
                 m(error, { errors: errors }),
                 m('.actions.mt-4', [
-                    m('button.btn.btn-primary[type=button]', {
+                    m('button.btn.mr-2.btn-primary[type=button]', {
                         onclick: () => m.route.set('/tasks/new?project_id=' + project.id)
                     }, [
                         m('i.fa.fa-plus.mr-1'),

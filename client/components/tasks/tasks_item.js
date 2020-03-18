@@ -34,24 +34,26 @@ export default function TasksItem() {
             return m('li', { class: 'priority' + task.priority }, [
                 m('.item-description', [
                     m('h3.item-title', [
-                        task.name,
+                        m('span.mr-2', task.name),
                         (task.category.id > 0) ?
-                            m('a.badge.badge-light.ml-2', { onclick: () => m.route.set('/categories/' + task.category.id) }, [
+                            m('a.badge.badge-light.badge-category.mr-2', { onclick: () => m.route.set('/categories/' + task.category.id) }, [
                                 m('i.fa.fa-tag.mr-1'),
                                 task.category.name
                             ]) : null,
-                        (!task.completed) ? m('a.badge.badge-success.ml-2', "Open") : null,
+                        (!task.completed) ? m('a.badge.badge-success', "Open") : null,
                     ]),
                     m('.dates', [
-                        m('span.fa.fa-calendar'),
-                        m('span', 'Created on: '),
-                        m('span', humanDate(task.created_at)),
-                        task.updated_at > task.created_at ? [
-                            m('span.fa.fa-calendar.ml-3'),
+                        m('span.created-on.mr-3', [
+                            m('span.fa.fa-calendar'),
+                            m('span', 'Created on: '),
+                            m('span', humanDate(task.created_at)),
+                        ]),
+                        task.updated_at > task.created_at ? m('span.updated-on.mr-3', [
+                            m('span.fa.fa-calendar'),
                             m('span', 'Updated on: '),
                             m('span', humanDate(task.updated_at)),
-                        ] : null,
-                        (spent(task) != '') ? m('span.time-spent.ml-3', { title: "Total time spent" }, [
+                        ]) : null,
+                        (spent(task) != '') ? m('span.time-spent', { title: "Total time spent" }, [
                             m('span.fa.fa-clock-o'),
                             spent(task),
                         ]) : null,
@@ -62,30 +64,29 @@ export default function TasksItem() {
                         onclick: () => startTask(task, onUpdate)
                     }, [
                         m('i.fa.fa-play'),
-                        'Start',
+                        m('span.button-text', 'Start'),
                     ]),
                     m('button.btn.btn-default.btn-round[type=button]', {
                         onclick: () => m.route.set('/tasks/' + task.id)
                     }, [
-                        'Details',
-                        (task.comments && task.comments.length > 0) ? m('span.comments-count.ml-2.text-muted', [
-                            m('i.fa.fa-comments'),
-                            task.comments.length
-                        ]) : null,
+                        m('i.fa.fa-info'),
+                        m('span.button-text.mr-2', 'Details'),
                     ]),
-                    m('button.btn.btn-default.btn-icon[type=button]', {
-                        onclick: () => m.route.set('/tasks/edit/' + task.id)
-                    }, m('i.fa.fa-edit')),
-                    m('button.btn.btn-default.btn-icon[type=button]', {
-                        onclick: () => { isSolution = false; showCommentsModal = true }
-                    }, m('i.fa.fa-commenting-o')),
-                    (!task.completed) ?
-                        m('button.btn.btn-primary.btn-icon[type=button]', {
-                            onclick: () => { isSolution = true; showCommentsModal = true }
-                        }, m('i.fa.fa-check')) : null,
-                    m('button.btn.btn-default.btn-icon[type=button]', {
-                        onclick: () => showRemoveModal = true
-                    }, m('i.fa.fa-trash-o')),
+                    m('span.extra-buttons', [
+                        m('button.btn.btn-default.btn-icon[type=button]', {
+                            onclick: () => m.route.set('/tasks/edit/' + task.id)
+                        }, m('i.fa.fa-edit')),
+                        m('button.btn.btn-default.btn-icon[type=button]', {
+                            onclick: () => { isSolution = false; showCommentsModal = true }
+                        }, m('i.fa.fa-commenting-o')),
+                        (!task.completed) ?
+                            m('button.btn.btn-primary.btn-icon[type=button]', {
+                                onclick: () => { isSolution = true; showCommentsModal = true }
+                            }, m('i.fa.fa-check')) : null,
+                        m('button.btn.btn-default.btn-icon[type=button]', {
+                            onclick: () => showRemoveModal = true
+                        }, m('i.fa.fa-trash-o')),
+                    ])
                 ]),
 
                 (showCommentsModal) ? m(edit_comment_modal, {

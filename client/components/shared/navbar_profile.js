@@ -11,7 +11,7 @@ export default function Profile() {
                         m('img.img-round.mr-1[width=23px][height=23px]', {
                             src: '/public/images/user_icon.png'
                         }),
-                        m('span', Auth.getAuthenticatedUser().name)
+                        m('span.name', Auth.getAuthenticatedUser().name)
                     ]),
                     m('.dropdown-menu', [
                         m('a.dropdown-item[href=#!/manage]', 'Account'),

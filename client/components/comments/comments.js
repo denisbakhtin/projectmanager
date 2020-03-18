@@ -26,7 +26,7 @@ export default function Comments() {
                 (comments && comments.length > 0) ?
                     m('ul.dashboard-box.box-list',
                         comments.map((comment) => m(comments_item, { key: comment.id, comment: comment, onUpdate: onUpdate }))
-                    ) : null,
+                    ) : m('p.text-muted', 'No comments yet.'),
 
                 (showCommentsModal) ? m(edit_comment_modal, {
                     task_id: task_id,
