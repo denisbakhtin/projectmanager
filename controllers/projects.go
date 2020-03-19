@@ -70,8 +70,7 @@ func projectsPost(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	user := models.User{}
-	project.UserID = user.ID
+	project.UserID = currentUserID(c)
 	if err := models.DB.Create(&project).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
