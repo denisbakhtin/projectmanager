@@ -74,11 +74,13 @@ body {
   min-height: 100%;
   overflow: hidden;
   width: 100%;
+  height: 100%;
 }
 
 .layout {
   min-height: 100%;
   position: relative;
+  height: 100%;
 
   &.public-layout {
     background: url('/public/images/home_bg.jpg') center center;
@@ -602,27 +604,26 @@ table {
 
 .active-task {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 0;
+  right: 0;
+  left: 240px;
   display: flex;
   flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
   z-index: 10;
-  padding: 10px;
+  padding: 10px 20px;
   background: #fff;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s;
 
-  .fa {
-    font-size: 1.5em;
+  &.wide {
+    left: 50px;
   }
 
-  .stop-button {
+  .btn {
     cursor: pointer;
     transition: all 0.3s ease;
-    color: $primary;
-
-    &:hover {
-      color: darken($primary, 10%);
-    }
   }
 }
 

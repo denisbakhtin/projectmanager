@@ -15,9 +15,14 @@ const Filters = Object.freeze({
 export default function Tasks() {
     let tasks = [],
         errors = [],
-        filter = Filters.ALL,
+        filter,
 
-        activeClass = (fil) => (filter === fil) ? "active" : "",
+        activeClass = (fil) => (filter === Filters[fil]) ? "active" : "",
+        setFilter = (fil) => {
+            localStorage.taskFilter = fil
+            filter = Filters[fil]
+        },
+        getFilter = () => localStorage.taskFilter,
 
         getAll = () =>
             service.getTasks()
@@ -27,6 +32,7 @@ export default function Tasks() {
     return {
         oninit(vnode) {
             getAll()
+            filter = Filters[getFilter() ?? "ALL"] ?? Filters["ALL"]
         },
 
         view(vnode) {
@@ -35,9 +41,9 @@ export default function Tasks() {
             return m(".tasks", [
                 m('h1.title', 'Tasks'),
                 m('.filters', [
-                    m('button.btn.btn-link', { class: activeClass(Filters.ALL), onclick: () => filter = Filters.ALL }, "All"),
-                    m('button.btn.btn-link', { class: activeClass(Filters.OPEN), onclick: () => filter = Filters.OPEN }, "Open"),
-                    m('button.btn.btn-link', { class: activeClass(Filters.SOLVED), onclick: () => filter = Filters.SOLVED }, "Solved"),
+                    m('button.btn.btn-link', { class: activeClass("ALL"), onclick: () => setFilter("ALL") }, "All"),
+                    m('button.btn.btn-link', { class: activeClass("OPEN"), onclick: () => setFilter("OPEN") }, "Open"),
+                    m('button.btn.btn-link', { class: activeClass("SOLVED"), onclick: () => setFilter("SOLVED") }, "Solved"),
                 ]),
                 (filteredTasks && filteredTasks.length > 0) ? m('ul.dashboard-box.box-list',
                     filteredTasks.map((task) => m(tasks_item, { key: task.id, task: task, onUpdate: getAll }))

@@ -13,9 +13,14 @@ const Filters = Object.freeze({
 export default function Projects() {
     let projects = [],
         errors = [],
-        filter = Filters.ALL,
+        filter,
 
-        activeClass = (fil) => (filter === fil) ? "active" : "",
+        activeClass = (fil) => (filter === Filters[fil]) ? "active" : "",
+        setFilter = (fil) => {
+            localStorage.projectFilter = fil
+            filter = Filters[fil]
+        },
+        getFilter = () => localStorage.projectFilter,
 
         getAll = () =>
             service.getProjects()
@@ -25,6 +30,7 @@ export default function Projects() {
     return {
         oninit(vnode) {
             getAll()
+            filter = Filters[getFilter() ?? "ALL"] ?? Filters["ALL"]
         },
 
         view(vnode) {
@@ -33,10 +39,10 @@ export default function Projects() {
             return m(".projects", [
                 m('h1.title', 'Projects'),
                 m('.filters', [
-                    m('button.btn.btn-link', { class: activeClass(Filters.ALL), onclick: () => filter = Filters.ALL }, "All"),
-                    m('button.btn.btn-link', { class: activeClass(Filters.OPEN), onclick: () => filter = Filters.OPEN }, "Open"),
-                    m('button.btn.btn-link', { class: activeClass(Filters.ARCHIVED), onclick: () => filter = Filters.ARCHIVED }, "Archived"),
-                    m('button.btn.btn-link', { class: activeClass(Filters.FAVORITE), onclick: () => filter = Filters.FAVORITE }, "Favorite"),
+                    m('button.btn.btn-link', { class: activeClass("ALL"), onclick: () => setFilter("ALL") }, "All"),
+                    m('button.btn.btn-link', { class: activeClass("OPEN"), onclick: () => setFilter("OPEN") }, "Open"),
+                    m('button.btn.btn-link', { class: activeClass("ARCHIVED"), onclick: () => setFilter("ARCHIVED") }, "Archived"),
+                    m('button.btn.btn-link', { class: activeClass("FAVORITE"), onclick: () => setFilter("FAVORITE") }, "Favorite"),
                 ]),
                 (filteredProjects && filteredProjects.length > 0) ? m('ul.dashboard-box.box-list',
                     filteredProjects.map((proj) => m(projects_item, { key: proj.id, project: proj, onUpdate: getAll }))

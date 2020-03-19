@@ -1,12 +1,11 @@
 ﻿import m from 'mithril'
 import {
-    guid,
     responseErrors,
     humanSpent
 } from '../../utils/helpers'
 import service from '../../utils/service'
 import { addDanger } from '../shared/notifications'
-import { updateLocale } from 'moment'
+import global_state from '../shared/state'
 
 let state = {
     task_log: undefined,
@@ -48,10 +47,13 @@ export default function ActiveTask() {
         oninit(vnode) { },
         view(vnode) {
             return state.task_log ?
-                m('.active-task', [
+                m('.active-task', { class: global_state.sidebarCollapsed ? "wide" : "narrow" }, [
                     m('a', { href: '#!/tasks/' + state.task_log.task.id }, state.task_log.task.name),
                     (state.spent() != '') ? m('span.text-muted.ml-2', state.spent()) : null,
-                    m('.stop-button.ml-2[href=#]', { onclick: state.stop }, m('i.fa.fa-stop-circle'))
+                    m('button.btn.btn-sm.btn-primary.ml-3', { onclick: state.stop }, [
+                        m('i.fa.fa-stop.mr-1'),
+                        m('span', 'Stop'),
+                    ])
                 ]) : null
         }
     }
