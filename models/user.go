@@ -165,3 +165,8 @@ type AccountVM struct {
 	CurrentPassword string `json:"current_password"`
 	NewPassword     string `json:"new_password"`
 }
+
+//UsersSummaryVM is a view model for users statistics
+type UsersSummaryVM struct {
+	Count int `json:"count"`
+}

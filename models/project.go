@@ -89,3 +89,8 @@ type EditProjectVM struct {
 	Project    `json:"project"`
 	Categories []Category `json:"categories"`
 }
+
+//ProjectsSummaryVM is a view model for projects statistics
+type ProjectsSummaryVM struct {
+	Count int `json:"count"`
+}

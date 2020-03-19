@@ -24,6 +24,7 @@ const Service = {
     createCategory: (category) => post("/api/categories", category),
     updateCategory: (id, category) => put("/api/categories/" + id, category),
     deleteCategory: (id) => del("/api/categories/" + id),
+    getCategoriesSummary: () => get("/api/categories_summary"),
 
     //>>>>>>>>>>>>> projects
     getProject: (id) => get("/api/projects/" + id),
@@ -36,6 +37,7 @@ const Service = {
     archiveProject: (id, project) => put("/api/archive_project/" + id, project),
     favorProject: (id, project) => put("/api/favor_project/" + id, project),
     getFavoriteProjects: () => get("/api/favorite_projects"),
+    getProjectsSummary: () => get("/api/projects_summary"),
 
     //>>>>>>>>>>>>>>>>>> tasks
     getTask: (id) => get("/api/tasks/" + id),
@@ -45,6 +47,7 @@ const Service = {
     editTask: (id) => get("/api/edit_task/" + id),
     updateTask: (id, task) => put("/api/tasks/" + id, task),
     deleteTask: (id) => del("/api/tasks/" + id),
+    getTasksSummary: () => get("/api/tasks_summary"),
 
     //>>>>>>>>>>>>>>>>>> comments
     getComment: (id) => get("/api/comments/" + id),
@@ -59,6 +62,7 @@ const Service = {
     newSession: () => get("/api/new_session/"),
     createSession: (session) => post("/api/sessions", session),
     deleteSession: (id) => del("/api/sessions/" + id),
+    getSessionsSummary: () => get("/api/sessions_summary"),
 
     //>>>>>>>>>>>>>>>>>> task logs
     getTaskLog: (id) => get("/api/task_logs/" + id),
@@ -74,6 +78,7 @@ const Service = {
     getUsers: () => get("/api/users"),
     //getProjectUsers: (project_id) => get("/api/project_users/" + project_id),
     getRoles: () => get("/api/roles"),
+    getUsersSummary: () => get("/api/users_summary"),
 
     //>>>>>>>>>>>>>> settings
     getSetting: (id) => get("/api/settings/" + id),

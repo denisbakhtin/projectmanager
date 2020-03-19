@@ -1,16 +1,12 @@
 ﻿import m from 'mithril'
 import Auth from '../utils/auth'
 import login from './account/login';
+import dashboard from './dashboard/dashboard'
 
 export default function Home() {
     return {
         view(vnode) {
-            return Auth.isLoggedIn() ? [
-                m('.home', [
-                    m('h1', 'My Dashboard'),
-                    m('p', `You are currently logged in as ${Auth.getAuthenticatedUser().name}.`),
-                ])
-            ] : m(login);
+            return Auth.isLoggedIn() ? m(dashboard) : m(login);
         }
     }
 }

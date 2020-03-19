@@ -46,3 +46,8 @@ func (s *Session) BeforeDelete(tx *gorm.DB) (err error) {
 type NewSessionVM struct {
 	TaskLogs []TaskLog `json:"task_logs"`
 }
+
+//SessionsSummaryVM is a view model for sessions statistics
+type SessionsSummaryVM struct {
+	Count int `json:"count"`
+}

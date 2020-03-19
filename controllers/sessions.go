@@ -78,3 +78,14 @@ func sessionsDelete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{})
 }
+
+//sessionsSummaryGet handles get sessions statistics request
+func sessionsSummaryGet(c *gin.Context) {
+	vm := models.SessionsSummaryVM{}
+	userID := currentUserID(c)
+	if err := models.DB.Model(models.Session{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, vm)
+}

@@ -94,3 +94,8 @@ type EditTaskVM struct {
 	Categories []Category `json:"categories"`
 	Task       `json:"task"`
 }
+
+//TasksSummaryVM is a view model for tasks statistics
+type TasksSummaryVM struct {
+	Count int `json:"count"`
+}

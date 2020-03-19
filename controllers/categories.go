@@ -76,3 +76,14 @@ func categoriesDelete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{})
 }
+
+//categoriesSummaryGet handles get categories statistics request
+func categoriesSummaryGet(c *gin.Context) {
+	vm := models.CategoriesSummaryVM{}
+	userID := currentUserID(c)
+	if err := models.DB.Model(models.Category{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, vm)
+}

@@ -142,3 +142,14 @@ func projectsDelete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{})
 }
+
+//projectsSummaryGet handles get projects statistics request
+func projectsSummaryGet(c *gin.Context) {
+	vm := models.ProjectsSummaryVM{}
+	userID := currentUserID(c)
+	if err := models.DB.Model(models.Project{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, vm)
+}

@@ -112,3 +112,14 @@ func tasksDelete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{})
 }
+
+//tasksSummaryGet handles get tasks statistics request
+func tasksSummaryGet(c *gin.Context) {
+	vm := models.TasksSummaryVM{}
+	userID := currentUserID(c)
+	if err := models.DB.Model(models.Task{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, vm)
+}

@@ -40,3 +40,13 @@ func usersPut(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{})
 }
+
+//usersSummaryGet handles get users statistics request
+func usersSummaryGet(c *gin.Context) {
+	vm := models.UsersSummaryVM{}
+	if err := models.DB.Model(models.User{}).Count(&vm.Count).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, vm)
+}

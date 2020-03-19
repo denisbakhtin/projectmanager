@@ -55,12 +55,14 @@ func ListenAndServe() {
 		api.POST("/categories", categoriesPost)
 		api.PUT("/categories/:id", categoriesPut)
 		api.DELETE("/categories/:id", categoriesDelete)
+		api.GET("/categories_summary", categoriesSummaryGet)
 
 		api.GET("/sessions", sessionsGet)
 		api.GET("/sessions/:id", sessionGet)
 		api.GET("/new_session", sessionNewGet)
 		api.POST("/sessions", sessionsPost)
 		api.DELETE("/sessions/:id", sessionsDelete)
+		api.GET("/sessions_summary", sessionsSummaryGet)
 
 		api.POST("/task_logs", taskLogsPost)
 		api.PUT("/task_logs/:id", taskLogsPut)
@@ -75,6 +77,7 @@ func ListenAndServe() {
 		api.GET("/favorite_projects", projectsFavoriteGet)
 		api.PUT("/archive_project/:id", projectArchive)
 		api.PUT("/favor_project/:id", projectFavorite)
+		api.GET("/projects_summary", projectsSummaryGet)
 
 		api.GET("/tasks", tasksGet)
 		api.GET("/tasks/:id", taskGet)
@@ -83,6 +86,7 @@ func ListenAndServe() {
 		api.POST("/tasks", tasksPost)
 		api.PUT("/tasks/:id", tasksPut)
 		api.DELETE("/tasks/:id", tasksDelete)
+		api.GET("/tasks_summary", tasksSummaryGet)
 
 		api.GET("/comments", commentsGet)
 		api.GET("/comments/:id", commentGet)
@@ -112,6 +116,7 @@ func ListenAndServe() {
 		api.GET("/users", usersGet)
 		api.GET("/users/:id", userGet)
 		api.PUT("/users/:id", usersPut)
+		api.GET("/users_summary", usersSummaryGet)
 
 		api.GET("/pages", pagesGet)
 		api.GET("/pages/:id", pageGet)
