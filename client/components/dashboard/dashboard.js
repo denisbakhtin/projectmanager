@@ -1,6 +1,6 @@
 ﻿import m from 'mithril'
 import { ProjectsCountWidget } from '../projects/projects_widgets'
-import { TasksCountWidget } from '../tasks/tasks_widgets'
+import { TasksCountWidget, LatestTasksWidget, LatestTaskLogsWidget } from '../tasks/tasks_widgets'
 import { CategoriesCountWidget } from '../categories/categories_widgets'
 import { SessionsCountWidget } from '../sessions/sessions_widgets'
 import { UsersCountWidget } from '../users/users_widgets'
@@ -20,7 +20,10 @@ export default function Dashboard() {
                     m('.col-sm-4.col-md-3.col-lg-2.mb-3', m(SessionsCountWidget)),
                     auth.isAdmin() ? m('.col-sm-4.col-md-3.col-lg-2.mb-3', m(UsersCountWidget)) : null,
                 ]),
-                m('.my-4.text-muted', 'More widgets to be developed...')
+                m('.row.task-widgets', [
+                    m('.col-sm-6.mb-3', m(LatestTasksWidget)),
+                    m('.col-sm-6.mb-3', m(LatestTaskLogsWidget)),
+                ]),
             ])
         }
     }

@@ -1166,3 +1166,37 @@ label {
     }
   }
 }
+
+.task-widgets {
+  align-items: stretch;
+
+  .task-widget {
+    height: 100%;
+
+    .widget-title {
+      text-transform: uppercase;
+      font-weight: bold;
+      color: #777;
+    }
+
+    table {
+      margin-bottom: 0;
+
+      th {
+        font-weight: normal;
+        border-bottom: none;
+        text-transform: uppercase;
+      }
+
+      .btn {
+        padding: 0.175rem 0.3rem 0.175rem 0.5rem;
+      }
+
+      td {
+        &.buttons {
+          padding: 0.3rem 0.75rem;
+        }
+      }
+    }
+  }
+}
