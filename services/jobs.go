@@ -93,5 +93,5 @@ func weekdayMask(day time.Weekday) uint {
 	if day == time.Sunday {
 		day = 7
 	}
-	return uint(2 << (day - 1))
+	return uint(2 << (uint(day) - 1))
 }
