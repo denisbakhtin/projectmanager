@@ -2,7 +2,8 @@ import m from 'mithril'
 import {
     humanDate,
     humanTaskSpent,
-    responseErrors
+    responseErrors,
+    isZeroDate
 } from '../../utils/helpers'
 import service from '../../utils/service.js'
 import edit_comment_modal from '../comments/edit_comment_modal'
@@ -42,22 +43,22 @@ export default function TasksItem() {
                             ]) : null,
                         (!task.completed) ? m('a.badge.badge-success', "Open") : null,
                     ]),
-                    m('.dates', [
-                        m('span.created-on.mr-3', [
+                    (!isZeroDate(task.start_date) || !isZeroDate(task.end_date) || spent(task) != '') ? m('.dates', [
+                        (!isZeroDate(task.start_date)) ? m('span.created-on.mr-3', [
                             m('span.fa.fa-calendar'),
-                            m('span', 'Created on: '),
-                            m('span', humanDate(task.created_at)),
-                        ]),
-                        task.updated_at > task.created_at ? m('span.updated-on.mr-3', [
+                            m('span', 'Starts: '),
+                            m('span', humanDate(task.start_date)),
+                        ]) : null,
+                        (!isZeroDate(task.end_date)) ? m('span.updated-on.mr-3', [
                             m('span.fa.fa-calendar'),
-                            m('span', 'Updated on: '),
-                            m('span', humanDate(task.updated_at)),
+                            m('span', 'Ends: '),
+                            m('span', humanDate(task.end_date)),
                         ]) : null,
                         (spent(task) != '') ? m('span.time-spent', { title: "Total time spent" }, [
                             m('span.fa.fa-clock-o'),
                             spent(task),
                         ]) : null,
-                    ]),
+                    ]) : null,
                 ]),
                 m('.buttons', [
                     m('button.btn.btn-primary.btn-raised.btn-round[type=button]', {

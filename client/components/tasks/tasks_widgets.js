@@ -2,6 +2,7 @@
 import service from '../../utils/service.js'
 import { responseErrors, humanSpent } from '../../utils/helpers'
 import { startTask } from '../shared/active_task'
+import error from '../shared/error'
 //import moment from 'moment'
 
 const state = {
@@ -57,7 +58,10 @@ export function LatestTasksWidget() {
         view(vnode) {
             return m(".card.task-widget",
                 m('.card-body', [
-                    m('.widget-title', "Recently created tasks"),
+                    m('.widget-title', [
+                        "Recently created tasks",
+                        m('a.ml-auto[href=#!/tasks]', 'Show all')
+                    ]),
                     m('table.table', [
                         m('thead', [
                             m('tr', [
@@ -72,10 +76,10 @@ export function LatestTasksWidget() {
                                     m('td.buttons.shrink.text-center',
                                         m('button.btn.btn-icon.btn-primary', { onclick: () => startTask(task, () => state.get()) }, m('i.fa.fa-play'))
                                     ),
-                                ])) : m('tr', m('td[colspan=2]', 'The list is empty'))
+                                ])) : m('tr', m('td.text-center[colspan=2]', 'The list is empty'))
                         ])
                     ]),
-                    (state.errors) ? m('.error', responseErrors(state.errors)) : null,
+                    m(error, { errors: responseErrors(state.errors) }),
                 ])
             )
         }
@@ -91,7 +95,10 @@ export function LatestTaskLogsWidget() {
         view(vnode) {
             return m(".card.task-widget",
                 m('.card-body', [
-                    m('.widget-title', "Recently run tasks"),
+                    m('.widget-title', [
+                        "Recently run tasks",
+                        m('a.ml-auto[href=#!/reports/spent]', 'Show all')
+                    ]),
                     m('table.table', [
                         m('thead', [
                             m('tr', [
@@ -106,10 +113,10 @@ export function LatestTaskLogsWidget() {
                                     m('td', m('a', { href: '#!/tasks/' + log.task.id }, log.task.name)),
                                     //m('td.shrink.text-center', moment(log.created_at).fromNow()),
                                     m('td.shrink.text-center', humanSpent(log.minutes)),
-                                ])) : m('tr', m('td[colspan=3]', 'The list is empty'))
+                                ])) : m('tr', m('td.text-center[colspan=3]', 'The list is empty'))
                         ])
                     ]),
-                    (state.errors) ? m('.error', responseErrors(state.errors)) : null,
+                    m(error, { errors: responseErrors(state.errors) }),
                 ])
             )
         }

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/denisbakhtin/projectmanager/helpers"
 	"github.com/denisbakhtin/projectmanager/models"
@@ -43,11 +44,26 @@ func taskGet(c *gin.Context) {
 
 //taskNewGet handles get new task request
 func taskNewGet(c *gin.Context) {
+	projectID := helpers.AtoUint64(c.Query("project_id"))
 	vm := models.EditTaskVM{}
 	userID := currentUserID(c)
 	models.DB.Where("user_id = ?", userID).Find(&vm.Projects)
 	models.DB.Where("user_id = ?", userID).Find(&vm.Categories)
 	vm.Task.Priority = models.PRIORITY4
+	vm.Task.ProjectID = projectID
+	if projectID != 0 {
+		//set category_id same as in the project
+		for i := range vm.Projects {
+			if vm.Projects[i].ID == projectID {
+				vm.Task.CategoryID = vm.Projects[i].CategoryID
+			}
+		}
+	}
+	if projectID == 0 && len(vm.Projects) > 0 {
+		vm.Task.ProjectID = vm.Projects[0].ID
+	}
+	vm.Task.Periodicity.Weekdays = 0b1111111 //Mon == 1 .. Sun == 0000001
+	vm.Task.StartDate = time.Now()
 	c.JSON(http.StatusOK, vm)
 }
 
@@ -56,7 +72,7 @@ func taskEditGet(c *gin.Context) {
 	vm := models.EditTaskVM{}
 	userID := currentUserID(c)
 	models.DB.Where("user_id = ?", userID).Find(&vm.Projects)
-	models.DB.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Project").First(&vm.Task, c.Param("id"))
+	models.DB.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Project").Preload("Periodicity").First(&vm.Task, c.Param("id"))
 	models.DB.Where("user_id = ?", userID).Find(&vm.Categories)
 	c.JSON(http.StatusOK, vm)
 }
@@ -73,6 +89,7 @@ func tasksPost(c *gin.Context) {
 	}
 	task.Completed = false
 	task.UserID = currentUserID(c)
+	task.Periodicity.UserID = currentUserID(c)
 	if err := models.DB.Create(&task).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -89,6 +106,7 @@ func tasksPut(c *gin.Context) {
 		return
 	}
 	task.UserID = currentUserID(c)
+	task.Periodicity.UserID = currentUserID(c)
 	if err := models.DB.Save(&task).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

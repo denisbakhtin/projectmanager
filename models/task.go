@@ -24,6 +24,10 @@ type Task struct {
 	UpdatedAt     time.Time      `json:"updated_at"`
 	Name          string         `json:"name" valid:"required,length(1|1500)"`
 	Description   string         `json:"description" valid:"length(0|10000)"`
+	StartDate     time.Time      `json:"start_date"`
+	EndDate       time.Time      `json:"end_date"`
+	PeriodicityID uint64         `json:"periodicity_id,omitempty" gorm:"index"`
+	Periodicity   Periodicity    `json:"periodicity" gorm:"save_associations:true"`
 	Completed     bool           `json:"completed"`
 	Priority      uint           `json:"priority,string"` //see constants
 	ProjectID     uint64         `json:"project_id,string,omitempty" gorm:"index" valid:"required"`

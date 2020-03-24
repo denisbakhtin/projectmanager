@@ -34,6 +34,7 @@
 //@import "../../node_modules/bootstrap/scss/carousel";
 @import "../../node_modules/bootstrap/scss/utilities";
 @import "../../node_modules/bootstrap/scss/print";
+@import '../../node_modules/pikaday/css/pikaday.css';
 
 @media (max-width: 767px) {
 
@@ -74,13 +75,22 @@ body {
   min-height: 100%;
   overflow: hidden;
   width: 100%;
-  height: 100%;
+  display: flex;
 }
 
 .layout {
   min-height: 100%;
   position: relative;
-  height: 100%;
+  display: flex;
+  flex: 1 1 1px;
+  align-items: stretch;
+
+  .content-wrapper {
+    flex: 1 1 1px;
+    display: flex;
+    flex-direction: row;
+  }
+
 
   &.public-layout {
     background: url('/public/images/home_bg.jpg') center center;
@@ -262,6 +272,7 @@ body {
 
     #main {
       padding-top: 75px;
+      flex: 1 1 1px;
     }
   }
 }
@@ -269,9 +280,6 @@ body {
 #side-menu {
   padding-top: $restricted-navbar-height;
   background: #fff;
-  position: absolute;
-  bottom: 0;
-  top: 0;
 
   z-index: 2;
   transition: all 0.3s;
@@ -284,17 +292,13 @@ body {
   &.wide {
     width: $restricted-sidebar-width;
 
-    &+#main {
-      margin-left: $restricted-sidebar-width;
-    }
+    &+#main {}
   }
 
   &.narrow {
     width: $restricted-sidebar-narrow-width;
 
-    &+#main {
-      margin-left: $restricted-sidebar-narrow-width;
-    }
+    &+#main {}
 
     .nav-item {
       .fa {
@@ -473,9 +477,7 @@ body {
 
 #main {
   padding: 20px;
-  height: 100%;
   position: relative;
-  min-height: calc(100vh - 56px);
   transition: all 0.3s ease;
 }
 
@@ -1154,6 +1156,7 @@ label {
       flex-direction: column;
       align-items: center;
       transition: all 0.3s ease;
+      position: relative;
 
       &:hover {
         text-decoration: none;
@@ -1162,6 +1165,13 @@ label {
       .count {
         font-size: 40px;
         line-height: 40px;
+      }
+
+      .fa {
+        position: absolute;
+        right: 1.25rem;
+        top: 1.25rem;
+        color: $danger;
       }
     }
   }
@@ -1177,6 +1187,13 @@ label {
       text-transform: uppercase;
       font-weight: bold;
       color: #777;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: flex-end;
+
+      a {
+        font-size: 80%;
+      }
     }
 
     table {
@@ -1186,15 +1203,27 @@ label {
         font-weight: normal;
         border-bottom: none;
         text-transform: uppercase;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 0.5rem 0.75rem;
       }
 
       .btn {
         padding: 0.175rem 0.3rem 0.175rem 0.5rem;
       }
 
-      td {
-        &.buttons {
-          padding: 0.3rem 0.75rem;
+      tbody {
+        tr:first-child {
+          td {
+            border-top-color: transparent;
+          }
+        }
+
+        td {
+          padding: 0.5rem 0.75rem;
+
+          &.buttons {
+            padding: 0.3rem 0.75rem;
+          }
         }
       }
     }

@@ -42,7 +42,7 @@ const Service = {
     //>>>>>>>>>>>>>>>>>> tasks
     getTask: (id) => get("/api/tasks/" + id),
     getTasks: () => get("/api/tasks"),
-    newTask: () => get("/api/new_task/"),
+    newTask: (project_id) => get("/api/new_task" + ((project_id) ? "?project_id=" + project_id : "")),
     createTask: (task) => post("/api/tasks", task),
     editTask: (id) => get("/api/edit_task/" + id),
     updateTask: (id, task) => put("/api/tasks/" + id, task),

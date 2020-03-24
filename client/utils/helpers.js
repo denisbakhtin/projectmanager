@@ -20,6 +20,10 @@ export function responseErrors(error) {
     return ["Your request resulted in an error."]
 }
 
+export function isZeroDate(date) {
+    return String(date).startsWith("0001-01-01")
+}
+
 export function humanDate(date) {
     if (typeof date === 'string') date = new Date(date)
     const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date)

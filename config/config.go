@@ -81,10 +81,12 @@ func Initialize() {
 		//closed in main.main by defer
 		LogFile, err = os.OpenFile(path.Join(AppDir, "logs", Env+".log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
-			log.Fatalf("Error opening log file: %v", err)
+			log.Printf("Error opening log file: %v. All logs will be redirected to STDOUT", err)
 		}
 		//works around all packages, importing standard "log"!!!! awesome tbh
-		log.SetOutput(LogFile)
+		if LogFile != nil {
+			log.SetOutput(LogFile)
+		}
 	}
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 

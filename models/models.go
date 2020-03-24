@@ -28,7 +28,7 @@ func InitializeDB() {
 	validations.RegisterCallbacks(DB)
 	DB.AutoMigrate(&User{}, &UserGroup{}, &Task{}, &Project{}, &TaskLog{},
 		&AttachedFile{}, &Page{}, &Log{}, &Notification{},
-		&Setting{}, &Category{}, &Session{}, &Comment{}, &TaskLog{})
+		&Setting{}, &Category{}, &Session{}, &Comment{}, &TaskLog{}, &Periodicity{})
 
 	count := 0
 	if err := DB.Model(&UserGroup{}).Where([]int64{ADMIN, EDITOR, USER}).Count(&count).Error; err != nil {

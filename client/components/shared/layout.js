@@ -10,8 +10,10 @@ export default function Layout() {
             //vnode.attrs -> body component
             return m(".layout.restricted-layout", [
                 m("header", m(navbar)),
-                m(side_menu),
-                m("#main", m(vnode.attrs.child)),
+                m('.content-wrapper', [
+                    m(side_menu),
+                    m("#main", m(vnode.attrs.child)),
+                ]),
                 m(notifications),
                 m(ActiveTask),
             ]);

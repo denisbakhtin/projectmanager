@@ -50,6 +50,12 @@ func Substr(s string, pos, length int) string {
 	return string(runes[pos:l])
 }
 
+//AtoUint64 converts string to uint64
+func AtoUint64(s string) uint64 {
+	res, _ := strconv.Atoi(s)
+	return uint64(res)
+}
+
 //CheckNewPassword checks if password is safe
 func CheckNewPassword(password string) error {
 	if len(strings.Trim(password, " ")) < 8 {
