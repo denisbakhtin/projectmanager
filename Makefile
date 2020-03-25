@@ -52,4 +52,4 @@ pull:
 pull_restart: stop pull clean build start
 
 deploy:
-	ansible-playbook deploy.yml
+	ansible-playbook deploy.yml -K
