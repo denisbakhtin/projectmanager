@@ -50,3 +50,6 @@ pull:
 	@git pull origin master
 
 pull_restart: stop pull clean build start
+
+deploy:
+	ansible-playbook deploy.yml

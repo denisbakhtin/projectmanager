@@ -1,0 +1,17 @@
+---
+- name: Deploy web-site
+  hosts: aghost
+  gather_facts: no
+  vars_prompt:
+    - name: commit
+      prompt: "What is the commit name?"
+      private: no
+
+  tasks:
+    - name: webpack build for production
+      delegate_to: localhost
+      shell: webpack
+
+    - name: git push
+      delegate_to: localhost
+      shell: git add -u && git add . && git commit -m "{{ commit }}" && git push origin master
