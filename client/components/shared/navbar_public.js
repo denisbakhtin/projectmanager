@@ -17,7 +17,7 @@ export default function Navbar() {
             getSettings()
         },
         view(vnode) {
-            return m('nav.navbar.navbar-expand-lg.navbar-dark.navbar-bg', [
+            return m('nav.navbar.fixed-top.navbar-expand-lg.navbar-dark.navbar-bg', [
                 m('.container', [
                     m('a.navbar-brand[href=#!/]', [
                         m('img', {
