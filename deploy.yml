@@ -14,7 +14,7 @@
 
     - name: git push
       delegate_to: localhost
-      shell: git add -u && git add . && git commit -m "{{ commit }}" && git push origin master
+      shell: git add -u && git add . && git commit -m "{{ commit }}" ; git push origin master
 
     - name: git pull
       shell: cd /home/tabula/denisbakhtin/projectmanager && git pull origin master
