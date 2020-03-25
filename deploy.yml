@@ -24,7 +24,9 @@
       become: yes
 
     - name: clean old binaries
-      shell: rm -f /home/tabula/denisbakhtin/projectmanager/projectmanager-go
+      file:
+        path: /home/tabula/denisbakhtin/projectmanager/projectmanager-go
+        state: absent
 
     - name: build new binary
       shell: cd /home/tabula/denisbakhtin/projectmanager && /home/tabula/golang/bin/go build -o projectmanager-go
