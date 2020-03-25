@@ -15,3 +15,20 @@
     - name: git push
       delegate_to: localhost
       shell: git add -u && git add . && git commit -m "{{ commit }}" && git push origin master
+
+    - name: git pull
+      shell: cd /home/tabula/denisbakhtin/projectmanager && git pull origin master
+
+    - name: stop service
+      shell: systemctl stop projectmanager
+      become: yes
+
+    - name: clean old binaries
+      shell: rm -f /home/tabula/denisbakhtin/projectmanager/projectmanager-go
+
+    - name: build new binary
+      shell: cd /home/tabula/denisbakhtin/projectmanager && go build -o projectmanager-go
+
+    - name: start service
+      shell: systemctl start projectmanager
+      become: yes
