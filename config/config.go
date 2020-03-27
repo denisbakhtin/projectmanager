@@ -2,12 +2,14 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
 
+	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
 )
 
@@ -26,8 +28,6 @@ var (
 	UploadPathURL string
 	//LogFile is log file reference, opened by config.Initialize, closed by main.main's defer
 	LogFile *os.File
-	//Domain name for session option
-	Domain string
 )
 
 //settings for ALL environments, see config.yml
@@ -52,31 +52,23 @@ type settingYaml struct {
 
 //Initialize loads config file and initializes config variables
 func Initialize() {
-	envPtr := flag.String("e", "development", "application environment, one of: development, production, test")
+	envPtr := flag.String("e", "debug", fmt.Sprintf("application environment, one of: %s, %s, %s", gin.DebugMode, gin.ReleaseMode, gin.TestMode))
 	flag.Parse()
 
 	AppDir, _ = filepath.Abs("")
 	switch *envPtr {
-	case "development":
+	case gin.DebugMode, gin.ReleaseMode, gin.TestMode:
 		Env = *envPtr
-		Domain = "" //empty is ok for dev
-	case "test":
-		Env = *envPtr
-		Domain = ""
-	case "production":
-		Env = *envPtr
-		log.Panic("AppDir & Domain not specified")
 	default:
-		log.Printf("Wrong value of -e flag: %s, setting it to 'development'", *envPtr)
-		Env = "development"
-		Domain = ""
+		log.Printf("Wrong value of -e flag: %s, setting it to 'debug'", *envPtr)
+		Env = gin.DebugMode
 	}
 
 	UploadPathURL = "/public/uploads"
 	UploadPath = path.Join(AppDir, "public", "uploads")
 
 	//log to file only in production, in dev mode I like to see messages on screen
-	if Env == "production" {
+	if Env == gin.ReleaseMode {
 		var err error
 		//closed in main.main by defer
 		LogFile, err = os.OpenFile(path.Join(AppDir, "logs", Env+".log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -92,11 +84,11 @@ func Initialize() {
 
 	DbSettingsAll := loadDbSettings()
 	switch Env {
-	case "development":
+	case gin.DebugMode:
 		Settings = DbSettingsAll.Development
-	case "production":
+	case gin.ReleaseMode:
 		Settings = DbSettingsAll.Production
-	case "test":
+	case gin.TestMode:
 		Settings = DbSettingsAll.Test
 	}
 

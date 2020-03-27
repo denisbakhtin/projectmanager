@@ -13,7 +13,8 @@ func ListenAndServe() {
 
 	//++++++++++++++++++++ GIN ROUTES +++++++++++++++++++++++++++++
 	router := gin.Default() //with logger and recover middlewares baked in
-	if config.Env != "production" {
+	gin.SetMode(config.Env)
+	if config.Env != gin.ReleaseMode {
 		//in production assets are served by nginx
 		router.Static("/public", "./public")
 	}
