@@ -42,6 +42,7 @@ func AuthRequired() gin.HandlerFunc {
 			c.Set("user", user)
 			c.Next()
 		} else {
+			log.Printf("Unauthenticated Request Error, URL: %s, Agent: %s, UserID: %d, UserStatus: %d\n", c.Request.URL.Path, c.Request.UserAgent(), user.ID, user.Status)
 			abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Please login to make this request"))
 		}
 	}
@@ -68,7 +69,7 @@ func LogErrors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
 		for _, err := range c.Errors {
-			log.Printf("Error: %s, URL: %s\n", err, c.Request.URL.Path)
+			log.Printf("Error: %s, URL: %s, Agent: %s\n", err, c.Request.URL.Path, c.Request.UserAgent())
 		}
 	}
 }
