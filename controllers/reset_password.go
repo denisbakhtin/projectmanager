@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -14,21 +15,19 @@ import (
 func forgotPost(c *gin.Context) {
 	vm := models.ForgotVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	user := models.User{}
 	models.DB.Where("email = ?", strings.ToLower(vm.Email)).First(&user)
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, "User not found")
+		abortWithError(c, http.StatusBadRequest, fmt.Errorf("User not found"))
 		return
 	}
 
 	user.Token = helpers.CreateSecureToken()
 	if err := models.DB.Save(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": err.Error(),
-		})
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -41,24 +40,24 @@ func forgotPost(c *gin.Context) {
 func resetPost(c *gin.Context) {
 	vm := models.ResetVM{}
 	if err := c.ShouldBindJSON(&vm); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	user := models.User{}
 	models.DB.Where("token = ?", vm.Token).First(&user)
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, "User not found")
+		abortWithError(c, http.StatusBadRequest, fmt.Errorf("User not found"))
 		return
 	}
 	user.Token = ""
 	user.PasswordHash = helpers.CreatePasswordHash(vm.Password)
 	if err := models.DB.Save(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	if err := user.CreateJWTToken(); err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 

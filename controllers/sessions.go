@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/denisbakhtin/projectmanager/helpers"
@@ -24,7 +25,7 @@ func sessionGet(c *gin.Context) {
 		Preload("TaskLogs").Preload("TaskLogs.Task").Preload("TaskLogs.Task.Project").
 		First(&session, id)
 	if session.ID == 0 {
-		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Session"))
+		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Session"))
 		return
 	}
 	c.JSON(http.StatusOK, session)
@@ -44,14 +45,14 @@ func sessionNewGet(c *gin.Context) {
 func sessionsPost(c *gin.Context) {
 	session := models.Session{}
 	if err := c.ShouldBindJSON(&session); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	userID := currentUserID(c)
 	session.UserID = userID
 
 	if err := models.DB.Create(&session).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -64,15 +65,15 @@ func sessionsDelete(c *gin.Context) {
 	session := models.Session{}
 	models.DB.Preload("TaskLogs").Where("user_id = ?", currentUserID(c)).First(&session, id)
 	if session.ID == 0 {
-		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Session"))
+		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Session"))
 		return
 	}
 	if len(session.TaskLogs) > 0 {
-		c.JSON(http.StatusBadRequest, "Can not remove non-empty session")
+		abortWithError(c, http.StatusBadRequest, fmt.Errorf("Can not remove non-empty session"))
 		return
 	}
 	if err := models.DB.Delete(&session).Error; err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -84,7 +85,7 @@ func sessionsSummaryGet(c *gin.Context) {
 	vm := models.SessionsSummaryVM{}
 	userID := currentUserID(c)
 	if err := models.DB.Model(models.Session{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, vm)

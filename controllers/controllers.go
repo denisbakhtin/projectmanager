@@ -12,21 +12,17 @@ import (
 func ListenAndServe() {
 
 	//++++++++++++++++++++ GIN ROUTES +++++++++++++++++++++++++++++
-	router := gin.Default() //with logger and recover middlewares baked in
 	gin.SetMode(config.Env)
-	if config.Env != gin.ReleaseMode {
-		//in production assets are served by nginx
-		router.Static("/public", "./public")
-	}
-
+	router := gin.Default() //with logger and recover middlewares baked in
+	router.Static("/public", "./public")
 	router.SetFuncMap(funcMap())
 	router.LoadHTMLGlob("views/**/*")
+	router.Use(LogErrors())
 	router.GET("/", home)
 	router.GET("/pages/:id", pagesGetHTML)
 
 	publicAPI := router.Group("/api")
 	{
-
 		publicAPI.POST("/login", loginPost)
 		publicAPI.POST("/activate", activatePost)
 		publicAPI.POST("/register", registerPost)
@@ -159,4 +155,9 @@ func pagesMenu() []models.Page {
 
 func siteName() string {
 	return config.Settings.ProjectName
+}
+
+func abortWithError(c *gin.Context, code int, err error) {
+	c.AbortWithStatusJSON(code, err.Error())
+	c.Error(err)
 }

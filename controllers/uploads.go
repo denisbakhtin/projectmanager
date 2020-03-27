@@ -22,7 +22,7 @@ func uploadsPost(c *gin.Context) {
 	ext := filepath.Ext(file.Filename)
 	if !isExtensionAllowed(ext) || !isValidFilename(file.Filename) {
 		//TODO: extend the list? Or just prohibit executables
-		c.JSON(http.StatusBadRequest, "Unsupported file extension")
+		abortWithError(c, http.StatusBadRequest, fmt.Errorf("Unsupported file extension"))
 		return
 	}
 	user := c.MustGet("user").(models.User)
@@ -31,16 +31,16 @@ func uploadsPost(c *gin.Context) {
 	uploadsDir := path.Join(config.UploadPath, subDir)
 	filename, err := helpers.GetUniqueFilename(uploadsDir, file.Filename)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := os.MkdirAll(uploadsDir, 0755); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	if err := c.SaveUploadedFile(file, path.Join(uploadsDir, filename)); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 

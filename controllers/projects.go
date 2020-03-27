@@ -40,7 +40,7 @@ func projectGet(c *gin.Context) {
 
 	query.First(&project, id)
 	if project.ID == 0 {
-		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Project"))
+		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Project"))
 		return
 	}
 	c.JSON(http.StatusOK, project)
@@ -67,12 +67,12 @@ func projectEditGet(c *gin.Context) {
 func projectsPost(c *gin.Context) {
 	project := models.Project{}
 	if err := c.ShouldBindJSON(&project); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	project.UserID = currentUserID(c)
 	if err := models.DB.Create(&project).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -83,12 +83,12 @@ func projectsPut(c *gin.Context) {
 	//id := c.Param("id")
 	project := models.Project{}
 	if err := c.ShouldBindJSON(&project); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	project.UserID = currentUserID(c)
 	if err := models.DB.Save(&project).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -99,12 +99,12 @@ func projectArchive(c *gin.Context) {
 	//id := c.Param("id")
 	project := models.Project{}
 	if err := c.ShouldBindJSON(&project); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	//update column without hooks
 	if err := models.DB.Model(&project).UpdateColumn("archived", project.Archived).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -115,12 +115,12 @@ func projectFavorite(c *gin.Context) {
 	//id := c.Param("id")
 	project := models.Project{}
 	if err := c.ShouldBindJSON(&project); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	//update column without hooks
 	if err := models.DB.Model(&project).UpdateColumn("favorite", project.Favorite).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -132,11 +132,11 @@ func projectsDelete(c *gin.Context) {
 	project := models.Project{}
 	models.DB.Where("user_id = ?", currentUserID(c)).First(&project, id)
 	if project.ID == 0 {
-		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Project"))
+		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Project"))
 		return
 	}
 	if err := models.DB.Delete(&project).Error; err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -148,7 +148,7 @@ func projectsSummaryGet(c *gin.Context) {
 	vm := models.ProjectsSummaryVM{}
 	userID := currentUserID(c)
 	if err := models.DB.Model(models.Project{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, vm)

@@ -13,10 +13,10 @@ export function guid() {
 
 export function responseErrors(error) {
     if (!error) return []
+    if (!!error.message) return [error.message]
     if (error.code == 401) return ["Authorization required with appropriate privileges."]
     if (error.code == 404) return ["Sorry, the request url you tried cannot be found."]
-    if (!!error.error) return [error.error]
-    if (!!error.message) return [error.message]
+
     return ["Your request resulted in an error."]
 }
 

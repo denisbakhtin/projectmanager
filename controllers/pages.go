@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/denisbakhtin/projectmanager/models"
@@ -20,7 +21,7 @@ func pageGet(c *gin.Context) {
 	page := models.Page{}
 	models.DB.First(&page, id)
 	if page.ID == 0 {
-		c.JSON(http.StatusNotFound, "Page not found")
+		abortWithError(c, http.StatusNotFound, fmt.Errorf("Page not found"))
 		return
 	}
 	c.JSON(http.StatusOK, page)
@@ -30,11 +31,11 @@ func pageGet(c *gin.Context) {
 func pagesPost(c *gin.Context) {
 	page := models.Page{}
 	if err := c.ShouldBindJSON(&page); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	if err := models.DB.Create(&page).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -45,11 +46,11 @@ func pagesPut(c *gin.Context) {
 	//id := c.Param("id")
 	page := models.Page{}
 	if err := c.ShouldBindJSON(&page); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	if err := models.DB.Save(&page).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -61,11 +62,11 @@ func pagesDelete(c *gin.Context) {
 	page := models.Page{}
 	models.DB.First(&page, id)
 	if page.ID == 0 {
-		c.JSON(http.StatusNotFound, "Page not found")
+		abortWithError(c, http.StatusNotFound, fmt.Errorf("Page not found"))
 		return
 	}
 	if err := models.DB.Delete(&page).Error; err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 

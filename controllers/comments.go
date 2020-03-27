@@ -21,7 +21,7 @@ func commentGet(c *gin.Context) {
 	comment := models.Comment{}
 	models.DB.Where("user_id = ?", currentUserID(c)).First(&comment, id)
 	if comment.ID == 0 {
-		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Comment"))
+		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Comment"))
 		return
 	}
 	c.JSON(http.StatusOK, comment)
@@ -31,12 +31,12 @@ func commentGet(c *gin.Context) {
 func commentsPost(c *gin.Context) {
 	comment := models.Comment{}
 	if err := c.ShouldBindJSON(&comment); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	comment.UserID = currentUserID(c)
 	if err := models.DB.Create(&comment).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -46,13 +46,13 @@ func commentsPost(c *gin.Context) {
 func commentsPut(c *gin.Context) {
 	comment := models.Comment{}
 	if err := c.ShouldBindJSON(&comment); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	userID := currentUserID(c)
 	comment.UserID = userID
 	if err := models.DB.Save(&comment).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -64,11 +64,11 @@ func commentsDelete(c *gin.Context) {
 	comment := models.Comment{}
 	models.DB.Where("user_id = ?", currentUserID(c)).First(&comment, id)
 	if comment.ID == 0 {
-		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Comment"))
+		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Comment"))
 		return
 	}
 	if err := models.DB.Delete(&comment).Error; err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 

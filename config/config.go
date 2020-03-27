@@ -52,7 +52,7 @@ type settingYaml struct {
 
 //Initialize loads config file and initializes config variables
 func Initialize() {
-	envPtr := flag.String("e", "debug", fmt.Sprintf("application environment, one of: %s, %s, %s", gin.DebugMode, gin.ReleaseMode, gin.TestMode))
+	envPtr := flag.String("mode", "debug", fmt.Sprintf("application environment, one of: %s, %s, %s", gin.DebugMode, gin.ReleaseMode, gin.TestMode))
 	flag.Parse()
 
 	AppDir, _ = filepath.Abs("")
@@ -60,25 +60,22 @@ func Initialize() {
 	case gin.DebugMode, gin.ReleaseMode, gin.TestMode:
 		Env = *envPtr
 	default:
-		log.Printf("Wrong value of -e flag: %s, setting it to 'debug'", *envPtr)
+		log.Printf("Wrong value of -mode flag: %s, setting it to 'debug'", *envPtr)
 		Env = gin.DebugMode
 	}
 
 	UploadPathURL = "/public/uploads"
 	UploadPath = path.Join(AppDir, "public", "uploads")
 
-	//log to file only in production, in dev mode I like to see messages on screen
-	if Env == gin.ReleaseMode {
-		var err error
-		//closed in main.main by defer
-		LogFile, err = os.OpenFile(path.Join(AppDir, "logs", Env+".log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-		if err != nil {
-			log.Printf("Error opening log file: %v. All logs will be redirected to STDOUT", err)
-		}
-		//works around all packages, importing standard "log"!!!! awesome tbh
-		if LogFile != nil {
-			log.SetOutput(LogFile)
-		}
+	var err error
+	//closed in main.main by defer
+	LogFile, err = os.OpenFile(path.Join(AppDir, "logs", Env+".log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Error opening log file: %v. All logs will be redirected to STDOUT", err)
+	}
+	//works around all packages, importing standard "log"!!!! awesome tbh
+	if LogFile != nil {
+		log.SetOutput(LogFile)
 	}
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 

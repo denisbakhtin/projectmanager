@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -23,16 +25,12 @@ func AuthRequired() gin.HandlerFunc {
 				token, err := jwt.ParseWithClaims(tokenString, &models.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 					// Don't forget to validate the alg is what you expect:
 					if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-						c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-							"error": "Invalid token signing method, please, login again",
-						})
+						abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Invalid token signing method, please, login again"))
 					}
 					return []byte(config.Settings.JWTSecret), nil
 				})
 				if err != nil {
-					c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-						"error": "Invalid authentication token, please, login again",
-					})
+					abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Invalid authentication token, please, login again"))
 				}
 
 				if claims, ok := token.Claims.(*models.JWTClaims); ok && token.Valid {
@@ -44,9 +42,7 @@ func AuthRequired() gin.HandlerFunc {
 			c.Set("user", user)
 			c.Next()
 		} else {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "Please login to make this request",
-			})
+			abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Please login to make this request"))
 		}
 	}
 }
@@ -62,9 +58,17 @@ func AdminRequired() gin.HandlerFunc {
 		if user.ID != 0 && user.IsAdmin() {
 			c.Next()
 		} else {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "Admin user is required to proceed",
-			})
+			abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Admin user is required to proceed"))
+		}
+	}
+}
+
+//LogErrors middleware logs all application errors to logs/%env%.log file
+func LogErrors() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+		for _, err := range c.Errors {
+			log.Printf("Error: %s\n", err)
 		}
 	}
 }

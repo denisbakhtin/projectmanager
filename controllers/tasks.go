@@ -36,7 +36,7 @@ func taskGet(c *gin.Context) {
 	})
 	query.Preload("Comments.AttachedFiles").First(&task, id)
 	if task.ID == 0 {
-		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Task"))
+		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Task"))
 		return
 	}
 	c.JSON(http.StatusOK, task)
@@ -81,7 +81,7 @@ func taskEditGet(c *gin.Context) {
 func tasksPost(c *gin.Context) {
 	task := models.Task{}
 	if err := c.ShouldBindJSON(&task); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	if task.Priority == 0 {
@@ -91,7 +91,7 @@ func tasksPost(c *gin.Context) {
 	task.UserID = currentUserID(c)
 	task.Periodicity.UserID = currentUserID(c)
 	if err := models.DB.Create(&task).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -102,13 +102,13 @@ func tasksPut(c *gin.Context) {
 	//id := c.Param("id")
 	task := models.Task{}
 	if err := c.ShouldBindJSON(&task); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	task.UserID = currentUserID(c)
 	task.Periodicity.UserID = currentUserID(c)
 	if err := models.DB.Save(&task).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -120,11 +120,11 @@ func tasksDelete(c *gin.Context) {
 	task := models.Task{}
 	models.DB.Where("user_id = ?", currentUserID(c)).First(&task, id)
 	if task.ID == 0 {
-		c.JSON(http.StatusNotFound, helpers.NotFoundOrOwned("Task"))
+		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Task"))
 		return
 	}
 	if err := models.DB.Delete(&task).Error; err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -136,15 +136,15 @@ func tasksSummaryGet(c *gin.Context) {
 	vm := models.TasksSummaryVM{}
 	userID := currentUserID(c)
 	if err := models.DB.Model(models.Task{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	if err := models.DB.Where("user_id = ?", userID).Order("id desc").Limit(5).Find(&vm.LatestTasks).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	if err := models.DB.Where("user_id = ? and minutes > 0", userID).Order("id desc").Limit(5).Preload("Task").Find(&vm.LatestTaskLogs).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, vm)

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/denisbakhtin/projectmanager/config"
@@ -23,7 +24,7 @@ func settingGet(c *gin.Context) {
 	setting := models.Setting{}
 	models.DB.First(&setting, id)
 	if setting.ID == 0 {
-		c.JSON(http.StatusNotFound, "Setting not found")
+		abortWithError(c, http.StatusNotFound, fmt.Errorf("Setting not found"))
 		return
 	}
 	c.JSON(http.StatusOK, setting)
@@ -33,11 +34,11 @@ func settingGet(c *gin.Context) {
 func settingsPost(c *gin.Context) {
 	setting := models.Setting{}
 	if err := c.ShouldBindJSON(&setting); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	if err := models.DB.Create(&setting).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -48,11 +49,11 @@ func settingsPut(c *gin.Context) {
 	//id := c.Param("id")
 	setting := models.Setting{}
 	if err := c.ShouldBindJSON(&setting); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	if err := models.DB.Save(&setting).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{})
@@ -64,11 +65,11 @@ func settingsDelete(c *gin.Context) {
 	setting := models.Setting{}
 	models.DB.First(&setting, id)
 	if setting.ID == 0 {
-		c.JSON(http.StatusNotFound, "Setting not found")
+		abortWithError(c, http.StatusNotFound, fmt.Errorf("Setting not found"))
 		return
 	}
 	if err := models.DB.Delete(&setting).Error; err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 

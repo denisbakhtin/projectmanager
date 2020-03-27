@@ -92,3 +92,8 @@ func CheckPasswordHash(password, hash string) bool {
 func NotFoundOrOwned(entity string) string {
 	return fmt.Sprintf("%s not found or not owned by this user", entity)
 }
+
+//NotFoundOrOwnedError returns NotFoundOrOwned message wrapped in error
+func NotFoundOrOwnedError(entity string) error {
+	return fmt.Errorf(NotFoundOrOwned(entity))
+}
