@@ -18,7 +18,6 @@ func AuthRequired() gin.HandlerFunc {
 		// before request
 		user := models.User{}
 		bearer := c.GetHeader("Authorization")
-		log.Printf("Debugging Auth Error, URL: %s, Bearer: %s\n", c.Request.URL.Path, bearer)
 
 		if strings.Contains(bearer, "Bearer ") {
 			ss := strings.SplitAfter(bearer, " ")
@@ -44,7 +43,6 @@ func AuthRequired() gin.HandlerFunc {
 			c.Set("user", user)
 			c.Next()
 		} else {
-			log.Printf("Unauthenticated Request Error, URL: %s, UserID: %d, UserStatus: %d\n", c.Request.URL.Path, user.ID, user.Status)
 			abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Please login to make this request"))
 		}
 	}
