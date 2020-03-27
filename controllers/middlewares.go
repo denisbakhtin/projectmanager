@@ -68,7 +68,7 @@ func LogErrors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
 		for _, err := range c.Errors {
-			log.Printf("Error: %s\n", err)
+			log.Printf("Error: %s, URL: %s\n", err, c.Request.URL.Path)
 		}
 	}
 }
