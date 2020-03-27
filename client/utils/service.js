@@ -16,7 +16,7 @@ const Service = {
     deletePage: (id) => del("/api/pages/" + id),
 
     //>>>>>>>>>>>>> reports
-    getSpent: () => get("/api/reports/spent/"),
+    getSpent: () => get("/api/reports/spent"),
 
     //>>>>>>>>>>>>> categories
     getCategory: (id) => get("/api/categories/" + id),
@@ -29,7 +29,7 @@ const Service = {
     //>>>>>>>>>>>>> projects
     getProject: (id) => get("/api/projects/" + id),
     getProjects: () => get("/api/projects"),
-    newProject: () => get("/api/new_project/"),
+    newProject: () => get("/api/new_project"),
     createProject: (project) => post("/api/projects", project),
     editProject: (id) => get("/api/edit_project/" + id),
     updateProject: (id, project) => put("/api/projects/" + id, project),
@@ -59,7 +59,7 @@ const Service = {
     //>>>>>>>>>>>>>>>>>> sessions
     getSession: (id) => get("/api/sessions/" + id),
     getSessions: () => get("/api/sessions"),
-    newSession: () => get("/api/new_session/"),
+    newSession: () => get("/api/new_session"),
     createSession: (session) => post("/api/sessions", session),
     deleteSession: (id) => del("/api/sessions/" + id),
     getSessionsSummary: () => get("/api/sessions_summary"),
