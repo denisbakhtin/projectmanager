@@ -15,7 +15,6 @@ lib-cov
 *.idea
 
 pids
-logs
 results
 
 node_modules
