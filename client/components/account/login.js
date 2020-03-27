@@ -13,7 +13,7 @@ export default function Login() {
                 m('.card', [
                     m('.card-body', [
                         m('h3.card-title.text-center', "User login"),
-                        m('form', [
+                        m('form[action=#]', [
                             m('.form-group', [
                                 m('label.control-label', "Email"),
                                 m('input.form-control[type=email][placeholder="Enter your email"]', {

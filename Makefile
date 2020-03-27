@@ -51,5 +51,6 @@ pull:
 
 pull_restart: stop pull clean build start
 
+#this is the default all-in-one command for deployment
 deploy:
 	ansible-playbook deploy.yml -K
