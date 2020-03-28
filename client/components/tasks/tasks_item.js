@@ -10,6 +10,7 @@ import edit_comment_modal from '../comments/edit_comment_modal'
 import { startTask } from '../shared/active_task'
 import { addDanger } from '../shared/notifications'
 import yesno_modal from '../shared/yesno_modal'
+import button_menu from '../shared/button_menu'
 
 export default function TasksItem() {
     let onUpdate,
@@ -73,21 +74,37 @@ export default function TasksItem() {
                         m('i.fa.fa-info'),
                         m('span.button-text.mr-2', 'Details'),
                     ]),
-                    m('span.extra-buttons', [
-                        m('button.btn.btn-default.btn-icon[type=button]', {
-                            onclick: () => m.route.set('/tasks/edit/' + task.id)
-                        }, m('i.fa.fa-edit')),
-                        m('button.btn.btn-default.btn-icon[type=button]', {
-                            onclick: () => { isSolution = false; showCommentsModal = true }
-                        }, m('i.fa.fa-commenting-o')),
-                        (!task.completed) ?
-                            m('button.btn.btn-primary.btn-icon[type=button]', {
-                                onclick: () => { isSolution = true; showCommentsModal = true }
-                            }, m('i.fa.fa-check')) : null,
-                        m('button.btn.btn-default.btn-icon[type=button]', {
-                            onclick: () => showRemoveModal = true
-                        }, m('i.fa.fa-trash-o')),
-                    ])
+                    m(button_menu, {
+                        children: [
+                            m('.dropdown-menu', [
+                                m('button.dropdown-item.btn.btn-default.btn-icon[type=button]', {
+                                    onclick: () => m.route.set('/tasks/edit/' + task.id)
+                                }, [
+                                    m('i.fa.fa-edit'),
+                                    m('span.text.ml-1', 'Edit')
+                                ]),
+                                m('button.dropdown-item.btn.btn-default.btn-icon[type=button]', {
+                                    onclick: () => { isSolution = false; showCommentsModal = true }
+                                }, [
+                                    m('i.fa.fa-commenting-o'),
+                                    m('span.text.ml-1', 'Comment')
+                                ]),
+                                (!task.completed) ?
+                                    m('button.dropdown-item.btn.btn-primary.btn-icon[type=button]', {
+                                        onclick: () => { isSolution = true; showCommentsModal = true }
+                                    }, [
+                                        m('i.fa.fa-check'),
+                                        m('span.text.ml-1', 'Solve')
+                                    ]) : null,
+                                m('button.dropdown-item.btn.btn-default.btn-icon[type=button]', {
+                                    onclick: () => showRemoveModal = true
+                                }, [
+                                    m('i.fa.fa-trash-o'),
+                                    m('span.text.ml-1', 'Delete')
+                                ]),
+                            ])
+                        ]
+                    })
                 ]),
 
                 (showCommentsModal) ? m(edit_comment_modal, {

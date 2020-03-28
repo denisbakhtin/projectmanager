@@ -118,8 +118,7 @@ const Auth = {
         delete localStorage.role
         m.route.set('/') //redirect to home page
     },
-    authHeader: () =>
-        (!!localStorage.token) ? 'Bearer ' + localStorage.token : null,
+    authHeader: () => (!!localStorage.token) ? 'Bearer ' + localStorage.token : null,
     storeTokenData: (token) => {
         let decoded = jwt_decode(token)
         localStorage.token = token

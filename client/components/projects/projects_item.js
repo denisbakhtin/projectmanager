@@ -9,6 +9,7 @@ import {
 } from '../shared/notifications'
 import service from '../../utils/service.js'
 import yesno_modal from '../shared/yesno_modal'
+import button_menu from '../shared/button_menu'
 
 export default function ProjectsItem() {
     let onUpdate,
@@ -78,24 +79,40 @@ export default function ProjectsItem() {
                         'Details',
                         (project.tasks && project.tasks.length > 0) ? m('span.badge.badge-primary.ml-2', project.tasks.length) : '',
                     ]),
-                    m('span.extra-buttons', [
-                        m('button.btn.btn-default.btn-icon[type=button]', {
-                            title: "Edit",
-                            onclick: () => m.route.set('/projects/edit/' + project.id)
-                        }, m('i.fa.fa-edit')),
-                        m('button.btn.btn-default.btn-icon[type=button]', {
-                            title: (project.favorite) ? "Remove from favorites" : "Move to favorites",
-                            onclick: () => toggleFavor(project),
-                        }, (project.favorite) ? m('i.fa.fa-star') : m('i.fa.fa-star-o')),
-                        m('button.btn.btn-default.btn-icon[type=button]', {
-                            title: (project.archived) ? "Unarchive" : "Archive",
-                            onclick: () => toggleArchive(project),
-                        }, m('i.fa.fa-archive')),
-                        m('button.btn.btn-default.btn-icon[type=button]', {
-                            title: "Delete",
-                            onclick: () => showModal = true
-                        }, m('i.fa.fa-trash-o')),
-                    ]),
+                    m(button_menu, {
+                        children: [
+                            m('.dropdown-menu', [
+                                m('button.dropdown-item.btn.btn-default.btn-icon[type=button]', {
+                                    title: "Edit",
+                                    onclick: () => m.route.set('/projects/edit/' + project.id)
+                                }, [
+                                    m('i.fa.fa-edit'),
+                                    m('span.text.ml-1', 'Edit')
+                                ]),
+                                m('button.dropdown-item.btn.btn-default.btn-icon[type=button]', {
+                                    title: (project.favorite) ? "Remove from favorites" : "Move to favorites",
+                                    onclick: () => toggleFavor(project),
+                                }, [
+                                    (project.favorite) ? m('i.fa.fa-star') : m('i.fa.fa-star-o'),
+                                    m('span.text.ml-1', 'Favorite')
+                                ]),
+                                m('button.dropdown-item.btn.btn-default.btn-icon[type=button]', {
+                                    title: (project.archived) ? "Unarchive" : "Archive",
+                                    onclick: () => toggleArchive(project),
+                                }, [
+                                    m('i.fa.fa-archive'),
+                                    m('span.text.ml-1', 'Archive')
+                                ]),
+                                m('button.dropdown-item.btn.btn-default.btn-icon[type=button]', {
+                                    title: "Delete",
+                                    onclick: () => showModal = true
+                                }, [
+                                    m('i.fa.fa-trash-o'),
+                                    m('span.text.ml-1', 'Delete')
+                                ]),
+                            ])
+                        ]
+                    }),
                 ]),
                 (showModal) ? m(yesno_modal, {
                     onYes: () => { remove(project); showModal = false },
