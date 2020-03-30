@@ -36,6 +36,7 @@ export default function Modal() {
                         ]),
                         m('.modal-body', vnode.attrs.body || ''),
                         m('.modal-footer', [
+                            (vnode.attrs.extra_buttons) ? vnode.attrs.extra_buttons : null,
                             m('button[type=submit].btn.btn-primary', { onclick: onOk }, [
                                 m('i.fa.fa-check.mr-1'),
                                 vnode.attrs.okText ?? "Submit",

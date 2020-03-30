@@ -9,14 +9,16 @@ import {
 import comments from '../comments/comments'
 import { startTask } from '../shared/active_task'
 import files from '../attached_files/files'
+import edit_comment_modal from '../comments/edit_comment_modal'
 
 export default function Task() {
     let task,
         id,
         errors = [],
         md,
+        showSolutionModal = false,
 
-        get = (id) =>
+        get = () =>
             service.getTask(id)
                 .then((result) => task = result)
                 .catch((error) => errors = responseErrors(error)),
@@ -26,7 +28,7 @@ export default function Task() {
     return {
         oninit(vnode) {
             id = m.route.param('id')
-            get(id)
+            get()
             md = new MarkdownIt()
         },
 
@@ -46,7 +48,7 @@ export default function Task() {
                 ]) : null,
                 m('.buttons', [
                     m('button.btn.btn-primary.btn-raised.btn-round[type=button]', {
-                        onclick: () => startTask(task, () => get(id))
+                        onclick: () => startTask(task, () => get())
                     }, [
                         m('i.fa.fa-play'),
                         'Start',
@@ -56,7 +58,7 @@ export default function Task() {
                     }, m('i.fa.fa-edit')),
                     (!task.completed) ?
                         m('button.btn.btn-primary.btn-icon[type=button]', {
-                            onclick: () => m.route.set('/tasks/edit/' + task.id)
+                            onclick: () => showSolutionModal = true,
                         }, m('i.fa.fa-check')) : null,
                     m('button.btn.btn-default.btn-icon[type=button]', {
                         onclick: () => remove()
@@ -64,14 +66,21 @@ export default function Task() {
                 ]),
                 (task.description) ? m('.task-contents', m.trust(md.render(task.description))) : null,
                 m(files, { files: task.files, readOnly: true }),
-                m(comments, { comments: task.comments, task_id: task.id, onUpdate: () => get(id) }),
+                m(comments, { comments: task.comments, task_id: task.id, onUpdate: () => get() }),
 
                 m(error, { errors: errors }),
                 m('.actions.mt-4', [
                     m('button.btn.btn-outline-secondary.mr-2[type=button]', {
                         onclick: () => window.history.back()
                     }, "Back"),
-                ])
+                ]),
+
+                (showSolutionModal) ? m(edit_comment_modal, {
+                    task_id: task.id,
+                    is_solution: true,
+                    onOk: () => { showSolutionModal = false; get(); },
+                    onCancel: () => { showSolutionModal = false },
+                }) : null,
             ] : m('Loading...'))
         }
     }

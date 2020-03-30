@@ -1001,6 +1001,10 @@ ul.box-list {
         margin-top: 10px;
         margin-left: auto;
 
+        @media (min-width: 451px) {
+          margin-left: initial;
+        }
+
         &>button {
           margin-right: 0;
         }

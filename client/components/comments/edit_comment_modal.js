@@ -21,6 +21,7 @@ export default function EditComment() {
 
         setContents = (contents) => comment.contents = contents,
         setFiles = (files) => comment.files = files,
+        modalOnOk = () => (comment.id) ? update().then(onOk) : create().then(onOk),
 
         //requests
         create = () =>
@@ -70,7 +71,15 @@ export default function EditComment() {
                 large: true,
                 title: (comment.id) ? 'New comment' : 'Edit comment',
                 body: body,
-                onOk: () => (comment.id) ? update().then(onOk) : create().then(onOk),
+                extra_buttons: (is_solution) ? [
+                    m('button[type=button].btn.btn-info.mr-auto', {
+                        onclick: () => {
+                            setContents('Done!')
+                            modalOnOk()
+                        }
+                    }, "Done!"),
+                ] : null,
+                onOk: modalOnOk,
                 onCancel: onCancel,
             })
 
