@@ -25,11 +25,17 @@
 
     - name: clean old binaries
       file:
-        path: /home/tabula/denisbakhtin/projectmanager/projectmanager-go
+        path: "{{ path }}"
         state: absent
+      with_items: 
+        - /home/tabula/denisbakhtin/projectmanager/projectmanager-go
+        - /home/tabula/denisbakhtin/projectmanager/periodic-go
 
     - name: build new binary
       shell: cd /home/tabula/denisbakhtin/projectmanager && /home/tabula/golang/bin/go build -o projectmanager-go
+
+    - name: build new periodic command binary
+      shell: cd /home/tabula/denisbakhtin/projectmanager && /home/tabula/golang/bin/go build -o periodic-go cmd/periodical/main.go
 
     - name: start service
       shell: systemctl start projectmanager
