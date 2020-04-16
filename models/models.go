@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/denisbakhtin/marble/models"
 	"github.com/denisbakhtin/projectmanager/config"
 	"github.com/fiam/gounidecode/unidecode"
 	"github.com/jinzhu/gorm"
@@ -15,7 +16,9 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-//DB references sqlx db connection
+//TODO: make DB private, all access to db should be made via repositories
+
+//DB references gorm db connection
 var DB *gorm.DB
 
 //InitializeDB initializes DB variable by establishing connection to the DB server
@@ -27,7 +30,7 @@ func InitializeDB() {
 	}
 	validations.RegisterCallbacks(DB)
 	DB.AutoMigrate(&User{}, &UserGroup{}, &Task{}, &Project{}, &TaskLog{},
-		&AttachedFile{}, &Page{}, &Log{}, &Notification{},
+		&AttachedFile{}, &Page{}, &Log{},
 		&Setting{}, &Category{}, &Session{}, &Comment{}, &TaskLog{}, &Periodicity{})
 
 	count := 0
@@ -35,16 +38,32 @@ func InitializeDB() {
 		log.Panic(err)
 	}
 	if count != 3 {
-		if err := DB.Model(&UserGroup{}).Create(&UserGroup{ID: ADMIN, Name: "Admin"}).Error; err != nil {
+		if err := DB.Create(&UserGroup{ID: ADMIN, Name: "Admin"}).Error; err != nil {
 			log.Panic(fmt.Sprintf("Error creating Admin user group with ID=%d. Try to create it manually and modify models.ADMIN constant accordingly.", ADMIN))
 		}
-		if err := DB.Model(&UserGroup{}).Create(&UserGroup{ID: EDITOR, Name: "Editor"}).Error; err != nil {
+		if err := DB.Create(&UserGroup{ID: EDITOR, Name: "Editor"}).Error; err != nil {
 			log.Panic(fmt.Sprintf("Error creating Editor user group with ID=%d. Try to create it manually and modify models.EDITOR constant accordingly.", EDITOR))
 		}
-		if err := DB.Model(&UserGroup{}).Create(&UserGroup{ID: USER, Name: "User"}).Error; err != nil {
+		if err := DB.Create(&UserGroup{ID: USER, Name: "User"}).Error; err != nil {
 			log.Panic(fmt.Sprintf("Error creating User user group with ID=%d. Try to create it manually and modify models.USER constant accordingly.", USER))
 		}
 	}
+	//ensure site_name setting exists in database
+	setting := models.Setting{}
+	if err := DB.Where("code = ?", "site_name").First(&setting).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			if err := DB.Create(&models.Setting{Code: "site_name", Value: config.Settings.ProjectName}).Error; err != nil {
+				log.Panic(fmt.Sprintf("Can't create site_name setting in database. %v", err))
+			}
+		} else {
+			log.Panic(err)
+		}
+	}
+}
+
+//Close terminates DB handler
+func Close() {
+	DB.Close()
 }
 
 //createSlug makes url slug out of string

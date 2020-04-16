@@ -1,8 +1,6 @@
 package config
 
 import (
-	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,8 +12,6 @@ import (
 )
 
 var (
-	//Env represents application mode (ex: development, test, production)
-	Env string
 	//Settings keeps db settings for current environment
 	Settings settingYaml
 	//SettingsAll keeps db settings for all environments
@@ -51,17 +47,13 @@ type settingYaml struct {
 }
 
 //Initialize loads config file and initializes config variables
-func Initialize() {
-	envPtr := flag.String("mode", "debug", fmt.Sprintf("application environment, one of: %s, %s, %s", gin.DebugMode, gin.ReleaseMode, gin.TestMode))
-	flag.Parse()
-
+func Initialize(mode string) {
 	AppDir, _ = filepath.Abs("")
-	switch *envPtr {
+	switch mode {
 	case gin.DebugMode, gin.ReleaseMode, gin.TestMode:
-		Env = *envPtr
 	default:
-		log.Printf("Wrong value of -mode flag: %s, setting it to 'debug'", *envPtr)
-		Env = gin.DebugMode
+		log.Printf("Wrong value of -mode flag: %s, setting it to 'debug'", mode)
+		mode = gin.DebugMode
 	}
 
 	UploadPathURL = "/public/uploads"
@@ -69,30 +61,26 @@ func Initialize() {
 
 	var err error
 	//closed in main.main by defer
-	LogFile, err = os.OpenFile(path.Join(AppDir, "logs", Env+".log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	LogFile, err = os.OpenFile(path.Join(AppDir, "logs", mode+".log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("Error opening log file: %v. All logs will be redirected to STDOUT", err)
 	}
-	//works around all packages, importing standard "log"!!!! awesome tbh
-	if LogFile != nil {
-		log.SetOutput(LogFile)
-	}
+	//redirect standard log output to file
+	log.SetOutput(LogFile)
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	DbSettingsAll := loadDbSettings()
-	switch Env {
+	SettingsAll = loadDbSettings()
+	switch mode {
 	case gin.DebugMode:
-		Settings = DbSettingsAll.Development
+		Settings = SettingsAll.Development
 	case gin.ReleaseMode:
-		Settings = DbSettingsAll.Production
+		Settings = SettingsAll.Production
 	case gin.TestMode:
-		Settings = DbSettingsAll.Test
+		Settings = SettingsAll.Test
 	}
-
-	log.Printf("Starting application in %s mode", Env)
 }
 
-func loadDbSettings() *settingsYaml {
+func loadDbSettings() settingsYaml {
 	configFile := path.Join(AppDir, "config", "config.yml")
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		log.Panic(err.Error())
@@ -108,5 +96,5 @@ func loadDbSettings() *settingsYaml {
 	if err != nil {
 		log.Panic(err.Error())
 	}
-	return &allSettings
+	return allSettings
 }

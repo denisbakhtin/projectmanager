@@ -42,8 +42,3 @@ func (c *Category) BeforeDelete(tx *gorm.DB) (err error) {
 	}
 	return
 }
-
-//CategoriesSummaryVM is a view model for categories statistics
-type CategoriesSummaryVM struct {
-	Count int `json:"count"`
-}

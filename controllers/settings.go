@@ -1,30 +1,32 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
-	"github.com/denisbakhtin/projectmanager/config"
+	"github.com/denisbakhtin/projectmanager/helpers"
 	"github.com/denisbakhtin/projectmanager/models"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 //settingsGet handles GET all settings request
 func settingsGet(c *gin.Context) {
-	var settings []models.Setting
-	models.DB.Order("id").Find(&settings)
-	//append some settings from config.yml
-	settings = append(settings, models.Setting{Code: "site_name", Value: config.Settings.ProjectName})
+	settings, err := models.SettingsDB.GetAll()
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+	}
 	c.JSON(http.StatusOK, settings)
 }
 
 //settingGet handles get setting request
 func settingGet(c *gin.Context) {
-	id := c.Param("id")
-	setting := models.Setting{}
-	models.DB.First(&setting, id)
-	if setting.ID == 0 {
-		abortWithError(c, http.StatusNotFound, fmt.Errorf("Setting not found"))
+	setting, err := models.SettingsDB.Get(c.Param("id"))
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Setting"))
+		} else {
+			abortWithError(c, http.StatusInternalServerError, err)
+		}
 		return
 	}
 	c.JSON(http.StatusOK, setting)
@@ -37,7 +39,7 @@ func settingsPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if err := models.DB.Create(&setting).Error; err != nil {
+	if _, err := models.SettingsDB.Create(setting); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -46,13 +48,12 @@ func settingsPost(c *gin.Context) {
 
 //settingsPut handles update setting request
 func settingsPut(c *gin.Context) {
-	//id := c.Param("id")
 	setting := models.Setting{}
 	if err := c.ShouldBindJSON(&setting); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if err := models.DB.Save(&setting).Error; err != nil {
+	if _, err := models.SettingsDB.Update(setting); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -61,14 +62,7 @@ func settingsPut(c *gin.Context) {
 
 //settingsDelete handles delete setting request
 func settingsDelete(c *gin.Context) {
-	id := c.Param("id")
-	setting := models.Setting{}
-	models.DB.First(&setting, id)
-	if setting.ID == 0 {
-		abortWithError(c, http.StatusNotFound, fmt.Errorf("Setting not found"))
-		return
-	}
-	if err := models.DB.Delete(&setting).Error; err != nil {
+	if err := models.SettingsDB.Delete(c.Param("id")); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}

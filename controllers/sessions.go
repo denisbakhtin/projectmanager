@@ -1,31 +1,32 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/denisbakhtin/projectmanager/helpers"
 	"github.com/denisbakhtin/projectmanager/models"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 //sessionsGet handles get all sessions request
 func sessionsGet(c *gin.Context) {
-	var sessions []models.Session
-	models.DB.Where("user_id = ?", currentUserID(c)).Preload("TaskLogs").Find(&sessions)
+	sessions, err := models.SessionsDB.GetAll(currentUserID(c))
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+	}
 	c.JSON(http.StatusOK, sessions)
 }
 
 //sessionGet handles get session request
 func sessionGet(c *gin.Context) {
-	id := c.Param("id")
-	session := models.Session{}
-	userID := currentUserID(c)
-	models.DB.Where("user_id = ?", userID).
-		Preload("TaskLogs").Preload("TaskLogs.Task").Preload("TaskLogs.Task.Project").
-		First(&session, id)
-	if session.ID == 0 {
-		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Session"))
+	session, err := models.SessionsDB.Get(currentUserID(c), c.Param("id"))
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Page"))
+		} else {
+			abortWithError(c, http.StatusInternalServerError, err)
+		}
 		return
 	}
 	c.JSON(http.StatusOK, session)
@@ -33,11 +34,11 @@ func sessionGet(c *gin.Context) {
 
 //sessionNewGet handles get new session request
 func sessionNewGet(c *gin.Context) {
-	var logs []models.TaskLog
-	userID := currentUserID(c)
-	models.DB.
-		Where("user_id = ? and minutes > 0 and session_id = 0", userID).
-		Preload("Task").Preload("Task.Project").Find(&logs)
+	logs, err := models.SessionsDB.NewGet(currentUserID(c))
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+		return
+	}
 	c.JSON(http.StatusOK, logs)
 }
 
@@ -48,10 +49,7 @@ func sessionsPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	userID := currentUserID(c)
-	session.UserID = userID
-
-	if err := models.DB.Create(&session).Error; err != nil {
+	if _, err := models.SessionsDB.Create(currentUserID(c), session); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -61,18 +59,7 @@ func sessionsPost(c *gin.Context) {
 
 //sessionsDelete handles delete session request
 func sessionsDelete(c *gin.Context) {
-	id := c.Param("id")
-	session := models.Session{}
-	models.DB.Preload("TaskLogs").Where("user_id = ?", currentUserID(c)).First(&session, id)
-	if session.ID == 0 {
-		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Session"))
-		return
-	}
-	if len(session.TaskLogs) > 0 {
-		abortWithError(c, http.StatusBadRequest, fmt.Errorf("Can not remove non-empty session"))
-		return
-	}
-	if err := models.DB.Delete(&session).Error; err != nil {
+	if err := models.SessionsDB.Delete(currentUserID(c), c.Param("id")); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
@@ -82,9 +69,8 @@ func sessionsDelete(c *gin.Context) {
 
 //sessionsSummaryGet handles get sessions statistics request
 func sessionsSummaryGet(c *gin.Context) {
-	vm := models.SessionsSummaryVM{}
-	userID := currentUserID(c)
-	if err := models.DB.Model(models.Session{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
+	vm, err := models.SessionsDB.Summary(currentUserID(c))
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}

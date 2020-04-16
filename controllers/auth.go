@@ -1,14 +1,12 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/badoux/checkmail"
 	"github.com/denisbakhtin/projectmanager/config"
 	"github.com/denisbakhtin/projectmanager/helpers"
 	"github.com/denisbakhtin/projectmanager/models"
-	"github.com/denisbakhtin/projectmanager/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,25 +17,12 @@ func loginPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	user := models.User{}
-	models.DB.Model(&models.User{}).Where("email = ?", helpers.NormalizeEmail(vm.Email)).First(&user)
-	switch {
-	case user.ID == 0 || !user.HasPassword(vm.Password):
-		abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Wrong email or password"))
-		return
-	case user.Status == models.NOTACTIVE:
-		abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Account requires activation"))
-		return
-	case user.Status == models.SUSPENDED:
-		abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Account suspended"))
+	user, err := models.UsersDB.Login(vm)
+	if err != nil {
+		abortWithError(c, http.StatusUnauthorized, err)
 		return
 	}
-
-	if err := user.CreateJWTToken(); err != nil {
-		abortWithError(c, http.StatusInternalServerError, err)
-		return
-	}
-	c.JSON(200, gin.H{"token": user.Token})
+	c.JSON(200, gin.H{"token": user.JWTToken})
 }
 
 //activatePost handles user activation
@@ -47,30 +32,12 @@ func activatePost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	user := models.User{}
-	models.DB.Where("token = ?", vm.Token).First(&user)
-	switch {
-	case user.ID == 0:
-		abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Wrong activation token"))
-		return
-	case user.Status == models.SUSPENDED:
-		abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Account suspended"))
-		return
-	}
-	//update user record
-	user.Status = models.ACTIVE
-	user.Token = ""
-	if err := models.DB.Save(&user).Error; err != nil {
-		abortWithError(c, http.StatusInternalServerError, err)
-		return
+	user, err := models.UsersDB.Activate(vm)
+	if err != nil {
+		abortWithError(c, http.StatusUnauthorized, err)
 	}
 
-	if err := user.CreateJWTToken(); err != nil {
-		abortWithError(c, http.StatusInternalServerError, err)
-		return
-	}
-
-	c.JSON(200, gin.H{"token": user.Token})
+	c.JSON(200, gin.H{"token": user.JWTToken})
 }
 
 //registerPost handles user registration
@@ -93,32 +60,50 @@ func registerPost(c *gin.Context) {
 		}
 	}
 
-	user := models.User{}
-	models.DB.Where("email = ?", helpers.NormalizeEmail(vm.Email)).First(&user)
-	if user.ID != 0 && user.Status != models.NOTACTIVE {
-		abortWithError(c, http.StatusBadRequest, fmt.Errorf("This email already taken"))
-		return
-	}
-
-	user.Name = vm.Name
-	user.Email = vm.Email
-	user.PasswordHash = helpers.CreatePasswordHash(vm.Password)
-	user.UserGroupID = models.USER
-	//user.Token = helpers.CreateSecureToken()
-	user.Status = models.ACTIVE
-	user.Token = ""
-
-	//create new or update inactive account
-	if err := models.DB.Save(&user).Error; err != nil {
+	user, err := models.UsersDB.Register(vm)
+	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	go services.SendUserRegistrationMessage(c, &user) //send email in background
+	go Email.SendUserRegistrationMessage(c, &user) //send email in background
 
-	if err := user.CreateJWTToken(); err != nil {
-		abortWithError(c, http.StatusInternalServerError, err)
+	c.JSON(200, gin.H{"token": user.JWTToken})
+}
+
+//forgotPost handles password reset request
+func forgotPost(c *gin.Context) {
+	vm := models.ForgotVM{}
+	if err := c.ShouldBindJSON(&vm); err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	c.JSON(200, gin.H{"token": user.Token})
+	user, err := models.UsersDB.Forgot(vm)
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	go Email.SendPasswordResetMessage(c, &user)
+
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+//resetPost handles password reset request
+func resetPost(c *gin.Context) {
+	vm := models.ResetVM{}
+	if err := c.ShouldBindJSON(&vm); err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	user, err := models.UsersDB.ResetPassword(vm)
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	go Email.SendPasswordResetConfirmation(c, &user)
+
+	c.JSON(200, gin.H{"token": user.JWTToken})
 }

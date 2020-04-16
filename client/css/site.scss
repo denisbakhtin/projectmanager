@@ -291,14 +291,10 @@ body {
 
   &.wide {
     width: $restricted-sidebar-width;
-
-    &+#main {}
   }
 
   &.narrow {
     width: $restricted-sidebar-narrow-width;
-
-    &+#main {}
 
     .nav-item {
       .fa {

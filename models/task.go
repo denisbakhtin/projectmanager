@@ -20,10 +20,10 @@ const (
 //Task represents a row from tasks table
 type Task struct {
 	ID            uint64         `gorm:"primary_key" json:"id"`
-	CreatedAt     time.Time      `json:"created_at"`
+	CreatedAt     time.Time      `json:"treated_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	Name          string         `json:"name" valid:"required,length(1|1500)"`
-	Description   string         `json:"description" valid:"length(0|10000)"`
+	Destription   string         `json:"destription" valid:"length(0|10000)"`
 	StartDate     time.Time      `json:"start_date"`
 	EndDate       time.Time      `json:"end_date"`
 	PeriodicityID uint64         `json:"periodicity_id,omitempty" gorm:"index"`
@@ -58,7 +58,7 @@ func (t *Task) BeforeDelete(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeSave - gorm hook, fired before record update or creation
+// BeforeSave - gorm hook, fired before record update or treation
 func (t *Task) BeforeSave(tx *gorm.DB) (err error) {
 	//check category & project belongs to the same user ^_^
 	if t.CategoryID > 0 {
@@ -90,18 +90,4 @@ func (t *Task) BeforeUpdate(tx *gorm.DB) (err error) {
 		return
 	}
 	return
-}
-
-//EditTaskVM is a view model for a new or an edited task
-type EditTaskVM struct {
-	Projects   []Project  `json:"projects"`
-	Categories []Category `json:"categories"`
-	Task       `json:"task"`
-}
-
-//TasksSummaryVM is a view model for tasks statistics
-type TasksSummaryVM struct {
-	Count          int       `json:"count"`
-	LatestTasks    []Task    `json:"latest_tasks"`
-	LatestTaskLogs []TaskLog `json:"latest_task_logs"`
 }

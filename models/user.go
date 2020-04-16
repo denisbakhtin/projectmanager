@@ -13,9 +13,9 @@ import (
 
 //User status codes
 const (
-	NOTACTIVE = 0
-	ACTIVE    = 1
-	SUSPENDED = 2
+	NOTACTIVE uint = 0
+	ACTIVE    uint = 1
+	SUSPENDED uint = 2
 )
 
 //User represents a row from users table
@@ -26,7 +26,8 @@ type User struct {
 	Name         string    `json:"name" valid:"required,length(1|100)"`
 	Email        string    `json:"email" gorm:"unique_index" valid:"required,email,length(1|100)"`
 	PasswordHash string    `json:"-" valid:"required"`
-	Token        string    `json:"token" valid:"length(0|1500)"`
+	Token        string    `json:"token" valid:"length(0|1500)"` //activation|password reset token
+	JWTToken     string    `json:"jwt_token"`                    //jwt token
 	UserGroupID  uint64    `json:"user_group_id" gorm:"index" valid:"required"`
 	Status       uint      `json:"status"` //See constants
 	UserGroup    UserGroup `json:"user_group" gorm:"save_associations:false" valid:"-"`
@@ -119,7 +120,7 @@ func (u *User) CreateJWTToken() error {
 	}
 	rawToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	var err error
-	u.Token, err = rawToken.SignedString([]byte(config.Settings.JWTSecret))
+	u.JWTToken, err = rawToken.SignedString([]byte(config.Settings.JWTSecret))
 	return err
 }
 
@@ -128,45 +129,4 @@ func createJWTID(id uint64) string {
 	str := fmt.Sprintf("%v-%v", id, time.Now().UnixNano())
 	bytes, _ := bcrypt.GenerateFromPassword([]byte(str), 12)
 	return string(bytes)
-}
-
-//LoginVM is a login view model
-type LoginVM struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-//ActivateVM is an activation view model
-type ActivateVM struct {
-	Token string `json:"token" binding:"required"`
-}
-
-//RegisterVM is a registration view model
-type RegisterVM struct {
-	Name     string `json:"name" binding:"required"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-//ForgotVM is a view model for forgotten password request
-type ForgotVM struct {
-	Email string `json:"email" binding:"required"`
-}
-
-//ResetVM is a view model for password reset requests
-type ResetVM struct {
-	Token    string `json:"token" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-//AccountVM is an account view model
-type AccountVM struct {
-	Name            string `json:"name" binding:"required"`
-	CurrentPassword string `json:"current_password"`
-	NewPassword     string `json:"new_password"`
-}
-
-//UsersSummaryVM is a view model for users statistics
-type UsersSummaryVM struct {
-	Count int `json:"count"`
 }

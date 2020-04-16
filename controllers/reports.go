@@ -9,10 +9,10 @@ import (
 
 //spentGet handles spent report get request
 func spentGet(c *gin.Context) {
-	var taskLogs []models.TaskLog
-	models.DB.Preload("Task.Project").Preload("Task").
-		Preload("Task.Category").
-		Where("session_id = 0 and minutes > 0 and user_id = ?", currentUserID(c)).
-		Find(&taskLogs)
+	taskLogs, err := models.ReportsDB.Spent(currentUserID(c))
+	if err != nil {
+		abortWithError(c, http.StatusInternalServerError, err)
+		return
+	}
 	c.JSON(http.StatusOK, taskLogs)
 }

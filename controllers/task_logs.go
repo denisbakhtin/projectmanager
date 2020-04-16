@@ -14,28 +14,23 @@ func taskLogsPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	taskLog.UserID = currentUserID(c)
-	taskLog.SessionID = 0
-	if err := models.DB.Create(&taskLog).Error; err != nil {
+	if _, err := models.TaskLogsDB.Create(currentUserID(c), taskLog); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, taskLog)
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 //taskLogsPut handles update taskLog request
 func taskLogsPut(c *gin.Context) {
-	//id := c.Param("id")
 	taskLog := models.TaskLog{}
 	if err := c.ShouldBindJSON(&taskLog); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	taskLog.UserID = currentUserID(c)
-	taskLog.SessionID = 0
-	if err := models.DB.Save(&taskLog).Error; err != nil {
+	if _, err := models.TaskLogsDB.Update(currentUserID(c), taskLog); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, taskLog)
+	c.JSON(http.StatusOK, gin.H{})
 }

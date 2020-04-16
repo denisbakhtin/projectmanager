@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"html/template"
+	"log"
 
 	"github.com/denisbakhtin/projectmanager/config"
 	"github.com/denisbakhtin/projectmanager/models"
@@ -9,11 +10,19 @@ import (
 )
 
 //ListenAndServe prepares routes & runs web server
-func ListenAndServe() {
+func ListenAndServe(mode string) {
 
 	//++++++++++++++++++++ GIN ROUTES +++++++++++++++++++++++++++++
-	gin.SetMode(config.Env)
-	router := gin.Default() //with logger and recover middlewares baked in
+	gin.SetMode(mode)
+
+	router := setupRouter()
+
+	log.Printf("Starting application in %s mode", mode)
+	router.Run(":8181")
+}
+
+func setupRouter() *gin.Engine {
+	router := gin.New()
 	router.Static("/public", "./public")
 	router.SetFuncMap(funcMap())
 	router.LoadHTMLGlob("views/**/*")
@@ -101,9 +110,6 @@ func ListenAndServe() {
 
 		api.POST("/upload/:uploader", uploadsPost)
 
-		api.GET("/notifications", notificationsGet)
-		api.DELETE("/notifications/:id", notificationsDelete)
-
 		api.GET("/search", searchGet)
 	}
 
@@ -112,7 +118,7 @@ func ListenAndServe() {
 	{
 		api.GET("/users", usersGet)
 		api.GET("/users/:id", userGet)
-		api.PUT("/users/:id", usersPut)
+		api.PUT("/users/:id", userStatusPut)
 		api.GET("/users_summary", usersSummaryGet)
 
 		api.GET("/pages", pagesGet)
@@ -126,8 +132,7 @@ func ListenAndServe() {
 		api.PUT("/settings/:id", settingsPut)
 		api.DELETE("/settings/:id", settingsDelete)
 	}
-
-	router.Run(":8181")
+	return router
 }
 
 //currentUserID returns authenticated user ID
@@ -148,8 +153,7 @@ func funcMap() template.FuncMap {
 }
 
 func pagesMenu() []models.Page {
-	var pages []models.Page
-	models.DB.Where("published = true").Order("id asc").Select("id, name").Find(&pages)
+	pages, _ := models.PagesDB.GetPagesForMenu()
 	return pages
 }
 

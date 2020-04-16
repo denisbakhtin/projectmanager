@@ -1,41 +1,46 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
+	"github.com/denisbakhtin/projectmanager/helpers"
 	"github.com/denisbakhtin/projectmanager/models"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 //usersGet handles get all users request
 func usersGet(c *gin.Context) {
-	var users []models.User
-	models.DB.Find(&users)
+	users, err := models.UsersDB.GetAll()
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+		return
+	}
 	c.JSON(http.StatusOK, users)
 }
 
 //userGet handles get user request
 func userGet(c *gin.Context) {
-	id := c.Param("id")
-	user := models.User{}
-	models.DB.First(&user, id)
-	if user.ID == 0 {
-		abortWithError(c, http.StatusNotFound, fmt.Errorf("User not found"))
+	user, err := models.UsersDB.Get(c.Param("id"))
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("User"))
+		} else {
+			abortWithError(c, http.StatusInternalServerError, err)
+		}
 		return
 	}
 	c.JSON(http.StatusOK, user)
 }
 
-//usersPut handles user status update
-func usersPut(c *gin.Context) {
-	//id := c.Param("id")
+//userStatusPut handles user status update
+func userStatusPut(c *gin.Context) {
 	user := models.User{}
 	if err := c.ShouldBindJSON(&user); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if err := models.DB.Where("id = ?", user.ID).Update("status", user.Status).Error; err != nil {
+	if _, err := models.UsersDB.UpdateStatus(user); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -44,8 +49,8 @@ func usersPut(c *gin.Context) {
 
 //usersSummaryGet handles get users statistics request
 func usersSummaryGet(c *gin.Context) {
-	vm := models.UsersSummaryVM{}
-	if err := models.DB.Model(models.User{}).Count(&vm.Count).Error; err != nil {
+	vm, err := models.UsersDB.Summary()
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}

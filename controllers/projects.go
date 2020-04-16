@@ -11,36 +11,33 @@ import (
 
 //projectsGet handles get all projects request
 func projectsGet(c *gin.Context) {
-	var projects []models.Project
-	models.DB.Preload("Tasks").Preload("Category").
-		Where("user_id = ?", currentUserID(c)).Order("archived asc, created_at asc").
-		Find(&projects)
+	projects, err := models.ProjectsDB.GetAll(currentUserID(c))
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+		return
+	}
 	c.JSON(http.StatusOK, projects)
 }
 
 //projectsFavoriteGet handles get all favorite projects request
 func projectsFavoriteGet(c *gin.Context) {
-	var projects []models.Project
-	models.DB.Select("id, name").Where("user_id = ? and favorite = true", currentUserID(c)).Order("created_at asc").Find(&projects)
+	projects, err := models.ProjectsDB.GetAllFavorite(currentUserID(c))
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+		return
+	}
 	c.JSON(http.StatusOK, projects)
 }
 
 //projectGet handles get project request
 func projectGet(c *gin.Context) {
-	id := c.Param("id")
-	project := models.Project{}
-	query := models.DB.Where("user_id = ?", currentUserID(c)).
-		Preload("AttachedFiles").Preload("Category")
-	query = query.Preload("Tasks", func(db *gorm.DB) *gorm.DB {
-		return db.Order("tasks.completed asc, created_at asc")
-	})
-	query = query.Preload("Tasks.Comments", func(db *gorm.DB) *gorm.DB {
-		return db.Order("comments.created_at asc")
-	})
-
-	query.First(&project, id)
-	if project.ID == 0 {
-		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Project"))
+	project, err := models.ProjectsDB.Get(currentUserID(c), c.Param("id"))
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Page"))
+		} else {
+			abortWithError(c, http.StatusInternalServerError, err)
+		}
 		return
 	}
 	c.JSON(http.StatusOK, project)
@@ -48,18 +45,21 @@ func projectGet(c *gin.Context) {
 
 //projectNewGet handles get new project request
 func projectNewGet(c *gin.Context) {
-	vm := models.EditProjectVM{}
-	userID := currentUserID(c)
-	models.DB.Where("user_id = ?", userID).Find(&vm.Categories)
+	vm, err := models.ProjectsDB.GetNew(currentUserID(c))
+	if err != nil {
+		abortWithError(c, http.StatusInternalServerError, err)
+		return
+	}
 	c.JSON(http.StatusOK, vm)
 }
 
 //projectEditGet handles edit project request
 func projectEditGet(c *gin.Context) {
-	vm := models.EditProjectVM{}
-	userID := currentUserID(c)
-	models.DB.Where("user_id = ?", userID).Find(&vm.Categories)
-	models.DB.Preload("AttachedFiles").Preload("Tasks").First(&vm.Project, c.Param("id"))
+	vm, err := models.ProjectsDB.GetEdit(currentUserID(c), c.Param("id"))
+	if err != nil {
+		abortWithError(c, http.StatusInternalServerError, err)
+		return
+	}
 	c.JSON(http.StatusOK, vm)
 }
 
@@ -70,8 +70,8 @@ func projectsPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	project.UserID = currentUserID(c)
-	if err := models.DB.Create(&project).Error; err != nil {
+
+	if _, err := models.ProjectsDB.Create(currentUserID(c), project); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -80,14 +80,12 @@ func projectsPost(c *gin.Context) {
 
 //projectsPut handles update project request
 func projectsPut(c *gin.Context) {
-	//id := c.Param("id")
 	project := models.Project{}
 	if err := c.ShouldBindJSON(&project); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	project.UserID = currentUserID(c)
-	if err := models.DB.Save(&project).Error; err != nil {
+	if _, err := models.ProjectsDB.Update(currentUserID(c), project); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -96,14 +94,12 @@ func projectsPut(c *gin.Context) {
 
 //projectArchive handles archive project request
 func projectArchive(c *gin.Context) {
-	//id := c.Param("id")
 	project := models.Project{}
 	if err := c.ShouldBindJSON(&project); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	//update column without hooks
-	if err := models.DB.Model(&project).UpdateColumn("archived", project.Archived).Error; err != nil {
+	if _, err := models.ProjectsDB.ToggleArchive(currentUserID(c), project); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -112,14 +108,12 @@ func projectArchive(c *gin.Context) {
 
 //projectFavorite handles toggling project favorite status request
 func projectFavorite(c *gin.Context) {
-	//id := c.Param("id")
 	project := models.Project{}
 	if err := c.ShouldBindJSON(&project); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	//update column without hooks
-	if err := models.DB.Model(&project).UpdateColumn("favorite", project.Favorite).Error; err != nil {
+	if _, err := models.ProjectsDB.ToggleFavorite(currentUserID(c), project); err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -128,14 +122,7 @@ func projectFavorite(c *gin.Context) {
 
 //projectsDelete handles delete role request
 func projectsDelete(c *gin.Context) {
-	id := c.Param("id")
-	project := models.Project{}
-	models.DB.Where("user_id = ?", currentUserID(c)).First(&project, id)
-	if project.ID == 0 {
-		abortWithError(c, http.StatusNotFound, helpers.NotFoundOrOwnedError("Project"))
-		return
-	}
-	if err := models.DB.Delete(&project).Error; err != nil {
+	if err := models.ProjectsDB.Delete(currentUserID(c), c.Param("id")); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
@@ -145,9 +132,8 @@ func projectsDelete(c *gin.Context) {
 
 //projectsSummaryGet handles get projects statistics request
 func projectsSummaryGet(c *gin.Context) {
-	vm := models.ProjectsSummaryVM{}
-	userID := currentUserID(c)
-	if err := models.DB.Model(models.Project{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
+	vm, err := models.ProjectsDB.Summary(currentUserID(c))
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}

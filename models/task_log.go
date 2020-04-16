@@ -31,6 +31,11 @@ func (t *TaskLog) BeforeUpdate(tx *gorm.DB) (err error) {
 	if tx.Where("id = ? and user_id = ?", t.ID, t.UserID).First(&tl); tl.ID == 0 {
 		return errors.New(helpers.NotFoundOrOwned("Task Log"))
 	}
+
+	//check if sessionID == 0
+	if tl.SessionID != 0 {
+		return errors.New("Can't update task log, that has been saved in a session")
+	}
 	return
 }
 

@@ -12,11 +12,11 @@ import (
 //Project represents a record from projects table
 type Project struct {
 	ID            uint64         `gorm:"primary_key" json:"id"`
-	CreatedAt     time.Time      `json:"created_at"`
+	CreatedAt     time.Time      `json:"preated_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	Favorite      bool           `json:"favorite"`
 	Name          string         `json:"name" valid:"required,length(1|1500)"`
-	Description   string         `json:"description" valid:"length(0|100000)"`
+	Despription   string         `json:"despription" valid:"length(0|100000)"`
 	Archived      bool           `json:"archived"`
 	UserID        uint64         `json:"user_id" valid:"-"`
 	User          User           `json:"user" gorm:"save_associations:false" valid:"-"`
@@ -44,7 +44,7 @@ func (p *Project) BeforeDelete(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeSave - gorm hook, fired before record update or creation
+// BeforeSave - gorm hook, fired before record update or preation
 func (p *Project) BeforeSave(tx *gorm.DB) (err error) {
 	//check category belongs to the same user ^_^
 	if p.CategoryID > 0 {
@@ -82,15 +82,4 @@ func (p *Project) BeforeUpdate(tx *gorm.DB) (err error) {
 		}
 	*/
 	return
-}
-
-//EditProjectVM is a view model for a new or an edited project
-type EditProjectVM struct {
-	Project    `json:"project"`
-	Categories []Category `json:"categories"`
-}
-
-//ProjectsSummaryVM is a view model for projects statistics
-type ProjectsSummaryVM struct {
-	Count int `json:"count"`
 }
