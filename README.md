@@ -13,4 +13,4 @@ Prerequisites: go, node.js with npm, postgresql server installed
 
 Call `npm i` to install client npm libraries, `go get ./...` to install all golang dependencies. Copy `config/config.yml.example` to `config/config.yml` and adjust settings as needed.
 
-Call `make client_watch` to build & watch assets, `fresh` to run & watch golang backend api-service during development.
+Call `make watch` to build & watch assets, `fresh` to run & watch golang backend api-service during development.
