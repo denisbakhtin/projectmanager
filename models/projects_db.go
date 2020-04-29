@@ -52,6 +52,7 @@ func (pr *projectsRepository) Get(userID uint64, id interface{}) (Project, error
 	query = query.Preload("Tasks.Comments", func(db *gorm.DB) *gorm.DB {
 		return db.Order("comments.created_at asc")
 	})
+	query = query.Preload("Tasks.TaskLogs")
 
 	err := query.First(&project, id).Error
 	return project, err

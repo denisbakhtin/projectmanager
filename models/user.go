@@ -111,7 +111,7 @@ func (u *User) CreateJWTToken() error {
 			IssuedAt:  now.Unix(),
 			Id:        createJWTID(u.ID),
 			Issuer:    "pm",
-			ExpiresAt: now.AddDate(0, 0, 30).Unix(),
+			ExpiresAt: now.AddDate(0, 0, 365).Unix(),
 			Subject:   u.Email,
 		},
 		UserID: u.ID,

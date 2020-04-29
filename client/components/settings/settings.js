@@ -26,7 +26,7 @@ export default function Settings() {
                     m('thead', [
                         m('tr', [
                             m('th[scope=col]', 'Code'),
-                            m('th[scope=col]', 'Title'),
+                            m('th[scope=col].hide-mobile', 'Title'),
                             m('th[scope=col]', 'Value'),
                             m('th.shrink.text-center[scope=col]', 'Actions')
                         ])
@@ -38,7 +38,7 @@ export default function Settings() {
                                     key: setting.id
                                 }, [
                                     m('td', setting.code),
-                                    m('td', setting.title),
+                                    m('td.hide-mobile', setting.title),
                                     m('td', setting.value),
                                     m('td.shrink.text-center', [
 

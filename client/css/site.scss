@@ -477,6 +477,65 @@ body {
   transition: all 0.3s ease;
 }
 
+@media (max-width: 450px) {
+  #side-menu {
+    display: none;
+
+    &.wide {
+      display: block;
+      width: 100% !important;
+
+      &+#main {
+        display: none;
+      }
+    }
+  }
+
+  #main {
+    padding: 0;
+
+    .actions {
+      padding: 0 15px 25px 15px;
+    }
+
+    .title,
+    .task>.buttons,
+    .comments>.buttons,
+    .task>.form-group,
+    .project>.form-group,
+    .settings>.form-group,
+    .comments>p.text-muted,
+    .category>h4,
+    .project>.attached_files,
+    .task>.attached_files,
+    .project .project-time-spent,
+    .task .task-time-spent {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    .spent-total {
+      font-size: 18px;
+    }
+
+    .hide-mobile {
+      display: none;
+    }
+  }
+
+  .active-task {
+    justify-content: space-between !important;
+
+    &.wide {
+      left: 0 !important;
+    }
+
+    &.narrow {
+      display: none;
+    }
+  }
+}
+
 .card {
   .card-title {
     text-transform: uppercase;
@@ -957,7 +1016,7 @@ ul.box-list {
     }
 
     &.solution-comment {
-      background: lighten($primary, 55%);
+      background: rgba(0, 100, 0, 0.02);
     }
 
     &.priority1 {
@@ -994,7 +1053,6 @@ ul.box-list {
 
       .dropdown {
         display: inline-block;
-        margin-top: 10px;
         margin-left: auto;
 
         @media (min-width: 451px) {

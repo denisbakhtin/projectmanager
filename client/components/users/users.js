@@ -23,11 +23,11 @@ export default function Users() {
 
         view(vnode) {
             return m(".users", [
-                m('h1.mb-4', 'Users'),
+                m('h1.title.mb-4', 'Users'),
                 m('table.table', [
                     m('thead', [
                         m('tr', [
-                            m('th[scope=col]', 'Name'),
+                            m('th[scope=col].hide-mobile', 'Name'),
                             m('th[scope=col]', 'Email'),
                             m('th.shrink.text-center[scope=col]', 'Actions')
                         ])
@@ -38,7 +38,7 @@ export default function Users() {
                             return m('tr', {
                                 key: user.id
                             }, [
-                                m('td', user.name),
+                                m('td.hide-mobile', user.name),
                                 m('td', user.email),
                                 m('td')
                             ])

@@ -17,7 +17,8 @@ const Auth = {
     setPassword: (password) => Auth.password = password,
     setPasswordConfirm: (passwordConfirm) => Auth.passwordConfirm = passwordConfirm,
     errors: [],
-    isLoggedIn: () => !!localStorage.token,
+    tokenNotExpired: () => !!localStorage.expires && (localStorage.expires > Date.now() / 1000),
+    isLoggedIn: () => !!localStorage.token && Auth.tokenNotExpired(),
     isAdmin: () => !!localStorage.token && (localStorage.role === "Admin"),
     login: () => {
         if (Auth.validateLogin())
@@ -116,6 +117,7 @@ const Auth = {
         delete localStorage.name
         delete localStorage.email
         delete localStorage.role
+        delete localStorage.expires
         m.route.set('/') //redirect to home page
     },
     authHeader: () => (!!localStorage.token) ? 'Bearer ' + localStorage.token : null,
@@ -126,6 +128,7 @@ const Auth = {
         localStorage.name = decoded.name
         localStorage.email = decoded.sub
         localStorage.role = decoded.role
+        localStorage.expires = decoded.exp
     },
     getAuthenticatedUser: () =>
         (!!localStorage.token) ? {
@@ -133,7 +136,8 @@ const Auth = {
             name: localStorage.name,
             email: localStorage.email,
             token: localStorage.token,
-            role: localStorage.role
+            role: localStorage.role,
+            expires: localStorage.expires
         } : null,
     validateLogin: () => {
         Auth.errors = []

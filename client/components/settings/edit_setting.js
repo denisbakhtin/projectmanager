@@ -47,7 +47,7 @@ export default function Setting() {
 
         view(vnode) {
             return m(".settings", [
-                m('h1.mb-4', (isNew) ? 'New setting' : 'Edit setting'),
+                m('h1.title.mb-4', (isNew) ? 'New setting' : 'Edit setting'),
                 m('.form-group.form-row', [
                     m('.col', [
                         m('label', 'Setting code'),

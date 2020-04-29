@@ -4,6 +4,7 @@ import error from '../shared/error'
 import service from '../../utils/service.js'
 import {
     responseErrors,
+    humanProjectSpent
 } from '../../utils/helpers'
 import tasks_item from '../tasks/tasks_item.js'
 import files from '../attached_files/files'
@@ -41,7 +42,7 @@ export default function Project() {
                 ]),
                 m('p.project-time-spent', [
                     m('i.fa.fa-clock-o.mr-2'),
-                    'Total time spent: 17 minutes',
+                    'Total time spent: ' + humanProjectSpent(project),
                 ]),
                 (project.description) ? m('p.project-contents', m.trust(md.render(project.description))) : null,
                 m(files, { files: project.files, readOnly: true }),

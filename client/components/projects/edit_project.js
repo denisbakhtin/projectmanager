@@ -70,7 +70,7 @@ export default function Project() {
         },
 
         view(vnode) {
-            return m(".projects", (loaded) ? [
+            return m(".project", (loaded) ? [
                 m('h1.title', (isNew) ? 'New project' : 'Edit project'),
                 m('.form-group', [
                     m('label', 'Project name'),
