@@ -19,7 +19,7 @@
     "moment": "^2.24.0",
     "moment-locales-webpack-plugin": "^1.2.0",
     "node-sass": "^4.13.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "popper.js": "^1.16.1",
     "sass": "^1.26.3",
