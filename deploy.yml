@@ -2,6 +2,8 @@
 - name: Deploy web-site
   hosts: aghost
   gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python
   vars_prompt:
     - name: commit
       prompt: "What is the commit name?"
