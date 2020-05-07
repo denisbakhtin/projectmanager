@@ -34,7 +34,7 @@ func (tr *tasksRepository) GetAll(userID uint64) ([]Task, error) {
 	query = query.Preload("TaskLogs", func(db *gorm.DB) *gorm.DB {
 		return db.Where("session_id = 0 and minutes > 0")
 	})
-	err := query.Order("tasks.completed asc, end_date < CURRENT_DATE desc nulls last, priority asc").Find(&tasks).Error
+	err := query.Order("tasks.completed asc, COALESCE(end_date, CURRENT_DATE) < CURRENT_DATE desc, priority asc").Find(&tasks).Error
 	return tasks, err
 }
 
