@@ -47,7 +47,7 @@ func (pr *projectsRepository) Get(userID uint64, id interface{}) (Project, error
 	project := Project{}
 	query := DB.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Category")
 	query = query.Preload("Tasks", func(db *gorm.DB) *gorm.DB {
-		return db.Order("tasks.completed asc, created_at asc")
+		return db.Order("tasks.completed asc, end_date < CURRENT_DATE desc nulls last, priority asc")
 	})
 	query = query.Preload("Tasks.Comments", func(db *gorm.DB) *gorm.DB {
 		return db.Order("comments.created_at asc")

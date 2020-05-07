@@ -34,7 +34,7 @@ func (tr *tasksRepository) GetAll(userID uint64) ([]Task, error) {
 	query = query.Preload("TaskLogs", func(db *gorm.DB) *gorm.DB {
 		return db.Where("session_id = 0 and minutes > 0")
 	})
-	err := query.Order("tasks.completed asc, tasks.created_at asc").Find(&tasks).Error
+	err := query.Order("tasks.completed asc, end_date < CURRENT_DATE desc nulls last, priority asc").Find(&tasks).Error
 	return tasks, err
 }
 
@@ -75,7 +75,8 @@ func (tr *tasksRepository) GetNew(userID uint64, projectID uint64) (EditTaskVM, 
 		vm.Task.ProjectID = vm.Projects[0].ID
 	}
 	vm.Task.Periodicity.Weekdays = 0b1111111 //Mon == 1 .. Sun == 0000001
-	vm.Task.StartDate = time.Now()
+	now := time.Now()
+	vm.Task.StartDate = &now
 
 	return vm, nil
 }

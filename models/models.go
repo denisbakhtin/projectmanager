@@ -33,6 +33,8 @@ func InitializeDB() {
 		&AttachedFile{}, &Page{}, &Log{},
 		&Setting{}, &Category{}, &Session{}, &Comment{}, &TaskLog{}, &Periodicity{})
 
+	runManualMigrations()
+
 	count := 0
 	if err := DB.Model(&UserGroup{}).Where([]int64{ADMIN, EDITOR, USER}).Count(&count).Error; err != nil {
 		log.Panic(err)
@@ -64,6 +66,21 @@ func InitializeDB() {
 //Close terminates DB handler
 func Close() {
 	DB.Close()
+}
+
+func runManualMigrations() {
+	if err := DB.Exec("update tasks set start_date = null where start_date::date = '0001-01-01'").Error; err != nil {
+		log.Panic(err)
+	}
+	if err := DB.Exec("update tasks set end_date = null where end_date::date = '0001-01-01'").Error; err != nil {
+		log.Panic(err)
+	}
+	if err := DB.Exec("update periodicities set repeating_from = null where repeating_from::date = '0001-01-01'").Error; err != nil {
+		log.Panic(err)
+	}
+	if err := DB.Exec("update periodicities set repeating_to = null where repeating_to::date = '0001-01-01'").Error; err != nil {
+		log.Panic(err)
+	}
 }
 
 //createSlug makes url slug out of string

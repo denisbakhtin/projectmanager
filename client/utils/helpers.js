@@ -21,7 +21,7 @@ export function responseErrors(error) {
 }
 
 export function isZeroDate(date) {
-    return String(date).startsWith("0001-01-01")
+    return String(date).startsWith("0001-01-01") || !date
 }
 
 export function humanDate(date) {

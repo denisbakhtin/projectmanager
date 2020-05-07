@@ -23,9 +23,6 @@ const WeekdayMasks = Object.freeze({
     7: 64
 })
 
-const zeroDate = "0001-01-01T00:00:00Z"
-
-
 export default function Task() {
     let task = {},
         pusers = [],
@@ -44,9 +41,9 @@ export default function Task() {
         setFiles = (files) => task.files = files,
         setPriority = (prio) => task.priority = prio,
         getStartDate = () => (!isZeroDate(task.start_date)) ? moment(task.start_date).format(format) : undefined,
-        setStartDate = (date) => task.start_date = (date) ? (new Date(date)).toISOString() : zeroDate,
+        setStartDate = (date) => task.start_date = (date) ? (new Date(date)).toISOString() : null,
         getEndDate = () => (!isZeroDate(task.end_date)) ? moment(task.end_date).format(format) : undefined,
-        setEndDate = (date) => task.end_date = (date) ? (new Date(date)).toISOString() : zeroDate,
+        setEndDate = (date) => task.end_date = (date) ? (new Date(date)).toISOString() : null,
         setPeriodicity = (val) => {
             task.periodicity.periodicity_type = val
             if (val == 3 || val == 4) {
@@ -57,9 +54,9 @@ export default function Task() {
         toggleWeekday = (day) => task.periodicity.weekdays = task.periodicity.weekdays ^ WeekdayMasks[day],
         getWeekday = (day) => task.periodicity.weekdays & WeekdayMasks[day],
         getRepeatingFrom = () => (!isZeroDate(task.periodicity.repeating_from)) ? moment(task.periodicity.repeating_from).format(format) : undefined,
-        setRepeatingFrom = (date) => task.periodicity.repeating_from = (date) ? (new Date(date)).toISOString() : zeroDate,
+        setRepeatingFrom = (date) => task.periodicity.repeating_from = (date) ? (new Date(date)).toISOString() : null,
         getRepeatingTo = () => (!isZeroDate(task.periodicity.repeating_to)) ? moment(task.periodicity.repeating_to).format(format) : undefined,
-        setRepeatingTo = (date) => task.periodicity.repeating_to = (date) ? (new Date(date)).toISOString() : zeroDate,
+        setRepeatingTo = (date) => task.periodicity.repeating_to = (date) ? (new Date(date)).toISOString() : null,
         //need to do something with timezone later... browser uses localtime always
 
         //requests

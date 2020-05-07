@@ -4,25 +4,18 @@ import {
     responseErrors
 } from '../../utils/helpers'
 import service from '../../utils/service'
-import tasks_item from './tasks_item.js'
+import tasks_list from './tasks_list'
 
 const Filters = Object.freeze({
     ALL: (task) => true,
     OPEN: (task) => task.completed == false,
-    SOLVED: (task) => task.completed == true
+    SOLVED: (task) => task.completed == true,
+    EXPIRED: (task) => !!task.end_date && Date.parse(task.end_date) < Date.now(),
 });
 
 export default function Tasks() {
     let tasks = [],
         errors = [],
-        filter,
-
-        activeClass = (fil) => (filter === Filters[fil]) ? "active" : "",
-        setFilter = (fil) => {
-            localStorage.taskFilter = fil
-            filter = Filters[fil]
-        },
-        getFilter = () => localStorage.taskFilter,
 
         getAll = () =>
             service.getTasks()
@@ -32,22 +25,12 @@ export default function Tasks() {
     return {
         oninit(vnode) {
             getAll()
-            filter = Filters[getFilter() ?? "ALL"] ?? Filters["ALL"]
         },
 
         view(vnode) {
-            let filteredTasks = tasks.filter(filter)
-
             return m(".tasks", [
                 m('h1.title', 'Tasks'),
-                m('.filters', [
-                    m('button.btn.btn-link', { class: activeClass("ALL"), onclick: () => setFilter("ALL") }, "All"),
-                    m('button.btn.btn-link', { class: activeClass("OPEN"), onclick: () => setFilter("OPEN") }, "Open"),
-                    m('button.btn.btn-link', { class: activeClass("SOLVED"), onclick: () => setFilter("SOLVED") }, "Solved"),
-                ]),
-                (filteredTasks && filteredTasks.length > 0) ? m('ul.dashboard-box.box-list',
-                    filteredTasks.map((task) => m(tasks_item, { key: task.id, task: task, onUpdate: getAll }))
-                ) : m('p.text-muted', 'The list is empty'),
+                m(tasks_list, { tasks: tasks, onUpdate: getAll }),
                 m(error, { errors: errors }),
                 m('.actions.mt-4', [
                     m('button.btn.btn-primary[type=button]', {

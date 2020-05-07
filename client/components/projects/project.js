@@ -6,7 +6,7 @@ import {
     responseErrors,
     humanProjectSpent
 } from '../../utils/helpers'
-import tasks_item from '../tasks/tasks_item.js'
+import tasks_list from '../tasks/tasks_list'
 import files from '../attached_files/files'
 
 export default function Project() {
@@ -46,10 +46,7 @@ export default function Project() {
                 ]),
                 (project.description) ? m('p.project-contents', m.trust(md.render(project.description))) : null,
                 m(files, { files: project.files, readOnly: true }),
-                (project.tasks && project.tasks.length > 0) ?
-                    m('ul.dashboard-box.box-list',
-                        project.tasks.map((task) => m(tasks_item, { task: task, onUpdate: get }))
-                    ) : null,
+                m(tasks_list, { tasks: project.tasks, onUpdate: get }),
                 m(error, { errors: errors }),
                 m('.actions.mt-4', [
                     m('button.btn.mr-2.btn-primary[type=button]', {

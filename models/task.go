@@ -24,8 +24,8 @@ type Task struct {
 	UpdatedAt     time.Time      `json:"updated_at"`
 	Name          string         `json:"name" valid:"required,length(1|1500)"`
 	Destription   string         `json:"destription" valid:"length(0|10000)"`
-	StartDate     time.Time      `json:"start_date"`
-	EndDate       time.Time      `json:"end_date"`
+	StartDate     *time.Time     `json:"start_date"`
+	EndDate       *time.Time     `json:"end_date"`
 	PeriodicityID uint64         `json:"periodicity_id,omitempty" gorm:"index"`
 	Periodicity   Periodicity    `json:"periodicity" gorm:"save_associations:true"`
 	Completed     bool           `json:"completed"`
