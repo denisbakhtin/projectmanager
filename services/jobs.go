@@ -82,8 +82,8 @@ func CreatePeriodicTasks(date time.Time) error {
 func freshTask(task models.Task, startDate time.Time, endDate time.Time) models.Task {
 	newTask := task
 	newTask.ID = 0
-	newTask.StartDate = startDate
-	newTask.EndDate = endDate
+	newTask.StartDate = &startDate
+	newTask.EndDate = &endDate
 	newTask.Completed = false
 	return newTask
 }

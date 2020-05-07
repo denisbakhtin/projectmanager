@@ -32,7 +32,8 @@ func (tm *TasksDBMock) GetNew(userID uint64, projectID uint64) (models.EditTaskV
 	vm := models.EditTaskVM{}
 	vm.Task.Priority = models.PRIORITY4
 	vm.Task.ProjectID = 1
-	vm.Task.StartDate = time.Now()
+	now := time.Now()
+	vm.Task.StartDate = &now
 	return vm, nil
 }
 
