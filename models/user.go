@@ -49,7 +49,7 @@ func (u *User) BeforeUpdate() (err error) {
 func (u *User) BeforeDelete() (err error) {
 	if u.IsAdmin() {
 		count := 0
-		DB.Model(&User{}).Where("user_group_id = ?", ADMIN).Count(&count)
+		db.Model(&User{}).Where("user_group_id = ?", ADMIN).Count(&count)
 		if count == 1 {
 			err = errors.New("Can't remove the last admin")
 		}
@@ -104,7 +104,7 @@ type JWTClaims struct {
 
 //CreateJWTToken issues a valid JWT token
 func (u *User) CreateJWTToken() error {
-	DB.First(&u.UserGroup, u.UserGroupID)
+	db.First(&u.UserGroup, u.UserGroupID)
 	now := time.Now()
 	claims := JWTClaims{
 		StandardClaims: jwt.StandardClaims{

@@ -52,7 +52,7 @@ func TestCategoriesRepositoryCreate(t *testing.T) {
 func TestCategoriesRepositoryUpdate(t *testing.T) {
 	name := fmt.Sprintf("Category-%d", time.Now().Nanosecond())
 	category := Category{}
-	DB.Where("user_id = ?", userID).First(&category)
+	db.Where("user_id = ?", userID).First(&category)
 	assert.NotZero(t, category.ID)
 	assert.NotEqual(t, category.Name, name)
 

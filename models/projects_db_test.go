@@ -52,7 +52,7 @@ func TestProjectsRepositoryCreate(t *testing.T) {
 func TestProjectsRepositoryUpdate(t *testing.T) {
 	name := fmt.Sprintf("Project-%d", time.Now().Nanosecond())
 	project := Project{}
-	DB.Where("user_id = ?", userID).First(&project)
+	db.Where("user_id = ?", userID).First(&project)
 	assert.NotZero(t, project.ID)
 	assert.NotEqual(t, project.Name, name)
 

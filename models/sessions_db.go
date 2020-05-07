@@ -24,14 +24,14 @@ type sessionsRepository struct{}
 //GetAll returns all sessions owned by specified user
 func (sr *sessionsRepository) GetAll(userID uint64) ([]Session, error) {
 	var sessions []Session
-	err := DB.Where("user_id = ?", userID).Preload("TaskLogs").Find(&sessions).Error
+	err := db.Where("user_id = ?", userID).Preload("TaskLogs").Find(&sessions).Error
 	return sessions, err
 }
 
 //Get fetches a session by its id
 func (sr *sessionsRepository) Get(userID uint64, id interface{}) (Session, error) {
 	session := Session{}
-	err := DB.Where("user_id = ?", userID).
+	err := db.Where("user_id = ?", userID).
 		Preload("TaskLogs").Preload("TaskLogs.Task").Preload("TaskLogs.Task.Project").
 		First(&session, id).Error
 	return session, err
@@ -40,7 +40,7 @@ func (sr *sessionsRepository) Get(userID uint64, id interface{}) (Session, error
 //NewGet gets a view models for a new session
 func (sr *sessionsRepository) NewGet(userID uint64) ([]TaskLog, error) {
 	var logs []TaskLog
-	err := DB.Where("user_id = ? and minutes > 0 and session_id = 0", userID).
+	err := db.Where("user_id = ? and minutes > 0 and session_id = 0", userID).
 		Preload("Task").Preload("Task.Project").Find(&logs).Error
 	return logs, err
 }
@@ -48,21 +48,21 @@ func (sr *sessionsRepository) NewGet(userID uint64) ([]TaskLog, error) {
 //Create sreates a new session in db
 func (sr *sessionsRepository) Create(userID uint64, session Session) (Session, error) {
 	session.UserID = userID
-	err := DB.Create(&session).Error
+	err := db.Create(&session).Error
 	return session, err
 }
 
 //Delete removes a session from db
 func (sr *sessionsRepository) Delete(userID uint64, id interface{}) error {
 	session := Session{}
-	err := DB.Preload("TaskLogs").Where("user_id = ?", userID).First(&session, id).Error
+	err := db.Preload("TaskLogs").Where("user_id = ?", userID).First(&session, id).Error
 	if err != nil {
 		return err
 	}
 	if len(session.TaskLogs) > 0 {
 		return fmt.Errorf("Can not remove non-empty session")
 	}
-	if err := DB.Delete(&session).Error; err != nil {
+	if err := db.Delete(&session).Error; err != nil {
 		return err
 	}
 	return nil
@@ -71,6 +71,6 @@ func (sr *sessionsRepository) Delete(userID uint64, id interface{}) error {
 //Summary returns summary info for a dashboard
 func (sr *sessionsRepository) Summary(userID uint64) (SessionsSummaryVM, error) {
 	vm := SessionsSummaryVM{}
-	err := DB.Model(Session{}).Where("user_id = ?", userID).Count(&vm.Count).Error
+	err := db.Model(Session{}).Where("user_id = ?", userID).Count(&vm.Count).Error
 	return vm, err
 }

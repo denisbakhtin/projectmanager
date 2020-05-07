@@ -18,7 +18,7 @@ type reportsRepository struct{}
 func (r *reportsRepository) Spent(userID uint64) ([]TaskLog, error) {
 	var taskLogs []TaskLog
 
-	err := DB.Preload("Task.Project").Preload("Task").
+	err := db.Preload("Task.Project").Preload("Task").
 		Preload("Task.Category").
 		Where("session_id = 0 and minutes > 0 and user_id = ?", userID).
 		Find(&taskLogs).Error

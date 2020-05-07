@@ -35,13 +35,13 @@ func init() {
 }
 
 func TestInitializeDB(t *testing.T) {
-	assert.NotNil(t, DB, "DB handler should not be nil")
+	assert.NotNil(t, db, "DB handler should not be nil")
 	count := 0
-	err := DB.Model(&UserGroup{}).Where([]int64{ADMIN, EDITOR, USER}).Count(&count).Error
+	err := db.Model(&UserGroup{}).Where([]int64{ADMIN, EDITOR, USER}).Count(&count).Error
 	assert.Nil(t, err, "Error should be nil")
 	assert.GreaterOrEqual(t, count, 3, "Not all required groups are present")
 
-	err = DB.Model(&Setting{}).Where("code = ?", "site_name").First(&Setting{}).Error
+	err = db.Model(&Setting{}).Where("code = ?", "site_name").First(&Setting{}).Error
 	assert.Nil(t, err)
 }
 
@@ -56,7 +56,7 @@ func getOrCreateCategory() Category {
 	}
 	cat.Name = "Test Category"
 	cat.UserID = userID
-	if err := DB.Create(&cat).Error; err != nil {
+	if err := db.Create(&cat).Error; err != nil {
 		panic("Can't create a category for testing")
 	}
 	return cat
@@ -64,7 +64,7 @@ func getOrCreateCategory() Category {
 
 func getUnrelatedCategory(userID uint64) (Category, error) {
 	cat := Category{}
-	err := DB.
+	err := db.
 		Where("user_id = ? and NOT EXISTS(select null from projects where projects.category_id = categories.id) and NOT EXISTS(select null from tasks where tasks.category_id = categories.id)", userID).
 		First(&cat).Error
 	return cat, err
@@ -72,7 +72,7 @@ func getUnrelatedCategory(userID uint64) (Category, error) {
 
 func getOrCreateTask() Task {
 	task := Task{}
-	err := DB.Where("user_id = ?", userID).First(&task).Error
+	err := db.Where("user_id = ?", userID).First(&task).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		panic("Can't retreive a task for testing")
 	}
@@ -83,15 +83,41 @@ func getOrCreateTask() Task {
 	task.Name = "Test Task"
 	task.UserID = userID
 	task.ProjectID = project.ID
-	if err := DB.Create(&task).Error; err != nil {
+	if err := db.Create(&task).Error; err != nil {
 		panic("Can't create a task for testing")
 	}
 	return task
 }
 
+func createPeriodicity() Periodicity {
+	yesterday := time.Now().AddDate(0, 0, -1)
+	per := Periodicity{
+		PeriodicityType: DAILY,
+		UserID:          userID,
+		RepeatingFrom:   &yesterday,
+	}
+	if err := db.Create(&per).Error; err != nil {
+		panic("Can't create a periodicity for testing")
+	}
+	proj := getOrCreateUnrelatedProject()
+	task := Task{
+		Name:          "Some periodical task",
+		PeriodicityID: per.ID,
+		UserID:        userID,
+		StartDate:     &yesterday,
+		Completed:     true,
+		ProjectID:     proj.ID,
+	}
+	if err := db.Create(&task).Error; err != nil {
+		panic("Cant' create a task for periodicity testing")
+	}
+	per.Tasks = []Task{task}
+	return per
+}
+
 func getOrCreateComment(taskID uint64) Comment {
 	comment := Comment{}
-	err := DB.Where("user_id = ? and task_id = ?", userID, taskID).First(&comment).Error
+	err := db.Where("user_id = ? and task_id = ?", userID, taskID).First(&comment).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		panic("Can't retreive a comment for testing")
 	}
@@ -101,7 +127,7 @@ func getOrCreateComment(taskID uint64) Comment {
 	comment.Contents = "Test comment"
 	comment.UserID = userID
 	comment.TaskID = taskID
-	if err := DB.Create(&comment).Error; err != nil {
+	if err := db.Create(&comment).Error; err != nil {
 		panic("Can't create a comment for testing")
 	}
 	return comment
@@ -109,7 +135,7 @@ func getOrCreateComment(taskID uint64) Comment {
 
 func getOrCreatePage() Page {
 	page := Page{}
-	err := DB.First(&page).Error
+	err := db.First(&page).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		panic("Can't retreive a page for testing")
 	}
@@ -117,7 +143,7 @@ func getOrCreatePage() Page {
 		return page
 	}
 	page.Name = "Test page"
-	if err := DB.Create(&page).Error; err != nil {
+	if err := db.Create(&page).Error; err != nil {
 		panic("Can't create a page for testing")
 	}
 	return page
@@ -125,7 +151,7 @@ func getOrCreatePage() Page {
 
 func getOrCreateUnrelatedProject() Project {
 	project := Project{}
-	err := DB.
+	err := db.
 		Where("user_id = ? and NOT EXISTS(select null from tasks where tasks.project_id = projects.id)", userID).
 		First(&project).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
@@ -136,7 +162,7 @@ func getOrCreateUnrelatedProject() Project {
 	}
 	project.Name = "Test project"
 	project.UserID = userID
-	if err := DB.Create(&project).Error; err != nil {
+	if err := db.Create(&project).Error; err != nil {
 		panic("Can't create a project for testing")
 	}
 	return project
@@ -144,7 +170,7 @@ func getOrCreateUnrelatedProject() Project {
 
 func getOrCreateUnrelatedSession() Session {
 	session := Session{}
-	err := DB.
+	err := db.
 		Where("user_id = ? and NOT EXISTS(select null from task_logs where task_logs.session_id = sessions.id)", userID).
 		First(&session).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
@@ -155,7 +181,7 @@ func getOrCreateUnrelatedSession() Session {
 	}
 	session.Contents = "Test session"
 	session.UserID = userID
-	if err := DB.Create(&session).Error; err != nil {
+	if err := db.Create(&session).Error; err != nil {
 		panic("Can't create a session for testing")
 	}
 	return session
@@ -163,7 +189,7 @@ func getOrCreateUnrelatedSession() Session {
 
 func getOrCreateRelatedSession() Session {
 	session := Session{}
-	err := DB.
+	err := db.
 		Where("user_id = ? and EXISTS(select null from task_logs where task_logs.session_id = sessions.id)", userID).
 		First(&session).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
@@ -177,7 +203,7 @@ func getOrCreateRelatedSession() Session {
 	session.TaskLogs = []TaskLog{
 		{Minutes: 1},
 	}
-	if err := DB.Create(&session).Error; err != nil {
+	if err := db.Create(&session).Error; err != nil {
 		panic("Can't create a related session for testing")
 	}
 	return session
@@ -185,7 +211,7 @@ func getOrCreateRelatedSession() Session {
 
 func getOrCreateSetting() Setting {
 	setting := Setting{}
-	err := DB.First(&setting).Error
+	err := db.First(&setting).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		panic("Can't retreive a setting for testing")
 	}
@@ -194,7 +220,7 @@ func getOrCreateSetting() Setting {
 	}
 	setting.Code = "test_setting"
 	setting.Value = "Test setting value"
-	if err := DB.Create(&setting).Error; err != nil {
+	if err := db.Create(&setting).Error; err != nil {
 		panic("Can't create a related setting for testing")
 	}
 	return setting
@@ -202,7 +228,7 @@ func getOrCreateSetting() Setting {
 
 func getOrCreateTaskLog() TaskLog {
 	tl := TaskLog{}
-	err := DB.Where("session_id = 0 and user_id = ?", userID).First(&tl).Error
+	err := db.Where("session_id = 0 and user_id = ?", userID).First(&tl).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		panic("Can't retreive a task log for testing")
 	}
@@ -213,7 +239,7 @@ func getOrCreateTaskLog() TaskLog {
 	tl.Minutes = 1
 	tl.UserID = userID
 	tl.TaskID = task.ID
-	if err := DB.Create(&tl).Error; err != nil {
+	if err := db.Create(&tl).Error; err != nil {
 		panic("Can't create a task log for testing")
 	}
 	return tl
@@ -221,7 +247,7 @@ func getOrCreateTaskLog() TaskLog {
 
 func getOrCreateUser() User {
 	user := User{}
-	err := DB.First(&user).Error
+	err := db.First(&user).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		panic(err)
 	}
@@ -246,7 +272,7 @@ func createUser(password string) User {
 		Email:        fmt.Sprintf("%d@email.com", now),
 		PasswordHash: phash,
 	}
-	if err := DB.Create(&user).Error; err != nil {
+	if err := db.Create(&user).Error; err != nil {
 		panic("Can't create a user for testing")
 	}
 	return user

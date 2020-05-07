@@ -24,21 +24,21 @@ func (pr *SearchRepository) Search(userID uint64, query string) (SearchVM, error
 	if len(strings.TrimSpace(query)) == 0 {
 		return SearchVM{}, fmt.Errorf("Query string is empty")
 	}
-	err := DB.Where("user_id = ?", userID).
+	err := db.Where("user_id = ?", userID).
 		Where("to_tsvector(name) @@ to_tsquery(?)", fmt.Sprintf("%s:*", query)).
 		Order("id asc").Find(&vm.Categories).Error
 	if err != nil {
 		return SearchVM{}, err
 	}
 
-	err = DB.Preload("Tasks").Preload("Category").Where("user_id = ?", userID).
+	err = db.Preload("Tasks").Preload("Category").Where("user_id = ?", userID).
 		Where("to_tsvector(name || ' ' || description) @@ to_tsquery(?)", fmt.Sprintf("%s:*", query)).
 		Order("archived asc, created_at asc").Find(&vm.Projects).Error
 	if err != nil {
 		return SearchVM{}, err
 	}
 
-	q := DB.Where("user_id = ?", userID).
+	q := db.Where("user_id = ?", userID).
 		Where("to_tsvector(name || ' ' || description) @@ to_tsquery(?)", fmt.Sprintf("%s:*", query)).
 		Preload("Project").Preload("Comments").Preload("Category")
 	q = q.Preload("TaskLogs", func(db *gorm.DB) *gorm.DB {
@@ -49,7 +49,7 @@ func (pr *SearchRepository) Search(userID uint64, query string) (SearchVM, error
 		return SearchVM{}, err
 	}
 
-	err = DB.Where("user_id = ?", userID).
+	err = db.Where("user_id = ?", userID).
 		Where("to_tsvector(contents) @@ to_tsquery(?)", fmt.Sprintf("%s:*", query)).
 		Order("id").Find(&vm.Comments).Error
 

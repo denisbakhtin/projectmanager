@@ -74,7 +74,7 @@ func TestTasksRepositoryCreate(t *testing.T) {
 func TestTasksRepositoryUpdate(t *testing.T) {
 	name := fmt.Sprintf("Task-%d", time.Now().Nanosecond())
 	task := Task{}
-	DB.Where("user_id = ?", userID).First(&task)
+	db.Where("user_id = ?", userID).First(&task)
 	assert.NotZero(t, task.ID)
 	assert.NotEqual(t, task.Name, name)
 
@@ -91,7 +91,7 @@ func TestTasksRepositoryDelete(t *testing.T) {
 	assert.True(t, gorm.IsRecordNotFoundError(err), "This task should not exist")
 
 	task := Task{}
-	err = DB.Where("user_id = ? and NOT EXISTS(select null from task_logs where task_logs.task_id = tasks.id)", userID).First(&task).Error
+	err = db.Where("user_id = ? and NOT EXISTS(select null from task_logs where task_logs.task_id = tasks.id)", userID).First(&task).Error
 	assert.Nil(t, err)
 	assert.NotZero(t, task.ID)
 

@@ -19,7 +19,7 @@ type taskLogsRepository struct{}
 func (r *taskLogsRepository) Create(userID uint64, taskLog TaskLog) (TaskLog, error) {
 	taskLog.UserID = userID
 	taskLog.SessionID = 0
-	err := DB.Create(&taskLog).Error
+	err := db.Create(&taskLog).Error
 	return taskLog, err
 }
 
@@ -27,6 +27,6 @@ func (r *taskLogsRepository) Create(userID uint64, taskLog TaskLog) (TaskLog, er
 func (r *taskLogsRepository) Update(userID uint64, taskLog TaskLog) (TaskLog, error) {
 	taskLog.UserID = userID
 	taskLog.SessionID = 0
-	err := DB.Save(&taskLog).Error
+	err := db.Save(&taskLog).Error
 	return taskLog, err
 }

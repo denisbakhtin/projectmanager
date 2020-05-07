@@ -15,7 +15,7 @@ func TestTaskLogsRepositoryCreate(t *testing.T) {
 		TaskID:  task.ID,
 	}
 	var logs []TaskLog
-	err := DB.Find(&logs).Error
+	err := db.Find(&logs).Error
 	assert.Nil(t, err)
 	count := len(logs)
 	l, err := TaskLogsDB.Create(userID, tl)
@@ -25,19 +25,19 @@ func TestTaskLogsRepositoryCreate(t *testing.T) {
 	assert.Equal(t, l.UserID, userID)
 	assert.Zero(t, l.SessionID)
 
-	err = DB.First(&l, l.ID).Error
+	err = db.First(&l, l.ID).Error
 	assert.Nil(t, err)
 	assert.NotZero(t, l.ID)
 	assert.Equal(t, l.Minutes, minutes)
 
-	DB.Find(&logs)
+	db.Find(&logs)
 	assert.Equal(t, count+1, len(logs), "The number of task logs should have been increased by 1")
 }
 
 func TestTaskLogsRepositoryUpdate(t *testing.T) {
 	minutes := uint64(time.Now().Nanosecond())
 	tl := TaskLog{}
-	DB.Where("user_id = ? and session_id != 0", userID).First(&tl)
+	db.Where("user_id = ? and session_id != 0", userID).First(&tl)
 	assert.NotZero(t, tl.ID)
 	tl.Minutes = minutes
 	_, err := TaskLogsDB.Update(userID, tl)

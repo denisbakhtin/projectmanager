@@ -47,7 +47,7 @@ func TestPagesRepositoryCreate(t *testing.T) {
 func TestPagesRepositoryUpdate(t *testing.T) {
 	name := fmt.Sprintf("Page-%d", time.Now().Nanosecond())
 	page := Page{}
-	DB.First(&page)
+	db.First(&page)
 	assert.NotZero(t, page.ID)
 	assert.NotEqual(t, page.Name, name)
 

@@ -30,7 +30,7 @@ type tasksRepository struct{}
 //GetAll returns all tasks owned by specified user
 func (tr *tasksRepository) GetAll(userID uint64) ([]Task, error) {
 	var tasks []Task
-	query := DB.Where("user_id = ?", userID).Preload("Project").Preload("Category")
+	query := db.Where("user_id = ?", userID).Preload("Project").Preload("Category")
 	query = query.Preload("TaskLogs", func(db *gorm.DB) *gorm.DB {
 		return db.Where("session_id = 0 and minutes > 0")
 	})
@@ -41,7 +41,7 @@ func (tr *tasksRepository) GetAll(userID uint64) ([]Task, error) {
 //Get fetches a task by its id
 func (tr *tasksRepository) Get(userID uint64, id interface{}) (Task, error) {
 	task := Task{}
-	query := DB.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Category")
+	query := db.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Category")
 	query = query.Preload("Comments", func(db *gorm.DB) *gorm.DB {
 		return db.Order("comments.created_at asc")
 	})
@@ -55,10 +55,10 @@ func (tr *tasksRepository) Get(userID uint64, id interface{}) (Task, error) {
 //GetNew returns a view model for creating a new task
 func (tr *tasksRepository) GetNew(userID uint64, projectID uint64) (EditTaskVM, error) {
 	vm := EditTaskVM{}
-	if err := DB.Where("user_id = ?", userID).Find(&vm.Projects).Error; err != nil {
+	if err := db.Where("user_id = ?", userID).Find(&vm.Projects).Error; err != nil {
 		return EditTaskVM{}, err
 	}
-	if err := DB.Where("user_id = ?", userID).Find(&vm.Categories).Error; err != nil {
+	if err := db.Where("user_id = ?", userID).Find(&vm.Categories).Error; err != nil {
 		return EditTaskVM{}, err
 	}
 	vm.Task.Priority = PRIORITY4
@@ -84,13 +84,13 @@ func (tr *tasksRepository) GetNew(userID uint64, projectID uint64) (EditTaskVM, 
 //GetEdit returns a view model for task edition
 func (tr *tasksRepository) GetEdit(userID uint64, id interface{}) (EditTaskVM, error) {
 	vm := EditTaskVM{}
-	if err := DB.Where("user_id = ?", userID).Find(&vm.Projects).Error; err != nil {
+	if err := db.Where("user_id = ?", userID).Find(&vm.Projects).Error; err != nil {
 		return EditTaskVM{}, err
 	}
-	if err := DB.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Project").Preload("Periodicity").First(&vm.Task, id).Error; err != nil {
+	if err := db.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Project").Preload("Periodicity").First(&vm.Task, id).Error; err != nil {
 		return EditTaskVM{}, err
 	}
-	if err := DB.Where("user_id = ?", userID).Find(&vm.Categories).Error; err != nil {
+	if err := db.Where("user_id = ?", userID).Find(&vm.Categories).Error; err != nil {
 		return EditTaskVM{}, err
 	}
 
@@ -105,7 +105,7 @@ func (tr *tasksRepository) Create(userID uint64, task Task) (Task, error) {
 	}
 	task.Completed = false
 	task.Periodicity.UserID = userID
-	err := DB.Create(&task).Error
+	err := db.Create(&task).Error
 	return task, err
 }
 
@@ -113,17 +113,17 @@ func (tr *tasksRepository) Create(userID uint64, task Task) (Task, error) {
 func (tr *tasksRepository) Update(userID uint64, task Task) (Task, error) {
 	task.UserID = userID
 	task.Periodicity.UserID = userID
-	err := DB.Save(&task).Error
+	err := db.Save(&task).Error
 	return task, err
 }
 
 //Delete removes a category from db
 func (tr *tasksRepository) Delete(userID uint64, id interface{}) error {
 	task := Task{}
-	if err := DB.Where("user_id = ?", userID).First(&task, id).Error; err != nil {
+	if err := db.Where("user_id = ?", userID).First(&task, id).Error; err != nil {
 		return err
 	}
-	if err := DB.Delete(&task).Error; err != nil {
+	if err := db.Delete(&task).Error; err != nil {
 		return err
 	}
 	return nil
@@ -132,13 +132,13 @@ func (tr *tasksRepository) Delete(userID uint64, id interface{}) error {
 //Summary returns summary info for a dashboard
 func (tr *tasksRepository) Summary(userID uint64) (TasksSummaryVM, error) {
 	vm := TasksSummaryVM{}
-	if err := DB.Model(Task{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
+	if err := db.Model(Task{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
 		return TasksSummaryVM{}, err
 	}
-	if err := DB.Where("user_id = ?", userID).Order("id desc").Limit(5).Find(&vm.LatestTasks).Error; err != nil {
+	if err := db.Where("user_id = ?", userID).Order("id desc").Limit(5).Find(&vm.LatestTasks).Error; err != nil {
 		return TasksSummaryVM{}, err
 	}
-	if err := DB.Where("user_id = ? and minutes > 0", userID).Order("id desc").Limit(5).Preload("Task").Find(&vm.LatestTaskLogs).Error; err != nil {
+	if err := db.Where("user_id = ? and minutes > 0", userID).Order("id desc").Limit(5).Preload("Task").Find(&vm.LatestTaskLogs).Error; err != nil {
 		return TasksSummaryVM{}, err
 	}
 	return vm, nil

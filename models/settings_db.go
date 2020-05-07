@@ -21,35 +21,35 @@ type settingsRepository struct{}
 //GetAll returns all settings owned by specified user
 func (cr *settingsRepository) GetAll() ([]Setting, error) {
 	var settings []Setting
-	err := DB.Order("id").Find(&settings).Error
+	err := db.Order("id").Find(&settings).Error
 	return settings, err
 }
 
 //Get fetches a setting by its id
 func (cr *settingsRepository) Get(id interface{}) (Setting, error) {
 	setting := Setting{}
-	err := DB.First(&setting, id).Error
+	err := db.First(&setting, id).Error
 	return setting, err
 }
 
 //Create creates a new setting in db
 func (cr *settingsRepository) Create(setting Setting) (Setting, error) {
-	err := DB.Create(&setting).Error
+	err := db.Create(&setting).Error
 	return setting, err
 }
 
 //Update updates a setting in db
 func (cr *settingsRepository) Update(setting Setting) (Setting, error) {
-	err := DB.Save(&setting).Error
+	err := db.Save(&setting).Error
 	return setting, err
 }
 
 //Delete removes a setting from db
 func (cr *settingsRepository) Delete(id interface{}) error {
 	setting := Setting{}
-	err := DB.First(&setting, id).Error
+	err := db.First(&setting, id).Error
 	if err != nil {
 		return err
 	}
-	return DB.Delete(&setting).Error
+	return db.Delete(&setting).Error
 }

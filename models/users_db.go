@@ -36,27 +36,27 @@ type usersRepository struct{}
 //GetAll returns all users owned by specified user
 func (tr usersRepository) GetAll() ([]User, error) {
 	var users []User
-	err := DB.Order("id asc").Find(&users).Error
+	err := db.Order("id asc").Find(&users).Error
 	return users, err
 }
 
 //Get fetches a user by its id
 func (tr usersRepository) Get(id interface{}) (User, error) {
 	user := User{}
-	err := DB.First(&user, id).Error
+	err := db.First(&user, id).Error
 	return user, err
 }
 
 //GetByEmail fetches a user by email
 func (tr usersRepository) GetByEmail(email string) (User, error) {
 	user := User{}
-	err := DB.Where("email = ?", email).First(&user).Error
+	err := db.Where("email = ?", email).First(&user).Error
 	return user, err
 }
 
 //UpdateStatus updates user status in db
 func (tr usersRepository) UpdateStatus(user User) (User, error) {
-	err := DB.Model(&user).UpdateColumn("status", user.Status).Error
+	err := db.Model(&user).UpdateColumn("status", user.Status).Error
 	return user, err
 }
 
@@ -69,7 +69,7 @@ func (tr usersRepository) UpdateAccount(vm AccountVM, user User) (User, error) {
 		}
 		user.PasswordHash = helpers.CreatePasswordHash(vm.NewPassword)
 	}
-	if err := DB.Save(&user).Error; err != nil {
+	if err := db.Save(&user).Error; err != nil {
 		return User{}, err
 	}
 	if err := user.CreateJWTToken(); err != nil {
@@ -82,7 +82,7 @@ func (tr usersRepository) UpdateAccount(vm AccountVM, user User) (User, error) {
 //Login checks if credentials are valid for logging in
 func (tr usersRepository) Login(vm LoginVM) (User, error) {
 	user := User{}
-	err := DB.Where("email = ?", helpers.NormalizeEmail(vm.Email)).First(&user).Error
+	err := db.Where("email = ?", helpers.NormalizeEmail(vm.Email)).First(&user).Error
 	switch {
 	case err != nil && gorm.IsRecordNotFoundError(err):
 		return User{}, fmt.Errorf("Wrong email or password")
@@ -108,7 +108,7 @@ func (tr usersRepository) Activate(vm ActivateVM) (User, error) {
 		return User{}, fmt.Errorf("Wrong activation token")
 	}
 	user := User{}
-	err := DB.Where("token = ?", vm.Token).First(&user).Error
+	err := db.Where("token = ?", vm.Token).First(&user).Error
 	switch {
 	case err != nil && gorm.IsRecordNotFoundError(err):
 		return User{}, fmt.Errorf("Wrong activation token")
@@ -120,7 +120,7 @@ func (tr usersRepository) Activate(vm ActivateVM) (User, error) {
 	//update user record
 	user.Status = ACTIVE
 	user.Token = ""
-	if err := DB.Save(&user).Error; err != nil {
+	if err := db.Save(&user).Error; err != nil {
 		return User{}, err
 	}
 
@@ -133,7 +133,7 @@ func (tr usersRepository) Activate(vm ActivateVM) (User, error) {
 //Register registers a new user
 func (tr usersRepository) Register(vm RegisterVM) (User, error) {
 	user := User{}
-	err := DB.Where("email = ?", helpers.NormalizeEmail(vm.Email)).First(&user).Error
+	err := db.Where("email = ?", helpers.NormalizeEmail(vm.Email)).First(&user).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return User{}, err
 	}
@@ -149,7 +149,7 @@ func (tr usersRepository) Register(vm RegisterVM) (User, error) {
 	user.Token = ""
 
 	//create new or update inactive account
-	if err := DB.Save(&user).Error; err != nil {
+	if err := db.Save(&user).Error; err != nil {
 		return User{}, err
 	}
 
@@ -162,7 +162,7 @@ func (tr usersRepository) Register(vm RegisterVM) (User, error) {
 //Forgot creates a secure token in case user forgor password
 func (tr usersRepository) Forgot(vm ForgotVM) (User, error) {
 	user := User{}
-	err := DB.Where("email = ?", strings.ToLower(vm.Email)).First(&user).Error
+	err := db.Where("email = ?", strings.ToLower(vm.Email)).First(&user).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return User{}, fmt.Errorf("User not found")
@@ -171,7 +171,7 @@ func (tr usersRepository) Forgot(vm ForgotVM) (User, error) {
 	}
 
 	user.Token = helpers.CreateSecureToken()
-	if err := DB.Save(&user).Error; err != nil {
+	if err := db.Save(&user).Error; err != nil {
 		return User{}, err
 	}
 	return user, nil
@@ -183,7 +183,7 @@ func (tr usersRepository) ResetPassword(vm ResetVM) (User, error) {
 		return User{}, fmt.Errorf("Wrong token")
 	}
 	user := User{}
-	err := DB.Where("token = ?", vm.Token).First(&user).Error
+	err := db.Where("token = ?", vm.Token).First(&user).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return User{}, fmt.Errorf("User not found")
@@ -193,7 +193,7 @@ func (tr usersRepository) ResetPassword(vm ResetVM) (User, error) {
 
 	user.Token = ""
 	user.PasswordHash = helpers.CreatePasswordHash(vm.Password)
-	if err := DB.Save(&user).Error; err != nil {
+	if err := db.Save(&user).Error; err != nil {
 		return User{}, err
 	}
 	if err := user.CreateJWTToken(); err != nil {
@@ -205,7 +205,7 @@ func (tr usersRepository) ResetPassword(vm ResetVM) (User, error) {
 //Summary returns summary info for a dashboard
 func (tr usersRepository) Summary() (UsersSummaryVM, error) {
 	vm := UsersSummaryVM{}
-	if err := DB.Model(User{}).Count(&vm.Count).Error; err != nil {
+	if err := db.Model(User{}).Count(&vm.Count).Error; err != nil {
 		return UsersSummaryVM{}, err
 	}
 	return vm, nil

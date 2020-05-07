@@ -56,7 +56,7 @@ func TestCommentsRepositoryCreate(t *testing.T) {
 func TestCommentsRepositoryUpdate(t *testing.T) {
 	contents := fmt.Sprintf("Comment-%d", time.Now().Nanosecond())
 	comment := Comment{}
-	DB.Where("user_id = ?", userID).First(&comment)
+	db.Where("user_id = ?", userID).First(&comment)
 	assert.NotZero(t, comment.ID)
 	assert.NotEqual(t, comment.Contents, contents)
 

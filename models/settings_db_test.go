@@ -48,7 +48,7 @@ func TestSettingsRepositoryCreate(t *testing.T) {
 func TestSettingsRepositoryUpdate(t *testing.T) {
 	code := fmt.Sprintf("setting_%d", time.Now().Nanosecond())
 	setting := Setting{}
-	DB.First(&setting)
+	db.First(&setting)
 	assert.NotZero(t, setting.ID)
 	assert.NotEqual(t, setting.Code, code)
 

@@ -87,7 +87,7 @@ func TestUsersRepositoryActivate(t *testing.T) {
 	user := createUser("123")
 	user.Status = NOTACTIVE
 	user.Token = helpers.CreateSecureToken()
-	err := DB.Save(&user).Error
+	err := db.Save(&user).Error
 	assert.Nil(t, err)
 
 	vm := ActivateVM{
