@@ -47,7 +47,7 @@ export default function TasksItem() {
                                 task.category.name
                             ]) : null,
                         (!task.completed) ? m('a.badge.badge-success', { onclick: onOpenClick }, "Open") : null,
-                        (!!task.end_date && Date.parse(task.end_date) < Date.now()) ? m('a.badge.badge-warning', { onclick: onExpiredClick }, "Expired") : null,
+                        (!task.completed && !!task.end_date && Date.parse(task.end_date) < Date.now()) ? m('a.badge.badge-warning', { onclick: onExpiredClick }, "Expired") : null,
                     ]),
                     (!isZeroDate(task.start_date) || !isZeroDate(task.end_date) || spent(task) != '') ? m('.dates', [
                         (!isZeroDate(task.start_date)) ? m('span.created-on.mr-3', [

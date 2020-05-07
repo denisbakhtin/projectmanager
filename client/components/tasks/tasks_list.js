@@ -5,7 +5,7 @@ const Filters = Object.freeze({
     ALL: (task) => true,
     OPEN: (task) => task.completed == false,
     SOLVED: (task) => task.completed == true,
-    EXPIRED: (task) => !!task.end_date && Date.parse(task.end_date) < Date.now(),
+    EXPIRED: (task) => task.completed == false && !!task.end_date && Date.parse(task.end_date) < Date.now(),
 });
 
 export default function TasksList() {
