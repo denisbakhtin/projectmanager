@@ -6,7 +6,7 @@ After=postgresql.service
 [Service]
 User=tabula
 WorkingDirectory=/home/tabula/go/src/github.com/denisbakhtin/projectmanager
-ExecStart=/home/tabula/go/src/github.com/denisbakhtin/medical/projectmanager-go -mode=release
+ExecStart=/home/tabula/go/src/github.com/denisbakhtin/projectmanager/projectmanager-go -mode=release
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure

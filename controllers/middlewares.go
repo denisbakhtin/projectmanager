@@ -36,7 +36,6 @@ func AuthRequired() gin.HandlerFunc {
 
 				if claims, ok := token.Claims.(*models.JWTClaims); ok && token.Valid {
 					user, _ = models.UsersDB.GetByEmail(claims.Subject)
-					log.Printf("%+v\n", user)
 				}
 			}
 		}
