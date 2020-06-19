@@ -14,11 +14,12 @@ func taskLogsPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.TaskLogsDB.Create(currentUserID(c), taskLog); err != nil {
+	taskLog, err := models.TaskLogsDB.Create(currentUserID(c), taskLog)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, taskLog)
 }
 
 //taskLogsPut handles update taskLog request

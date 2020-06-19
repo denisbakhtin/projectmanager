@@ -23,7 +23,7 @@ type Task struct {
 	CreatedAt     time.Time      `json:"treated_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	Name          string         `json:"name" valid:"required,length(1|1500)"`
-	Destription   string         `json:"destription" valid:"length(0|10000)"`
+	Destription   string         `json:"description" valid:"length(0|10000)"`
 	StartDate     *time.Time     `json:"start_date"`
 	EndDate       *time.Time     `json:"end_date"`
 	PeriodicityID uint64         `json:"periodicity_id,omitempty" gorm:"index"`

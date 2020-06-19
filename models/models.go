@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/denisbakhtin/marble/models"
 	"github.com/denisbakhtin/projectmanager/config"
 	"github.com/fiam/gounidecode/unidecode"
 	"github.com/jinzhu/gorm"
@@ -38,20 +37,20 @@ func InitializeDB() {
 	}
 	if count != 3 {
 		if err := db.Create(&UserGroup{ID: ADMIN, Name: "Admin"}).Error; err != nil {
-			log.Panic(fmt.Sprintf("Error creating Admin user group with ID=%d. Try to create it manually and modify models.ADMIN constant accordingly.", ADMIN))
+			log.Panic(fmt.Sprintf("Error creating Admin user group with ID=%d. Try to create it manually and modify ADMIN constant accordingly.", ADMIN))
 		}
 		if err := db.Create(&UserGroup{ID: EDITOR, Name: "Editor"}).Error; err != nil {
-			log.Panic(fmt.Sprintf("Error creating Editor user group with ID=%d. Try to create it manually and modify models.EDITOR constant accordingly.", EDITOR))
+			log.Panic(fmt.Sprintf("Error creating Editor user group with ID=%d. Try to create it manually and modify EDITOR constant accordingly.", EDITOR))
 		}
 		if err := db.Create(&UserGroup{ID: USER, Name: "User"}).Error; err != nil {
-			log.Panic(fmt.Sprintf("Error creating User user group with ID=%d. Try to create it manually and modify models.USER constant accordingly.", USER))
+			log.Panic(fmt.Sprintf("Error creating User user group with ID=%d. Try to create it manually and modify USER constant accordingly.", USER))
 		}
 	}
 	//ensure site_name setting exists in database
-	setting := models.Setting{}
+	setting := Setting{}
 	if err := db.Where("code = ?", "site_name").First(&setting).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			if err := db.Create(&models.Setting{Code: "site_name", Value: config.Settings.ProjectName}).Error; err != nil {
+			if err := db.Create(&Setting{Code: "site_name", Value: config.Settings.ProjectName}).Error; err != nil {
 				log.Panic(fmt.Sprintf("Can't create site_name setting in database. %v", err))
 			}
 		} else {

@@ -86,13 +86,15 @@ export default function Task() {
                 })
                 .catch((error) => errors = responseErrors(error)),
 
-        update = () =>
+        update = () => {
             service.updateTask(task.id, task)
                 .then((result) => {
                     addSuccess("Task updated.")
                     window.history.back();
                 })
                 .catch((error) => errors = responseErrors(error))
+        }
+
     /* getProjectUsers = () =>
         service.getProjectUsers(task.project_id)
             .then((result) => pusers = result)
