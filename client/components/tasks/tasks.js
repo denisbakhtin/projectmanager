@@ -32,14 +32,11 @@ export default function Tasks() {
                 m('h1.title', 'Tasks'),
                 m(tasks_list, { tasks: tasks, onUpdate: getAll }),
                 m(error, { errors: errors }),
-                m('.actions.mt-4', [
-                    m('button.btn.btn-primary[type=button]', {
-                        onclick: () => m.route.set('/tasks/new')
-                    }, [
-                        m('i.fa.fa-plus.mr-1'),
-                        "New task"
-                    ])
-                ]),
+                m('button#floating-add-button.btn.btn-primary[type=button]', {
+                    onclick: () => m.route.set('/tasks/new')
+                },
+                    m('i.fa.fa-plus'),
+                ),
             ])
         }
     }

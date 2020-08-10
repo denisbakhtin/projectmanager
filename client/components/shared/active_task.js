@@ -50,7 +50,7 @@ export default function ActiveTask() {
                 m('.active-task', { class: global_state.sidebarCollapsed ? "wide" : "narrow" }, [
                     m('a', { href: '#!/tasks/' + state.task_log.task.id }, state.task_log.task.name),
                     (state.spent() != '') ? m('span.text-muted.ml-2', state.spent()) : null,
-                    m('button.btn.btn-sm.btn-primary.ml-3', { onclick: state.stop }, [
+                    m('button.btn.btn-sm.btn-secondary.ml-3', { onclick: state.stop }, [
                         m('i.fa.fa-stop.mr-1'),
                         m('span', 'Stop'),
                     ])

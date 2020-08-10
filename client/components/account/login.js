@@ -16,14 +16,14 @@ export default function Login() {
                         m('form[action=#]', [
                             m('.form-group', [
                                 m('label.control-label', "Email"),
-                                m('input.form-control[type=email][placeholder="Enter your email"]', {
+                                m('input.form-control[type=email][name=email][placeholder="Enter your email"]', {
                                     oninput: (e) => Auth.setEmail(e.target.value),
                                     value: Auth.email
                                 })
                             ]),
                             m('.form-group', [
                                 m('label.control-label', "Password"),
-                                m('input.form-control[type=password][placeholder="Enter your password"]', {
+                                m('input.form-control[type=password][name=email][placeholder="Enter your password"]', {
                                     oninput: (e) => Auth.setPassword(e.target.value),
                                     value: Auth.password
                                 })

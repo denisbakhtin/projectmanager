@@ -59,11 +59,12 @@ func tasksPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.TasksDB.Create(currentUserID(c), task); err != nil {
+	task, err := models.TasksDB.Create(currentUserID(c), task)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, task)
 }
 
 //tasksPut handles update task request
@@ -73,11 +74,12 @@ func tasksPut(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.TasksDB.Update(currentUserID(c), task); err != nil {
+	task, err := models.TasksDB.Update(currentUserID(c), task)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, task)
 }
 
 //tasksDelete handles delete task request
@@ -98,4 +100,14 @@ func tasksSummaryGet(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, vm)
+}
+
+//tasksLatestGet handles get latest tasks request
+func tasksLatestGet(c *gin.Context) {
+	tasks, err := models.TasksDB.Latest(currentUserID(c))
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+		return
+	}
+	c.JSON(http.StatusOK, tasks)
 }

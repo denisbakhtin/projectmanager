@@ -3,7 +3,7 @@ package models
 import "time"
 
 //Log represent log table
-//WIP
+//Work in progress
 type Log struct {
 	ID        uint64    `gorm:"primary_key" json:"id"`
 	CreatedAt time.Time `json:"created_at"`

@@ -28,14 +28,11 @@ export default function Sessions() {
                         sessions.map((session) => m(sessions_item, { key: session.id, session: session, onUpdate: getAll }))
                     ]) : m('p', 'No sessions yet.'),
                 m(error, { errors: errors }),
-                m('.actions.mt-4', [
-                    m('button.btn.btn-primary[type=button]', {
-                        onclick: () => m.route.set('/sessions/new')
-                    }, [
-                        m('i.fa.fa-plus.mr-1'),
-                        "New session"
-                    ])
-                ]),
+                m('button#floating-add-button.btn.btn-primary[type=button]', {
+                    onclick: () => m.route.set('/sessions/new')
+                },
+                    m('i.fa.fa-plus'),
+                ),
             ])
         }
     }

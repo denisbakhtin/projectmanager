@@ -72,6 +72,7 @@ func setupRouter() *gin.Engine {
 
 		api.POST("/task_logs", taskLogsPost)
 		api.PUT("/task_logs/:id", taskLogsPut)
+		api.GET("/task_logs_latest", taskLogsLatestGet)
 
 		api.GET("/projects", projectsGet)
 		api.GET("/projects/:id", projectGet)
@@ -93,6 +94,7 @@ func setupRouter() *gin.Engine {
 		api.PUT("/tasks/:id", tasksPut)
 		api.DELETE("/tasks/:id", tasksDelete)
 		api.GET("/tasks_summary", tasksSummaryGet)
+		api.GET("/tasks_latest", tasksLatestGet)
 
 		api.GET("/comments", commentsGet)
 		api.GET("/comments/:id", commentGet)

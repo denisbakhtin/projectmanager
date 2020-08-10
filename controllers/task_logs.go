@@ -29,9 +29,20 @@ func taskLogsPut(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.TaskLogsDB.Update(currentUserID(c), taskLog); err != nil {
+	taskLog, err := models.TaskLogsDB.Update(currentUserID(c), taskLog)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, taskLog)
+}
+
+//taskLogsLatestGet handles get latest task logs request
+func taskLogsLatestGet(c *gin.Context) {
+	logs, err := models.TaskLogsDB.Latest(currentUserID(c))
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err)
+		return
+	}
+	c.JSON(http.StatusOK, logs)
 }

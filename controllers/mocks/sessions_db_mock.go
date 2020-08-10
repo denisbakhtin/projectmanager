@@ -34,8 +34,8 @@ func (cr *SessionsDBMock) Create(userID uint64, session models.Session) (models.
 }
 
 //NewGet gets a view models for a new session
-func (cr *SessionsDBMock) NewGet(userID uint64) ([]models.TaskLog, error) {
-	return nil, nil
+func (cr *SessionsDBMock) NewGet(userID uint64) (models.Session, error) {
+	return models.Session{}, nil
 }
 
 //Delete removes a session from db
@@ -51,6 +51,7 @@ func (cr *SessionsDBMock) Delete(userID uint64, id interface{}) error {
 	return fmt.Errorf("Session not found")
 }
 
+//Summary returs session summary
 func (cr *SessionsDBMock) Summary(userID uint64) (models.SessionsSummaryVM, error) {
 	return models.SessionsSummaryVM{Count: len(cr.Sessions)}, nil
 }

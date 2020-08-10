@@ -50,9 +50,7 @@ type EditTaskVM struct {
 
 //TasksSummaryVM is a view model for tasks statistics
 type TasksSummaryVM struct {
-	Count          int       `json:"count"`
-	LatestTasks    []Task    `json:"latest_tasks"`
-	LatestTaskLogs []TaskLog `json:"latest_task_logs"`
+	Count int `json:"count"`
 }
 
 //NewSessionVM is a view model for a new session

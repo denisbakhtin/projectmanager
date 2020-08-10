@@ -118,3 +118,22 @@ func TestTaskSummary(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Greater(t, vm.Count, 0)
 }
+
+func TestTaskLatestGet(t *testing.T) {
+	resp, err := jsonGet(server.URL + "/api/tasks_latest")
+	assert.Nil(t, err)
+	assert.Equal(t, 401, resp.StatusCode)
+
+	resp, err = jsonGetAuth(server.URL+"/api/tasks_latest", authenticatedUser.JWTToken)
+	assert.Nil(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
+
+	var tasks []models.Task
+	defer resp.Body.Close()
+	bytes, err := ioutil.ReadAll(resp.Body)
+	assert.Nil(t, err)
+	err = json.Unmarshal(bytes, &tasks)
+	assert.Nil(t, err)
+	assert.Greater(t, len(tasks), 0)
+	assert.LessOrEqual(t, len(tasks), 5)
+}

@@ -28,7 +28,7 @@ func (cr *commentsRepository) GetAll(userID uint64, taskID interface{}) ([]Comme
 //Get fetches a comment by its id
 func (cr *commentsRepository) Get(userID uint64, id interface{}) (Comment, error) {
 	comment := Comment{}
-	err := db.Where("user_id = ?", userID).First(&comment, id).Error
+	err := db.Where("user_id = ?", userID).Preload("AttachedFiles").First(&comment, id).Error
 	return comment, err
 }
 

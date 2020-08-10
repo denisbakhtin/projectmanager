@@ -5,44 +5,27 @@ import { startTask } from '../shared/active_task'
 import error from '../shared/error'
 //import moment from 'moment'
 
-const state = {
-    count: 0,
-    latestTasks: [],
-    latestTaskLogs: [],
-    errors: null,
-    lastRun: 0,
-
-    //methods
-    get: () => {
-        //10 sec threshold
-        if (Math.floor((Date.now() - state.lastRun) / 1000) > 10) {
-            state.lastRun = Date.now()
-            service.getTasksSummary()
-                .then((result) => {
-                    state.errors = null
-                    state.count = result.count
-                    state.latestTasks = result.latest_tasks
-                    state.latestTaskLogs = result.latest_task_logs
-                })
-                .catch((error) => state.errors = responseErrors(error))
-        }
-    }
-
-}
-
 export function TasksCountWidget() {
+    let count = 0,
+        errors,
+
+        get = () =>
+            service.getTasksSummary()
+                .then((result) => count = result.count)
+                .catch((error) => errors = responseErrors(error))
+
     return {
         oninit(vnode) {
-            state.get()
+            get()
         },
 
         view(vnode) {
 
             return m(".card.count-widget",
                 m('a.card-body[href=#!/tasks]', [
-                    m('.count', state.count),
+                    m('.count', count),
                     m('.description', 'Tasks'),
-                    (state.errors) ? m('i.fa.fa-exclamation-circle.error-icon', { title: responseErrors(state.errors) }) : null,
+                    (errors) ? m('i.fa.fa-exclamation-circle.error-icon', { title: responseErrors(errors) }) : null,
                 ])
             )
         }
@@ -50,9 +33,17 @@ export function TasksCountWidget() {
 }
 
 export function LatestTasksWidget() {
+    let latestTasks = [],
+        errors = null,
+
+        get = () =>
+            service.getLatestTasks()
+                .then((result) => latestTasks = result)
+                .catch((error) => errors = responseErrors(error))
+
     return {
         oninit(vnode) {
-            state.get()
+            get()
         },
 
         view(vnode) {
@@ -70,16 +61,16 @@ export function LatestTasksWidget() {
                             ])
                         ]),
                         m('tbody', [
-                            (state.latestTasks && state.latestTasks.length > 0) ?
-                                state.latestTasks.map((task) => m('tr', [
+                            (latestTasks && latestTasks.length > 0) ?
+                                latestTasks.map((task) => m('tr', [
                                     m('td', m('a', { href: '#!/tasks/' + task.id }, task.name)),
                                     m('td.buttons.shrink.text-center',
-                                        m('button.btn.btn-icon.btn-primary', { onclick: () => startTask(task, () => state.get()) }, m('i.fa.fa-play'))
+                                        m('button.btn.btn-icon.btn-primary', { onclick: () => startTask(task, () => get()) }, m('i.fa.fa-play'))
                                     ),
                                 ])) : m('tr', m('td.text-center[colspan=2]', 'The list is empty'))
                         ])
                     ]),
-                    m(error, { errors: responseErrors(state.errors) }),
+                    m(error, { errors: responseErrors(errors) }),
                 ])
             )
         }
@@ -87,9 +78,17 @@ export function LatestTasksWidget() {
 }
 
 export function LatestTaskLogsWidget() {
+    let latestTaskLogs = [],
+        errors = null,
+
+        get = () =>
+            service.getLatestTaskLogs()
+                .then((result) => latestTaskLogs = result)
+                .catch((error) => errors = responseErrors(error))
+
     return {
         oninit(vnode) {
-            state.get()
+            get()
         },
 
         view(vnode) {
@@ -108,15 +107,15 @@ export function LatestTaskLogsWidget() {
                             ])
                         ]),
                         m('tbody', [
-                            (state.latestTaskLogs && state.latestTaskLogs.length > 0) ?
-                                state.latestTaskLogs.map((log) => m('tr', [
+                            (latestTaskLogs && latestTaskLogs.length > 0) ?
+                                latestTaskLogs.map((log) => m('tr', [
                                     m('td', m('a', { href: '#!/tasks/' + log.task.id }, log.task.name)),
                                     //m('td.shrink.text-center', moment(log.created_at).fromNow()),
                                     m('td.shrink.text-center', humanSpent(log.minutes)),
                                 ])) : m('tr', m('td.text-center[colspan=3]', 'The list is empty'))
                         ])
                     ]),
-                    m(error, { errors: responseErrors(state.errors) }),
+                    m(error, { errors: responseErrors(errors) }),
                 ])
             )
         }

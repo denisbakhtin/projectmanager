@@ -23,6 +23,7 @@ type TasksRepository interface {
 	Update(userID uint64, task Task) (Task, error)
 	Delete(userID uint64, id interface{}) error
 	Summary(userID uint64) (TasksSummaryVM, error)
+	Latest(userID uint64) ([]Task, error)
 }
 
 type tasksRepository struct{}
@@ -41,7 +42,7 @@ func (tr *tasksRepository) GetAll(userID uint64) ([]Task, error) {
 //Get fetches a task by its id
 func (tr *tasksRepository) Get(userID uint64, id interface{}) (Task, error) {
 	task := Task{}
-	query := db.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Category")
+	query := db.Where("user_id = ?", userID).Preload("AttachedFiles").Preload("Category").Preload("Periodicity")
 	query = query.Preload("Comments", func(db *gorm.DB) *gorm.DB {
 		return db.Order("comments.created_at asc")
 	})
@@ -135,11 +136,14 @@ func (tr *tasksRepository) Summary(userID uint64) (TasksSummaryVM, error) {
 	if err := db.Model(Task{}).Where("user_id = ?", userID).Count(&vm.Count).Error; err != nil {
 		return TasksSummaryVM{}, err
 	}
-	if err := db.Where("user_id = ?", userID).Order("id desc").Limit(5).Find(&vm.LatestTasks).Error; err != nil {
-		return TasksSummaryVM{}, err
-	}
-	if err := db.Where("user_id = ? and minutes > 0", userID).Order("id desc").Limit(5).Preload("Task").Find(&vm.LatestTaskLogs).Error; err != nil {
-		return TasksSummaryVM{}, err
-	}
 	return vm, nil
+}
+
+//Latest returns a list of latest tasks owned by specified user
+func (tr *tasksRepository) Latest(userID uint64) ([]Task, error) {
+	var tasks []Task
+	if err := db.Where("user_id = ?", userID).Order("id desc").Limit(5).Find(&tasks).Error; err != nil {
+		return nil, err
+	}
+	return tasks, nil
 }

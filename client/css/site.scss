@@ -494,6 +494,10 @@ body {
   #main {
     padding: 0;
 
+    .dashboard {
+      padding: 0 10px;
+    }
+
     .actions {
       padding: 0 15px 25px 15px;
     }
@@ -673,16 +677,20 @@ table {
   position: fixed;
   bottom: 0;
   right: 0;
-  left: 240px;
+  left: 241px;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
   z-index: 10;
   padding: 10px 20px;
-  background: #fff;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  background: $primary;
+  box-shadow: 0 -2px 2px $primary;
   transition: all 0.3s;
+
+  a {
+    color: #fff;
+  }
 
   &.wide {
     left: 50px;
@@ -773,6 +781,8 @@ table {
 }
 
 .projects {
+  position: relative;
+
   textarea {
     height: 10em;
   }
@@ -1323,6 +1333,13 @@ label {
         line-height: 40px;
       }
 
+      .description {
+        color: gray;
+        text-transform: uppercase;
+        font-size: 90%;
+        margin-top: 5px;
+      }
+
       .fa {
         position: absolute;
         right: 1.25rem;
@@ -1376,6 +1393,7 @@ label {
 
         td {
           padding: 0.5rem 0.75rem;
+          word-break: break-word;
 
           &.buttons {
             padding: 0.3rem 0.75rem;
@@ -1383,5 +1401,23 @@ label {
         }
       }
     }
+  }
+}
+
+#floating-add-button {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  border-radius: 50%;
+  padding: 15px 18px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+.projects,
+.sessions,
+.tasks,
+.categories {
+  .box-list {
+    margin-bottom: 80px;
   }
 }

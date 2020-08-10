@@ -40,11 +40,12 @@ func commentsPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.CommentsDB.Create(currentUserID(c), comment); err != nil {
+	com, err := models.CommentsDB.Create(currentUserID(c), comment)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, com)
 }
 
 //commentsPut handles update comment request
@@ -54,11 +55,12 @@ func commentsPut(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.CommentsDB.Update(currentUserID(c), comment); err != nil {
+	com, err := models.CommentsDB.Update(currentUserID(c), comment)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, com)
 }
 
 //commentsDelete handles delete comment request

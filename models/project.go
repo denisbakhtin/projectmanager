@@ -16,7 +16,7 @@ type Project struct {
 	UpdatedAt     time.Time      `json:"updated_at"`
 	Favorite      bool           `json:"favorite"`
 	Name          string         `json:"name" valid:"required,length(1|1500)"`
-	Despription   string         `json:"despription" valid:"length(0|100000)"`
+	Despription   string         `json:"description" valid:"length(0|100000)"`
 	Archived      bool           `json:"archived"`
 	UserID        uint64         `json:"user_id" valid:"-"`
 	User          User           `json:"user" gorm:"save_associations:false" valid:"-"`
@@ -64,7 +64,7 @@ func (p *Project) BeforeUpdate(tx *gorm.DB) (err error) {
 		return errors.New(helpers.NotFoundOrOwned("Project"))
 	}
 	//delete removed file attachments
-	ids := make([]uint64, len(p.AttachedFiles))
+	ids := make([]uint64, len(p.AttachedFiles)+1) //force atleast 1 element for query to work... :/
 	for i := 0; i < len(p.AttachedFiles); i++ {
 		ids[i] = p.AttachedFiles[i].ID
 	}

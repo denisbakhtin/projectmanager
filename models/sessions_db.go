@@ -13,7 +13,7 @@ func init() {
 type SessionsRepository interface {
 	GetAll(userID uint64) ([]Session, error)
 	Get(userID uint64, id interface{}) (Session, error)
-	NewGet(userID uint64) ([]TaskLog, error)
+	NewGet(userID uint64) (Session, error)
 	Create(userID uint64, session Session) (Session, error)
 	Delete(userID uint64, id interface{}) error
 	Summary(userID uint64) (SessionsSummaryVM, error)
@@ -38,11 +38,11 @@ func (sr *sessionsRepository) Get(userID uint64, id interface{}) (Session, error
 }
 
 //NewGet gets a view models for a new session
-func (sr *sessionsRepository) NewGet(userID uint64) ([]TaskLog, error) {
-	var logs []TaskLog
+func (sr *sessionsRepository) NewGet(userID uint64) (Session, error) {
+	var session Session
 	err := db.Where("user_id = ? and minutes > 0 and session_id = 0", userID).
-		Preload("Task").Preload("Task.Project").Find(&logs).Error
-	return logs, err
+		Preload("Task").Preload("Task.Project").Find(&session.TaskLogs).Error
+	return session, err
 }
 
 //Create sreates a new session in db

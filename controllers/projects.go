@@ -71,11 +71,12 @@ func projectsPost(c *gin.Context) {
 		return
 	}
 
-	if _, err := models.ProjectsDB.Create(currentUserID(c), project); err != nil {
+	proj, err := models.ProjectsDB.Create(currentUserID(c), project)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, proj)
 }
 
 //projectsPut handles update project request
@@ -85,11 +86,12 @@ func projectsPut(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.ProjectsDB.Update(currentUserID(c), project); err != nil {
+	proj, err := models.ProjectsDB.Update(currentUserID(c), project)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, proj)
 }
 
 //projectArchive handles archive project request
@@ -99,11 +101,12 @@ func projectArchive(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.ProjectsDB.ToggleArchive(currentUserID(c), project); err != nil {
+	proj, err := models.ProjectsDB.ToggleArchive(currentUserID(c), project)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, proj)
 }
 
 //projectFavorite handles toggling project favorite status request
@@ -113,11 +116,12 @@ func projectFavorite(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.ProjectsDB.ToggleFavorite(currentUserID(c), project); err != nil {
+	proj, err := models.ProjectsDB.ToggleFavorite(currentUserID(c), project)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, proj)
 }
 
 //projectsDelete handles delete role request

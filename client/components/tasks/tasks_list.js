@@ -38,7 +38,7 @@ export default function TasksList() {
                 ]),
                 (filteredTasks && filteredTasks.length > 0) ? m('ul.dashboard-box.box-list',
                     filteredTasks.map((task) => m(tasks_item, { key: task.id, task: task, onUpdate: onUpdate, onOpenClick: () => setFilter("OPEN"), onExpiredClick: () => setFilter("EXPIRED") }))
-                ) : m('p.text-muted', 'The list is empty'),
+                ) : m('p.mx-3.text-muted', 'The list is empty'),
             ]
         }
     }

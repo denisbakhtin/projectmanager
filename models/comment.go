@@ -40,7 +40,7 @@ func (c *Comment) BeforeUpdate(tx *gorm.DB) (err error) {
 		return errors.New(helpers.NotFoundOrOwned("Comment"))
 	}
 	//delete removed file attachments
-	ids := make([]uint64, len(c.AttachedFiles))
+	ids := make([]uint64, len(c.AttachedFiles)+1) //force atleast 1 element for query to work... :/
 	for i := 0; i < len(c.AttachedFiles); i++ {
 		ids[i] = c.AttachedFiles[i].ID
 	}

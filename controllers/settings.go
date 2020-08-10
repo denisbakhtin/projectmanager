@@ -39,11 +39,12 @@ func settingsPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.SettingsDB.Create(setting); err != nil {
+	setting, err := models.SettingsDB.Create(setting)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, setting)
 }
 
 //settingsPut handles update setting request
@@ -53,11 +54,12 @@ func settingsPut(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.SettingsDB.Update(setting); err != nil {
+	setting, err := models.SettingsDB.Update(setting)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, setting)
 }
 
 //settingsDelete handles delete setting request

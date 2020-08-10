@@ -6,11 +6,12 @@ import (
 	"github.com/denisbakhtin/projectmanager/models"
 )
 
-//UsersDBMock is a UsersDB repository mock
+//TaskLogsDBMock is a TaskLogsDB repository mock
 type TaskLogsDBMock struct {
 	TaskLogs []models.TaskLog
 }
 
+//Create inserts new record in db
 func (r *TaskLogsDBMock) Create(userID uint64, taskLog models.TaskLog) (models.TaskLog, error) {
 	taskLog.UserID = userID
 	taskLog.SessionID = 0
@@ -30,4 +31,12 @@ func (r *TaskLogsDBMock) Update(userID uint64, taskLog models.TaskLog) (models.T
 		}
 	}
 	return models.TaskLog{}, fmt.Errorf("Task log not found")
+}
+
+//Latest returns a fixed number of latest task logs
+func (r *TaskLogsDBMock) Latest(userID uint64) ([]models.TaskLog, error) {
+	if len(r.TaskLogs) <= 5 {
+		return r.TaskLogs[0:len(r.TaskLogs)], nil
+	}
+	return r.TaskLogs[0:5], nil
 }

@@ -82,7 +82,7 @@ func (t *Task) BeforeUpdate(tx *gorm.DB) (err error) {
 		return errors.New(helpers.NotFoundOrOwned("Task"))
 	}
 	//delete removed file attachments
-	ids := make([]uint64, len(t.AttachedFiles))
+	ids := make([]uint64, len(t.AttachedFiles)+1) //force atleast 1 element for query to work... :/
 	for i := 0; i < len(t.AttachedFiles); i++ {
 		ids[i] = t.AttachedFiles[i].ID
 	}

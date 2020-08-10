@@ -34,12 +34,12 @@ func sessionGet(c *gin.Context) {
 
 //sessionNewGet handles get new session request
 func sessionNewGet(c *gin.Context) {
-	logs, err := models.SessionsDB.NewGet(currentUserID(c))
+	session, err := models.SessionsDB.NewGet(currentUserID(c))
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	c.JSON(http.StatusOK, logs)
+	c.JSON(http.StatusOK, session)
 }
 
 //sessionsPost handles create session request
@@ -49,12 +49,13 @@ func sessionsPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.SessionsDB.Create(currentUserID(c), session); err != nil {
+	session, err := models.SessionsDB.Create(currentUserID(c), session)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, session)
 }
 
 //sessionsDelete handles delete session request

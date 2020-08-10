@@ -40,11 +40,12 @@ func categoriesPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.CategoriesDB.Create(currentUserID(c), category); err != nil {
+	cat, err := models.CategoriesDB.Create(currentUserID(c), category)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, cat)
 }
 
 //categoriesPut handles update category request
@@ -54,11 +55,12 @@ func categoriesPut(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.CategoriesDB.Update(currentUserID(c), category); err != nil {
+	cat, err := models.CategoriesDB.Update(currentUserID(c), category)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, cat)
 }
 
 //categoriesDelete handles delete category request

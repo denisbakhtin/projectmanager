@@ -40,11 +40,12 @@ func userStatusPut(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.UsersDB.UpdateStatus(user); err != nil {
+	user, err := models.UsersDB.UpdateStatus(user)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, user)
 }
 
 //usersSummaryGet handles get users statistics request

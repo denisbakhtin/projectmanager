@@ -13,6 +13,7 @@ import (
 //loginPost handles user login
 func loginPost(c *gin.Context) {
 	vm := models.LoginVM{}
+
 	if err := c.ShouldBindJSON(&vm); err != nil {
 		abortWithError(c, http.StatusBadRequest, err)
 		return

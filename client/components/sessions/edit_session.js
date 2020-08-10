@@ -55,7 +55,7 @@ export default function Session() {
         newSession = () =>
             service.newSession()
                 .then((result) => {
-                    logs = result.slice(0)
+                    logs = result.task_logs.slice(0)
                     projects = groupLogsByProject(logs)
                 }).catch((error) => errors = responseErrors(error)),
 

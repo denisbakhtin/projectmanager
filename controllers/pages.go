@@ -40,11 +40,12 @@ func pagesPost(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.PagesDB.Create(page); err != nil {
+	page, err := models.PagesDB.Create(page)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, page)
 }
 
 //pagesPut handles update page request
@@ -54,11 +55,12 @@ func pagesPut(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
-	if _, err := models.PagesDB.Update(page); err != nil {
+	page, err := models.PagesDB.Update(page)
+	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, page)
 }
 
 //pagesDelete handles delete page request

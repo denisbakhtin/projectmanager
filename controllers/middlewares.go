@@ -33,7 +33,6 @@ func AuthRequired() gin.HandlerFunc {
 				if err != nil {
 					abortWithError(c, http.StatusUnauthorized, fmt.Errorf("Invalid authentication token, please, login again"))
 				}
-
 				if claims, ok := token.Claims.(*models.JWTClaims); ok && token.Valid {
 					user, _ = models.UsersDB.GetByEmail(claims.Subject)
 				}

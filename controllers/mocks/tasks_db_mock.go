@@ -80,6 +80,15 @@ func (tm *TasksDBMock) Delete(userID uint64, id interface{}) error {
 	return nil
 }
 
+//Summary returns tasks summary
 func (tm *TasksDBMock) Summary(userID uint64) (models.TasksSummaryVM, error) {
 	return models.TasksSummaryVM{Count: len(tm.Tasks)}, nil
+}
+
+//Latest returns a fixed number of latest tasks
+func (tm *TasksDBMock) Latest(userID uint64) ([]models.Task, error) {
+	if len(tm.Tasks) <= 5 {
+		return tm.Tasks[0:len(tm.Tasks)], nil
+	}
+	return tm.Tasks[0:5], nil
 }

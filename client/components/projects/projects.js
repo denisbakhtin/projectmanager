@@ -48,14 +48,11 @@ export default function Projects() {
                     filteredProjects.map((proj) => m(projects_item, { key: proj.id, project: proj, onUpdate: getAll }))
                 ) : m('p.text-muted', 'The list is empty'),
                 m(error, { errors: errors }),
-                m('.actions.mt-4', [
-                    m('button.btn.btn-primary[type=button]', {
-                        onclick: () => m.route.set('/projects/new')
-                    }, [
-                        m('i.fa.fa-plus.mr-1'),
-                        "New project"
-                    ])
-                ]),
+                m('button#floating-add-button.btn.btn-primary[type=button]', {
+                    onclick: () => m.route.set('/projects/new')
+                },
+                    m('i.fa.fa-plus'),
+                ),
             ])
         }
     }

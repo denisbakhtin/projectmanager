@@ -48,6 +48,7 @@ const Service = {
     updateTask: (id, task) => put("/api/tasks/" + id, task),
     deleteTask: (id) => del("/api/tasks/" + id),
     getTasksSummary: () => get("/api/tasks_summary"),
+    getLatestTasks: () => get("/api/tasks_latest"),
 
     //>>>>>>>>>>>>>>>>>> comments
     getComment: (id) => get("/api/comments/" + id),
@@ -69,6 +70,7 @@ const Service = {
     getTaskLogs: () => get("/api/task_logs"),
     createTaskLog: (taskLog) => post("/api/task_logs", taskLog),
     updateTaskLog: (id, taskLog) => put("/api/task_logs/" + id, taskLog),
+    getLatestTaskLogs: () => get("/api/task_logs_latest"),
 
     //>>>>>>>>>>>> notifications
     getNotifications: () => get("/api/notifications"),
