@@ -18,6 +18,8 @@ var (
 	SettingsAll settingsYaml
 	//AppDir is the full path to application dir
 	AppDir string
+	//AssetsDir is the full path to assets folder
+	AssetsDir string
 	//UploadPath is the full path to uploads dir
 	UploadPath string
 	//UploadPathURL is the uploads dir url (/public/uploads)
@@ -58,6 +60,7 @@ func Initialize(mode string) {
 
 	UploadPathURL = "/public/uploads"
 	UploadPath = path.Join(AppDir, "public", "uploads")
+	AssetsDir = path.Join(AppDir, "public", "assets")
 
 	var err error
 	//closed in main.main by defer

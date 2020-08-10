@@ -3,6 +3,8 @@ package controllers
 import (
 	"html/template"
 	"log"
+	"os"
+	"path"
 
 	"github.com/denisbakhtin/projectmanager/config"
 	"github.com/denisbakhtin/projectmanager/models"
@@ -149,8 +151,10 @@ func currentUserID(c *gin.Context) uint64 {
 
 func funcMap() template.FuncMap {
 	return template.FuncMap{
-		"pages":    pagesMenu,
-		"siteName": siteName,
+		"pages":      pagesMenu,
+		"siteName":   siteName,
+		"cssVersion": cssVersion,
+		"jsVersion":  jsVersion,
 	}
 }
 
@@ -166,4 +170,20 @@ func siteName() string {
 func abortWithError(c *gin.Context, code int, err error) {
 	c.AbortWithStatusJSON(code, err.Error())
 	c.Error(err)
+}
+
+func cssVersion() string {
+	return fileModified(path.Join(config.AssetsDir, "main.css"))
+}
+
+func jsVersion() string {
+	return fileModified(path.Join(config.AssetsDir, "main.js"))
+}
+
+func fileModified(filename string) string {
+	file, err := os.Stat(filename)
+	if err != nil {
+		return "blank"
+	}
+	return file.ModTime().Format("2006-01-02-15-04-05")
 }

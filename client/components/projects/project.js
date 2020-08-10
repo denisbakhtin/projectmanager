@@ -48,13 +48,12 @@ export default function Project() {
                 m(files, { files: project.files, readOnly: true }),
                 m(tasks_list, { tasks: project.tasks, onUpdate: get }),
                 m(error, { errors: errors }),
+                m('button#floating-add-button.btn.btn-primary[type=button]', {
+                    onclick: () => m.route.set('/tasks/new?project_id=' + project.id)
+                },
+                    m('i.fa.fa-plus'),
+                ),
                 m('.actions.mt-4', [
-                    m('button.btn.mr-2.btn-primary[type=button]', {
-                        onclick: () => m.route.set('/tasks/new?project_id=' + project.id)
-                    }, [
-                        m('i.fa.fa-plus.mr-1'),
-                        "New task"
-                    ]),
                     m('button.btn.btn-outline-secondary.mr-2[type=button]', {
                         onclick: () => window.history.back()
                     }, "Back"),
