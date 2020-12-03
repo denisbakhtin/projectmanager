@@ -4,36 +4,49 @@
   gather_facts: no
   vars:
     ansible_python_interpreter: /usr/bin/python
+    remote_path: /home/tabula/projectmanager
   vars_prompt:
     - name: commit
       prompt: "What is the commit name?"
       private: no
 
   tasks:
-    - name: webpack build for production
+    - name: build assets & binary for production
       delegate_to: localhost
-      shell: webpack
+      shell: make build
 
     - name: git push
       delegate_to: localhost
       shell: git add -A && git commit -m "{{ commit }}" ; git push origin master
 
-    - name: git pull
-      shell: cd /home/tabula/denisbakhtin/projectmanager && git pull origin master
+    - name: Copy config directory
+      copy:
+        src: "{{ playbook_dir }}/config/config.yml"
+        dest: "{{ remote_path }}/config/"
+      
+    - name: Copy assets directory
+      copy:
+        src: "{{ playbook_dir }}/public/assets/"
+        dest: "{{ remote_path }}/public/assets/"
+    
+    - name: Copy views directory
+      copy:
+        src: "{{ playbook_dir }}/views/"
+        dest: "{{ remote_path }}/views/"
 
-    - name: stop service
-      shell: systemctl stop projectmanager
+    - name: Copy service binary
+      copy:
+        src: "{{ playbook_dir }}/projectmanager-go"
+        dest: "{{ remote_path }}/"
+        mode: 0755
+    
+    - name: Copy periodic task binary
+      copy:
+        src: "{{ playbook_dir }}/periodic-go"
+        dest: "{{ remote_path }}/"
+        mode: 0755
+    
+    - name: restart service
+      shell: systemctl restart projectmanager
       become: yes
-
-    - name: clean old binaries (projectmanager-go & periodic-go)
-      shell: cd /home/tabula/denisbakhtin/projectmanager && rm -rf *-go
-
-    - name: build new binary
-      shell: cd /home/tabula/denisbakhtin/projectmanager && /usr/local/go/bin/go build -o projectmanager-go
-
-    - name: build new periodic command binary
-      shell: cd /home/tabula/denisbakhtin/projectmanager && /usr/local/go/bin/go build -o periodic-go cmd/periodical/main.go
-
-    - name: start service
-      shell: systemctl start projectmanager
-      become: yes
+    
