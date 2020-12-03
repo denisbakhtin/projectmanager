@@ -34,6 +34,11 @@
         src: "{{ playbook_dir }}/views/"
         dest: "{{ remote_path }}/views/"
 
+    - name: Creates directory
+      file:
+        path: "{{ remote_path }}/logs"
+        state: directory
+
     - name: Copy service binary
       copy:
         src: "{{ playbook_dir }}/projectmanager-go"
